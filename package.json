@@ -1,0 +1,33 @@
+{
+  "name": "bandruption-playlist-stores",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean",
+    "db:generate": "turbo run db:generate",
+    "db:push": "turbo run db:push",
+    "web": "turbo run dev --filter=web",
+    "mobile": "turbo run dev --filter=mobile",
+    "server": "turbo run dev --filter=server",
+    "setup": "npm install && npm run db:generate",
+    "watchman-clear": "watchman watch-del-all",
+    "dev:clean": "npm run watchman-clear && npm run dev",
+    "mobile:clean": "cd apps/mobile && npm run dev:clean"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.3",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
+  }
+} 
