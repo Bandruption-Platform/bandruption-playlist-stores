@@ -1,0 +1,67 @@
+import { create } from 'zustand';
+import { AppState, Album, AIArtGeneration, NFT, ChatMessage, Track, User } from '@shared/types';
+import { mockAlbums, mockUser, mockNFTs, mockDrafts } from '@shared/types';
+
+interface AppStore extends AppState {
+  // Actions
+  setUser: (user: User | null) => void;
+  setLibraryView: (view: 'blocks' | 'details' | 'stack' | 'list') => void;
+  addAlbumToLibrary: (album: Album) => void;
+  removeAlbumFromLibrary: (albumId: string) => void;
+  startNFTGeneration: (generation: AIArtGeneration) => void;
+  updateNFTGeneration: (id: string, updates: Partial<AIArtGeneration>) => void;
+  addChatMessage: (message: ChatMessage) => void;
+  setCurrentlyPlaying: (track: Track | null) => void;
+  addNFTToGallery: (nft: NFT) => void;
+}
+
+export const useAppStore = create<AppStore>((set, get) => ({
+  // Initial state
+  user: mockUser,
+  library: mockAlbums,
+  drafts: mockDrafts,
+  nftGallery: mockNFTs,
+  chatHistory: [],
+  currentlyPlaying: null,
+  isGeneratingNFT: false,
+  libraryView: 'blocks',
+
+  // Actions
+  setUser: (user) => set({ user }),
+  
+  setLibraryView: (view) => set({ libraryView: view }),
+  
+  addAlbumToLibrary: (album) => 
+    set((state) => ({ library: [...state.library, album] })),
+  
+  removeAlbumFromLibrary: (albumId) =>
+    set((state) => ({ 
+      library: state.library.filter(album => album.id !== albumId) 
+    })),
+  
+  startNFTGeneration: (generation) =>
+    set((state) => ({ 
+      drafts: [...state.drafts, generation],
+      isGeneratingNFT: true 
+    })),
+  
+  updateNFTGeneration: (id, updates) =>
+    set((state) => ({
+      drafts: state.drafts.map(draft => 
+        draft.id === id ? { ...draft, ...updates } : draft
+      ),
+      isGeneratingNFT: updates.status === 'generating' ? true : false
+    })),
+  
+  addChatMessage: (message) =>
+    set((state) => ({ 
+      chatHistory: [...state.chatHistory, message] 
+    })),
+  
+  setCurrentlyPlaying: (track) => set({ currentlyPlaying: track }),
+  
+  addNFTToGallery: (nft) =>
+    set((state) => ({ 
+      nftGallery: [...state.nftGallery, nft] 
+    })),
+}));

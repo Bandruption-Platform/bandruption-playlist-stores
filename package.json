@@ -16,6 +16,9 @@
     "db:push": "turbo run db:push",
     "web": "turbo run dev --filter=web",
     "mobile": "turbo run dev --filter=mobile",
+    "mobile:ios": "cd apps/mobile && npm run dev -- --ios",
+    "mobile:android": "cd apps/mobile && npm run dev -- --android",
+    "mobile:web": "cd apps/mobile && npm run build:web",
     "server": "turbo run dev --filter=server",
     "setup": "npm install && npm run db:generate",
     "watchman-clear": "watchman watch-del-all",
@@ -29,5 +32,8 @@
     "eslint": "^8.45.0",
     "prettier": "^3.0.0",
     "typescript": "^5.1.6"
+  },
+  "overrides": {
+    "ajv": "^8.17.1"
   }
 } 

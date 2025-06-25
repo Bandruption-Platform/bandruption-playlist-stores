@@ -27,16 +27,18 @@ export interface Playlist {
 
 export interface Track {
   id: string;
-  playlist_id: string;
-  spotify_id: string;
-  title: string;
-  artist: string;
+  playlist_id?: string;
+  spotify_id?: string;
+  title?: string;
+  artist?: string;
   duration: number;
-  order: number;
-  added_at: string;
+  order?: number;
+  added_at?: string;
+  // Mobile app fields (keep both for compatibility)
   name?: string;
   trackNumber?: number;
   lyrics?: string;
+  spotifyId?: string;
 }
 
 export interface Album {
@@ -80,6 +82,8 @@ export interface AIArtGeneration {
   status: 'generating' | 'completed' | 'failed';
   userId: string;
   createdAt: Date;
+  needsApproval?: boolean;
+  artistApproved?: boolean;
 }
 
 export interface MerchItem {
@@ -118,4 +122,22 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   username: string;
+}
+
+// Add ArtStyle type for mobile app
+export type ArtStyle = 'abstract' | 'cyberpunk' | 'vintage' | 'minimalist' | 'psychedelic';
+
+// Add MerchType for mobile app
+export type MerchType = 'tshirt' | 'hoodie' | 'poster' | 'sticker' | 'vinyl';
+
+// Add AppState interface for mobile app store
+export interface AppState {
+  user: User | null;
+  library: Album[];
+  drafts: AIArtGeneration[];
+  nftGallery: NFT[];
+  chatHistory: ChatMessage[];
+  currentlyPlaying: Track | null;
+  isGeneratingNFT: boolean;
+  libraryView: 'blocks' | 'details' | 'stack' | 'list';
 } 

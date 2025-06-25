@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", "build/**", ".expo/**"]
     },
     "dev": {
       "cache": false,
@@ -26,6 +26,10 @@
     },
     "db:push": {
       "cache": false
+    },
+    "build:web": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".expo/**"]
     }
   }
 } 
