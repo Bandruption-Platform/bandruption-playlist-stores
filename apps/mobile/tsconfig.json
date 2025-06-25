@@ -5,7 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@shared/*": ["../../packages/*/src"]
+      "@shared/types": ["../../packages/shared/src"],
+      "@shared/ui": ["../../packages/ui/src"],
+      "@shared/supabase": ["../../packages/supabase/src"]
     }
   },
   "include": [
