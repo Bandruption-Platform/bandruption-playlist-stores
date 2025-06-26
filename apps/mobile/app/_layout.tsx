@@ -6,6 +6,9 @@ import { MessageCircle } from 'lucide-react-native';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { AIChat } from '@/components/AIChat'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { MessageCircle } from 'lucide-react-native';
 
 const queryClient = new QueryClient();
 
