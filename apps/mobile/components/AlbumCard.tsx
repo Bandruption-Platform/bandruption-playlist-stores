@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ViewStyle } from 'react-native';
+import { router } from 'expo-router';
 import { Play, MoveVertical as MoreVertical } from 'lucide-react-native';
 import { Album } from '@shared/types';
 
@@ -11,8 +12,17 @@ interface AlbumCardProps {
 }
 
 export function AlbumCard({ album, style, showArtist = false, onPress }: AlbumCardProps) {
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      // Navigate to album details page
+      router.push(`/album/${album.id}`);
+    }
+  };
+
   return (
-    <TouchableOpacity style={[styles.container, style]} onPress={onPress}>
+    <TouchableOpacity style={[styles.container, style]} onPress={handlePress}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: album.imageUrl }} style={styles.image} />
         <View style={styles.overlay}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { Play, MoveVertical as MoreVertical, Clock } from 'lucide-react-native';
 import { Album } from '@shared/types';
 
@@ -15,8 +16,17 @@ export function AlbumListItem({ album, onPress }: AlbumListItemProps) {
     return `${minutes} min`;
   };
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      // Navigate to album details page
+      router.push(`/album/${album.id}`);
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
       <Image source={{ uri: album.imageUrl }} style={styles.image} />
       
       <View style={styles.info}>

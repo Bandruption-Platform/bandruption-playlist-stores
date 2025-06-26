@@ -133,6 +133,13 @@ Before you begin, make sure you have the following installed:
    - Verify environment variables are correct
    - Check database logs: `supabase logs -f`
 
+5. **Starting with NPX**
+   ```bash
+   nvm use xx.xx
+   cd apps/mobile
+   npx expo start --clear
+   ```
+
 ### Getting Help
 
 - Check the main [README.md](../README.md) for more information

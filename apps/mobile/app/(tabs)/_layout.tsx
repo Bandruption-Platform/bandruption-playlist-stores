@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import { Home, Library, ShoppingBag, User } from 'lucide-react-native';
 
 export default function TabLayout() {
+
   return (
     <Tabs
       screenOptions={{
@@ -36,16 +37,6 @@ export default function TabLayout() {
           title: 'Library',
           tabBarIcon: ({ size, color }) => (
             <Library size={size} color={color} />
-          ),
-        }}
-      />
-      
-      <Tabs.Screen
-        name="merchandise"
-        options={{
-          title: 'Merch',
-          tabBarIcon: ({ size, color }) => (
-            <ShoppingBag size={size} color={color} />
           ),
         }}
       />

@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
-import { useFrameworkReady } from '@/hooks/useFrameworkReady';
-import { AIChat } from '@/components/AIChat'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { MessageCircle } from 'lucide-react-native';
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { AIChat } from '@/components/AIChat'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   useFrameworkReady();
 
-  const [showAIChat, setShowAIChat] = useState(false); // add state for modal visability
+  const [showAIChat, setShowAIChat] = useState(false);
 
   const styles = StyleSheet.create({
     chatButtonContainer: {
@@ -43,6 +43,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="album/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="light" />
@@ -54,9 +55,9 @@ export default function RootLayout() {
       />
 
       {/* Persistent AI Chat Button */}
-      <View style = {styles.chatButtonContainer}>
+      <View style={styles.chatButtonContainer}>
         <TouchableOpacity
-          style = {styles.aiChatButton}
+          style={styles.aiChatButton}
           onPress={() => setShowAIChat(true)}
         >
           <MessageCircle size={24} color="#FFFFFF" />
@@ -64,6 +65,5 @@ export default function RootLayout() {
       </View>
 
     </QueryClientProvider>
-  );
-  
+  ); 
 }
