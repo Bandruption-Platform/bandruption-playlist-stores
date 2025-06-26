@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Library, ShoppingBag, User } from 'lucide-react-native';
+import { Home, Library, ShoppingBag, User } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -10,9 +10,9 @@ export default function TabLayout() {
           backgroundColor: '#0A0A0A',
           borderTopWidth: 1,
           borderTopColor: '#1A1A1A',
-          height: 85,
-          paddingTop: 8,
-          paddingBottom: 28,
+          height: 70,
+          paddingTop: 5,
+          paddingBottom: 5,
         },
         tabBarActiveTintColor: '#10B981',
         tabBarInactiveTintColor: '#6B7280',
@@ -39,6 +39,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="merchandise"
         options={{
@@ -48,6 +49,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="profile"
         options={{

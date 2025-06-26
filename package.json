@@ -27,17 +27,20 @@
   },
   "dependencies": {
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "supabase": "^2.26.9"
   },
   "devDependencies": {
-    "turbo": "^1.13.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.45.0",
+    "expo": "^53.0.12",
     "prettier": "^3.0.0",
+    "turbo": "^1.13.3",
     "typescript": "^5.1.6"
   },
   "overrides": {
     "ajv": "^8.17.1"
   }
-} 
+}

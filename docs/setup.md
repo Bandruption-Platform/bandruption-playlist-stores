@@ -6,6 +6,7 @@ This guide will help you set up the Bandruption Playlist Stores monorepo for dev
 
 Before you begin, make sure you have the following installed:
 
+- **Git**
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
 - **Git**
