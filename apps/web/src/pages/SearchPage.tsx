@@ -3,7 +3,7 @@ import { SpotifySearch } from '../components/SpotifySearch';
 import { useSpotify } from '../contexts/SpotifyContext';
 
 export const SearchPage: React.FC = () => {
-  const { isAuthenticated, connectSpotify } = useSpotify();
+  const { isAuthenticated, login } = useSpotify();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -23,7 +23,7 @@ export const SearchPage: React.FC = () => {
                 </p>
               </div>
               <button
-                onClick={connectSpotify}
+                onClick={login}
                 className="px-4 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors"
               >
                 Connect Spotify

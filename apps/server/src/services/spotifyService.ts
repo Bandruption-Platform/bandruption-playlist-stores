@@ -1,5 +1,5 @@
 import SpotifyWebApi from 'spotify-web-api-node';
-import { SpotifyAuth, SpotifySearchResults, SpotifyTrack, SpotifyAlbum, SpotifyArtist } from '@shared/types';
+import { SpotifyAuth, SpotifySearchResults, SpotifyTrack, SpotifyAlbum, SpotifyArtist, SpotifyUser } from '@shared/types';
 
 class SpotifyService {
   private spotify: SpotifyWebApi;
@@ -133,6 +133,12 @@ class SpotifyService {
     this.spotify.setAccessToken(token);
     const data = await this.spotify.getArtistAlbums(artistId, { limit: 50 });
     return data.body.items as any[];
+  }
+
+  async getCurrentUser(accessToken: string): Promise<SpotifyUser> {
+    this.spotify.setAccessToken(accessToken);
+    const data = await this.spotify.getMe();
+    return data.body as SpotifyUser;
   }
 }
 

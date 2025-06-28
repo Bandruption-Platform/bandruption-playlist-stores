@@ -1,19 +1,35 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { SpotifyAuth, SpotifyUser } from '@shared/types';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { SpotifyUser } from '@shared/types';
+import { useSpotifyAuth } from '../hooks/useSpotifyAuth';
+import { useSpotifyPlayer } from '../hooks/useSpotifyPlayer';
 
 interface SpotifyContextType {
+  // Auth state
   isAuthenticated: boolean;
   user: SpotifyUser | null;
+  isPremium: boolean;
   accessToken: string | null;
-  player: Spotify.Player | null;
-  deviceId: string | null;
-  isPlaying: boolean;
+  loading: boolean;
+  login: () => Promise<void>;
+  logout: () => void;
+  
+  // Player state
+  isPlayerReady: boolean;
   currentTrack: Spotify.Track | null;
-  connectSpotify: () => Promise<void>;
-  disconnectSpotify: () => void;
+  isPlaying: boolean;
+  position: number;
+  duration: number;
+  canUsePlayer: boolean;
+  
+  // Player controls
   playTrack: (uri: string) => Promise<void>;
-  pausePlayback: () => Promise<void>;
-  resumePlayback: () => Promise<void>;
+  playPlaylist: (playlistUri: string, startIndex?: number) => Promise<void>;
+  pause: () => Promise<void>;
+  resume: () => Promise<void>;
+  nextTrack: () => Promise<void>;
+  previousTrack: () => Promise<void>;
+  seek: (positionMs: number) => Promise<void>;
+  setVolume: (volume: number) => Promise<void>;
 }
 
 const SpotifyContext = createContext<SpotifyContextType | undefined>(undefined);
@@ -38,128 +54,60 @@ declare global {
 }
 
 export const SpotifyProvider: React.FC<SpotifyProviderProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<SpotifyUser | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [player, setPlayer] = useState<Spotify.Player | null>(null);
-  const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<Spotify.Track | null>(null);
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://sdk.scdn.co/spotify-player.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      initializePlayer();
-    };
-
-    return () => {
-      if (player) {
-        player.disconnect();
-      }
-    };
-  }, [accessToken]);
-
-  const initializePlayer = () => {
-    if (!accessToken) return;
-
-    const spotifyPlayer = new window.Spotify.Player({
-      name: 'Bandruption Playlist Player',
-      getOAuthToken: (cb: (token: string) => void) => {
-        cb(accessToken);
-      },
-      volume: 0.5,
-    });
-
-    spotifyPlayer.addListener('ready', ({ device_id }) => {
-      console.log('Ready with Device ID', device_id);
-      setDeviceId(device_id);
-    });
-
-    spotifyPlayer.addListener('not_ready', ({ device_id }) => {
-      console.log('Device ID has gone offline', device_id);
-    });
-
-    spotifyPlayer.addListener('player_state_changed', (state) => {
-      if (!state) return;
-      
-      setCurrentTrack(state.track_window.current_track);
-      setIsPlaying(!state.paused);
-    });
-
-    spotifyPlayer.connect();
-    setPlayer(spotifyPlayer);
-  };
-
-  const connectSpotify = async () => {
-    try {
-      const response = await fetch('/api/spotify/auth/login');
-      const { authUrl } = await response.json();
-      
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('Failed to connect to Spotify:', error);
-    }
-  };
-
-  const disconnectSpotify = () => {
-    if (player) {
-      player.disconnect();
-    }
-    setIsAuthenticated(false);
-    setUser(null);
-    setAccessToken(null);
-    setPlayer(null);
-    setDeviceId(null);
-    setIsPlaying(false);
-    setCurrentTrack(null);
-  };
-
-  const playTrack = async (uri: string) => {
-    if (!player || !deviceId) return;
-
-    try {
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ uris: [uri] }),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
-    } catch (error) {
-      console.error('Failed to play track:', error);
-    }
-  };
-
-  const pausePlayback = async () => {
-    if (player) {
-      await player.pause();
-    }
-  };
-
-  const resumePlayback = async () => {
-    if (player) {
-      await player.resume();
-    }
-  };
-
-  const value: SpotifyContextType = {
+  const {
     isAuthenticated,
     user,
     accessToken,
-    player,
-    deviceId,
-    isPlaying,
+    loading,
+    login,
+    logout,
+    isPremium
+  } = useSpotifyAuth();
+
+  const {
+    isPlayerReady,
     currentTrack,
-    connectSpotify,
-    disconnectSpotify,
+    isPlaying,
+    position,
+    duration,
     playTrack,
-    pausePlayback,
-    resumePlayback,
+    playPlaylist,
+    pause,
+    resume,
+    nextTrack,
+    previousTrack,
+    seek,
+    setVolume,
+    canUsePlayer
+  } = useSpotifyPlayer(accessToken, isPremium);
+
+  const value: SpotifyContextType = {
+    // Auth state
+    isAuthenticated,
+    user,
+    isPremium,
+    accessToken,
+    loading,
+    login,
+    logout,
+    
+    // Player state
+    isPlayerReady,
+    currentTrack,
+    isPlaying,
+    position,
+    duration,
+    canUsePlayer,
+    
+    // Player controls
+    playTrack,
+    playPlaylist,
+    pause,
+    resume,
+    nextTrack,
+    previousTrack,
+    seek,
+    setVolume,
   };
 
   return (

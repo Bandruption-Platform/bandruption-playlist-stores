@@ -19,7 +19,7 @@ This monorepo contains:
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** - Modern React with hooks
+- **React 19** - Modern React with hooks
 - **React Native** - Cross-platform mobile development (Expo ~49.0.8)
 - **TypeScript** - Type safety across the stack
 - **Tailwind CSS** - Utility-first CSS framework
@@ -125,20 +125,75 @@ npm run dev:clean          # Clear cache and start dev
 npm run mobile:clean       # Clear mobile cache and start
 ```
 
-### Project Architecture
+## 🏗️ Architecture Overview
+
+### Monorepo Structure
+
+Bandruption Playlist Stores is built as a **Turborepo monorepo** with full-stack TypeScript integration:
 
 ```
 bandruption-playlist-stores/
 ├── apps/
-│   ├── web/                 # React web app (Vite + React 18)
-│   ├── mobile/              # React Native mobile app (Expo)
-│   └── server/              # Node.js API server (Express - basic)
+│   ├── web/                 # React 19 + Vite + TypeScript + Tailwind CSS
+│   ├── mobile/              # React Native + Expo + NativeWind
+│   └── server/              # Express + TypeScript API server
 ├── packages/
-│   ├── shared/              # Shared types and utils
-│   ├── ui/                  # Shared UI components
-│   └── supabase/            # Database client and types
-└── turbo.json              # Turborepo configuration
+│   ├── shared/              # Common types, utilities, constants
+│   ├── ui/                  # Cross-platform UI components  
+│   └── supabase/            # Database client and generated types
+├── package.json             # Root workspace configuration
+└── turbo.json              # Build pipeline orchestration
 ```
+
+### Key Architectural Patterns
+
+#### 1. **Backend-Only Spotify API** (Critical)
+- **ALL Spotify Web API calls MUST go through the backend server** (`apps/server`)
+- **Frontend apps NEVER call Spotify Web API directly**
+- **Exception**: Spotify Web Playback SDK (must run in browser for audio)
+- **Security**: Proper authentication, rate limiting, and token management
+
+#### 2. **Shared Package System**
+All applications import from internal packages using workspace aliases:
+```typescript
+import { User, Track } from '@shared/types'
+import { Button } from '@shared/ui'  
+import { supabase } from '@shared/supabase'
+```
+
+#### 3. **Database-First Development**
+- Define schema in Supabase Studio
+- Generate TypeScript types: `npm run db:generate`
+- Types automatically available across all apps
+
+#### 4. **Cross-Platform UI Components**
+The `@shared/ui` package exports components that work on both web and mobile through platform-specific implementations.
+
+#### 5. **Turborepo Pipeline**
+Build tasks orchestrated through `turbo.json` ensuring dependencies build in correct order:
+- Shared packages build first (`^build` dependency)
+- Apps can run independently or together
+- Intelligent caching optimizes rebuild times
+
+### Application Details
+
+#### **Web App** (`apps/web/`)
+- **Stack**: React 19 + Vite + TypeScript + Tailwind CSS
+- **Port**: 3000 (development)
+- **State**: Zustand + TanStack React Query
+- **Features**: Spotify search & playback, playlist management, chat interface
+
+#### **Mobile App** (`apps/mobile/`)  
+- **Stack**: React Native + Expo + TypeScript + NativeWind
+- **Platforms**: iOS, Android, Web (via Expo)
+- **Navigation**: Expo Router with file-based routing
+- **Features**: Music library, AI NFT generation, merchandise integration
+
+#### **API Server** (`apps/server/`)
+- **Stack**: Express + TypeScript + Node.js  
+- **Port**: 3001
+- **Security**: Helmet, CORS, JWT authentication
+- **Role**: Spotify API proxy, authentication, data management
 
 ### Current Implementation Status
 
@@ -154,11 +209,208 @@ bandruption-playlist-stores/
 
 #### 🚧 In Development / TODO
 - 🔄 **Real Supabase Integration** - Replace mock data with real backend
-- 🎵 **Spotify Integration** - Connect to Spotify API
 - 🔄 **Real-time Data Sync** - Implement with Supabase real-time
 - 📊 **Data Persistence** - Move from localStorage to Supabase
 - 🧪 **Testing** - Add unit and integration tests
 - 🚀 **Production Deployment** - Set up CI/CD pipeline
+
+## 🎵 Spotify Integration
+
+### Integration Architecture
+
+The Spotify integration follows a **backend-proxy pattern** for security and proper API usage:
+
+#### **Critical Design Principle**
+- **ALL Spotify Web API calls go through the backend server** (`apps/server`)
+- **Frontend applications NEVER call Spotify Web API directly**
+- **Single Exception**: Spotify Web Playback SDK (must run in browser for audio playback)
+
+### Authentication Flow
+
+1. **Frontend** calls `/api/spotify/auth/login` to get OAuth URL
+2. **User** authorizes application on Spotify
+3. **Spotify** redirects to frontend with authorization code
+4. **Frontend** sends code to `/api/spotify/auth/callback`
+5. **Backend** exchanges code for access/refresh tokens
+6. **Backend** stores tokens and returns user identification
+7. **Frontend** uses tokens for subsequent API calls
+
+### Features Implemented
+
+#### **Public Features** (No User Authentication)
+- **Search**: Music discovery without user login
+- **Track/Album/Artist Details**: Metadata access for public content
+- **Artist Discography**: Browse artist's albums and tracks
+
+#### **Authenticated Features** (Requires User Login)
+- **Spotify Profile Access**: User's Spotify profile information
+- **Personalized Search**: Search results in user's context
+- **Playback Control**: Control Spotify player (Web Playback SDK)
+
+#### **OAuth Scopes**
+The application requests these Spotify permissions:
+- `streaming` - Control playback via Web Playback SDK
+- `user-read-email` - Access user's email address
+- `user-read-private` - Access user's profile information
+- `playlist-read-private` - Read user's private playlists
+- `playlist-modify-public` - Modify user's public playlists
+- `playlist-modify-private` - Modify user's private playlists
+
+### Implementation Details
+
+#### **Backend Service** (`apps/server/src/services/spotifyService.ts`)
+- **Library**: `spotify-web-api-node` for API integration
+- **Token Management**: Automatic refresh for expired tokens
+- **Security**: Environment-based credentials and JWT state verification
+
+#### **Frontend Integration** (`apps/web/src/contexts/SpotifyContext.tsx`)
+- **Web Playback SDK**: Direct browser integration for audio streaming
+- **React Context**: Centralized state management for Spotify features
+- **Player Controls**: Play, pause, skip, volume control
+
+#### **Environment Configuration**
+Required environment variables:
+```bash
+# Spotify API credentials
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+SPOTIFY_REDIRECT_URI=http://localhost:3000/auth/spotify/callback
+
+# Security
+JWT_SECRET=your_jwt_secret
+```
+
+### Type Safety
+
+Comprehensive TypeScript definitions in `@shared/types`:
+- `SpotifyAuth` - OAuth token management
+- `SpotifyUser` - User profile data
+- `SpotifyTrack` - Track metadata with album art, preview URLs
+- `SpotifyAlbum` - Album details with track listings
+- `SpotifyArtist` - Artist information with images and genres
+- `SpotifySearchResults` - Unified search response structure
+
+### Security Considerations
+
+1. **Client Credentials Flow**: Public endpoints use server-side client credentials
+2. **Authorization Code Flow**: User-specific endpoints use proper OAuth flow
+3. **Token Storage**: Secure server-side token management (current: in-memory, production: database)
+4. **Rate Limiting**: Server-side rate limiting and error handling
+5. **CORS Protection**: Controlled cross-origin access
+
+## 🔌 REST API Documentation
+
+The backend server (`apps/server`) provides a comprehensive REST API for Spotify integration and data management.
+
+### Base URL
+- **Development**: `http://localhost:3001`
+- **API Prefix**: `/api/spotify`
+
+### Authentication
+- **Type**: Bearer token authentication
+- **Header**: `Authorization: Bearer <access_token>`
+
+### Public Endpoints (No Authentication)
+
+#### Search
+```http
+GET /api/spotify/public/search?q=<query>&type=<types>
+```
+- **Query Parameters**:
+  - `q` (required): Search query string
+  - `type` (optional): Comma-separated types (default: 'track,album,artist')
+- **Response**: `SpotifySearchResults`
+
+#### Track Details
+```http
+GET /api/spotify/public/track/:id
+```
+- **Parameters**: `id` - Spotify track ID
+- **Response**: `SpotifyTrack`
+
+#### Album Details  
+```http
+GET /api/spotify/public/album/:id
+```
+- **Parameters**: `id` - Spotify album ID
+- **Response**: `SpotifyAlbum`
+
+#### Artist Details
+```http
+GET /api/spotify/public/artist/:id
+```
+- **Parameters**: `id` - Spotify artist ID  
+- **Response**: `SpotifyArtist`
+
+#### Artist Albums
+```http
+GET /api/spotify/public/artist/:id/albums
+```
+- **Parameters**: `id` - Spotify artist ID
+- **Response**: `SpotifyAlbum[]` (limit: 50)
+
+### Authentication Endpoints
+
+#### Login
+```http
+GET /api/spotify/auth/login
+```
+- **Response**: `{ authUrl: string }`
+- **Purpose**: Generate Spotify OAuth URL
+
+#### Callback
+```http
+POST /api/spotify/auth/callback
+```
+- **Body**: `{ code: string, state: string }`
+- **Response**: `{ success: boolean, userId: string }`
+- **Purpose**: Exchange authorization code for tokens
+
+### User Endpoints
+
+#### Profile
+```http
+GET /api/spotify/me/:userId
+```
+- **Parameters**: `userId` - User's Spotify ID
+- **Response**: `SpotifyUser`
+- **Authentication**: Requires valid tokens
+
+### Authenticated Endpoints
+
+All endpoints require `Authorization: Bearer <token>` header:
+
+#### Authenticated Search
+```http
+GET /api/spotify/search?q=<query>&type=<types>
+```
+
+#### Authenticated Track/Album/Artist
+```http
+GET /api/spotify/track/:id
+GET /api/spotify/album/:id  
+GET /api/spotify/artist/:id
+GET /api/spotify/artist/:id/albums
+```
+
+### Health Check
+```http
+GET /health
+```
+- **Response**: `{ status: 'OK', message: 'Server is running!' }`
+
+### Error Responses
+All endpoints return consistent error format:
+```json
+{ "error": "Error message description" }
+```
+
+Common HTTP status codes:
+- `200` - Success
+- `400` - Bad request (invalid parameters)
+- `401` - Unauthorized (missing/invalid token)
+- `404` - Not found
+- `500` - Internal server error
 
 ## 🗄️ Database Schema
 

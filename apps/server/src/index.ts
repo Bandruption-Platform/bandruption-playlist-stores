@@ -1,11 +1,11 @@
+import dotenv from 'dotenv';
+// Load environment variables BEFORE any other imports
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 import spotifyRoutes from './routes/spotify';
-
-// Load environment variables from root directory
-dotenv.config({ path: '../../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3001;

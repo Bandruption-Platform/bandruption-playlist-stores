@@ -2,6 +2,10 @@ import { Router } from 'express';
 import { spotifyService } from '../services/spotifyService';
 import jwt from 'jsonwebtoken';
 
+// Temporary in-memory storage for demo purposes
+// In production, this should be stored in a database
+const userTokens = new Map<string, { accessToken: string; refreshToken: string; userId?: string }>();
+
 const router = Router();
 
 // Public routes (no authentication required)
@@ -82,17 +86,59 @@ router.post('/auth/callback', async (req, res) => {
   try {
     const { code, state } = req.body;
     
+    // Check if required parameters exist
+    if (!code || !state) {
+      return res.status(400).json({ error: 'Missing code or state parameter' });
+    }
+    
     // Verify state parameter
-    jwt.verify(state, process.env.JWT_SECRET!);
+    try {
+      jwt.verify(state, process.env.JWT_SECRET!);
+    } catch (jwtError) {
+      console.error('JWT verification failed:', jwtError);
+      return res.status(400).json({ error: 'Invalid state parameter' });
+    }
     
-    const tokens = await spotifyService.exchangeCodeForTokens(code);
-    
-    // Store tokens in database (implement this)
-    // await storeUserTokens(req.user.id, tokens);
-    
-    res.json({ success: true });
+    // Exchange code for tokens
+    try {
+      const tokens = await spotifyService.exchangeCodeForTokens(code);
+      
+      // Get user info to get their Spotify user ID
+      const user = await spotifyService.getCurrentUser(tokens.access_token);
+      
+      // Store tokens temporarily (in production, use database)
+      userTokens.set(user.id, {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        userId: user.id
+      });
+      
+      res.json({ success: true, userId: user.id });
+    } catch (spotifyError) {
+      console.error('Spotify token exchange failed:', spotifyError);
+      return res.status(400).json({ error: 'Failed to exchange authorization code' });
+    }
   } catch (error) {
-    res.status(400).json({ error: 'Invalid authorization code' });
+    console.error('Unexpected error in auth callback:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// User routes
+router.get('/me/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const tokenData = userTokens.get(userId);
+    
+    if (!tokenData) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+    
+    const user = await spotifyService.getCurrentUser(tokenData.accessToken);
+    res.json(user);
+  } catch (error) {
+    console.error('Failed to get current user:', error);
+    res.status(500).json({ error: 'Failed to get user profile' });
   }
 });
 
