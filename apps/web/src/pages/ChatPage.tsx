@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Music, Palette, Lightbulb, Trash2 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
 
 interface Message {

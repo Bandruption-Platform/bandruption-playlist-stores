@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Music, User, Search, Menu, X } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Button } from '@shared/ui';
 import { useAppStore } from '../../store/appStore';
 
 export const Header: React.FC = () => {

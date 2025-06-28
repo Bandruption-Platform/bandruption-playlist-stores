@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User, Playlist, Track, NFT } from '../types';
+import type { User, Playlist, Track, NFT } from '@shared/types';
 
 interface AppStore {
   // User state
