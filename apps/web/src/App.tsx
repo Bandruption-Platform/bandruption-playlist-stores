@@ -1,68 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { User } from '@shared/types';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { PlaylistProvider } from './contexts/PlaylistContext';
-import { ChatProvider } from './contexts/ChatContext';
-import Navigation from './components/Navigation';
-import Home from './pages/Home';
-import Profile from './pages/Profile';
-import Playlists from './pages/Playlists';
-import PlaylistBuilder from './pages/PlaylistBuilder';
-import Marketplace from './pages/Marketplace';
-import AIArtStudio from './pages/AIArtStudio';
-import AuthModal from './components/AuthModal';
-import ChatInterface from './components/ChatInterface';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
+import { ChatWidget } from './components/chat/ChatWidget';
+import { LandingPage } from './pages/LandingPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { PlaylistPage } from './pages/PlaylistPage';
+import { PlayerPage } from './pages/PlayerPage';
+import { ChatPage } from './pages/ChatPage';
+import { useAppStore } from './store/appStore';
 
-function AppContent() {
-  const { user, loading } = useAuth();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900">
-      <Navigation onAuthClick={() => setAuthModalOpen(true)} />
-      
-      <main className="pt-16">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile/:userId?" element={user ? <Profile /> : <Navigate to="/" />} />
-          <Route path="/playlists" element={user ? <Playlists /> : <Navigate to="/" />} />
-          <Route path="/playlist/builder" element={user ? <PlaylistBuilder /> : <Navigate to="/" />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/ai-art" element={user ? <AIArtStudio /> : <Navigate to="/" />} />
-        </Routes>
-      </main>
-
-      {user && <ChatInterface />}
-      
-      <AuthModal 
-        isOpen={authModalOpen && !user} 
-        onClose={() => setAuthModalOpen(false)} 
-      />
-    </div>
-  );
-}
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
+  const { setUser } = useAppStore();
+
+  // Mock authentication - in real app this would check for stored tokens
+  React.useEffect(() => {
+    // Simulate logged in user for demo
+    const mockUser = {
+      id: '1',
+      email: 'alex@bandruption.com',
+      username: 'alex_music',
+      avatar_url: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      created_at: '2024-01-15T00:00:00Z',
+      updated_at: '2024-01-15T00:00:00Z',
+      bio: 'Electronic music producer and NFT artist.',
+      favoriteGenres: ['Electronic', 'Synthwave', 'Ambient'],
+      isPaidSubscriber: true,
+      spotifyConnected: true,
+    };
+    setUser(mockUser);
+  }, [setUser]);
+
   return (
-    <Router>
-      <AuthProvider>
-        <PlaylistProvider>
-          <ChatProvider>
-            <AppContent />
-          </ChatProvider>
-        </PlaylistProvider>
-      </AuthProvider>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="min-h-screen bg-dark-900 text-white">
+          <Header />
+          <main>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/profile/:username" element={<ProfilePage />} />
+              <Route path="/playlist/:id" element={<PlaylistPage />} />
+              <Route path="/player" element={<PlayerPage />} />
+              <Route path="/chat" element={<ChatPage />} />
+            </Routes>
+          </main>
+          <Footer />
+          <ChatWidget />
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
