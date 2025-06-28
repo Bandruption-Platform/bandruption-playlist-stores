@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Play, Plus, Share2, Clock, Heart, Download } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
 import { mockPlaylists, mockUsers } from '../data/mockData';
 

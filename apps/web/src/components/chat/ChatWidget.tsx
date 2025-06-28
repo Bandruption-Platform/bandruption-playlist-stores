@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Button } from '@shared/ui';
 import { Card } from '../ui/Card';
 import { useAppStore } from '../../store/appStore';
 

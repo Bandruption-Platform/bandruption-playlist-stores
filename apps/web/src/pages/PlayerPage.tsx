@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Shuffle, Repeat, Heart, MoreHorizontal } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
 import { mockTracks, mockPlaylists } from '../data/mockData';
 import { useAppStore } from '../store/appStore';

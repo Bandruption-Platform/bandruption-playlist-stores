@@ -1,4 +1,4 @@
-import type { User, Album, Track, Playlist, NFT, MerchItem } from '../types';
+import type { User, Album, Track, Playlist, NFT, MerchItem } from '@shared/types';
 
 export const mockUsers: User[] = [
   {

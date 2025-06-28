@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, Download, Palette, Coins, Users, Zap, Music, Smartphone } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
 
 export const LandingPage: React.FC = () => {
