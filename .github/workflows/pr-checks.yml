@@ -55,7 +55,7 @@ jobs:
         run: |
           echo "Verifying individual app builds..."
           cd apps/web && npm run build
-          cd ../server && npm run build
+          cd apps/server && npm run build
 
   security-scan:
     name: Security Scan
