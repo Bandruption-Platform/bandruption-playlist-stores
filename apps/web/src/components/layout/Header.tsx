@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
 
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/' },
-    { name: 'Discover', href: '/discover', current: location.pathname === '/discover' },
+    { name: 'Search', href: '/search', current: location.pathname === '/search' },
     { name: 'Player', href: '/player', current: location.pathname === '/player' },
   ];
 
@@ -47,9 +47,9 @@ export const Header: React.FC = () => {
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200">
+            <Link to="/search" className="p-2 text-gray-400 hover:text-white transition-colors duration-200">
               <Search className="w-5 h-5" />
-            </button>
+            </Link>
 
             {/* Chat */}
             <Button

@@ -13,9 +13,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@shared/types": ["../../packages/shared/src/types/index.ts"]
+      "@shared/types": ["../../packages/shared/dist/index.d.ts"],
+      "@shared/types/*": ["../../packages/shared/dist/*"]
     }
   },
   "include": ["src/**/*"],

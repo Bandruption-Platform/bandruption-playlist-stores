@@ -9,7 +9,9 @@ import { ProfilePage } from './pages/ProfilePage';
 import { PlaylistPage } from './pages/PlaylistPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ChatPage } from './pages/ChatPage';
+import { SearchPage } from './pages/SearchPage';
 import { useAppStore } from './store/appStore';
+import { SpotifyProvider } from './contexts/SpotifyContext';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -44,22 +46,25 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="min-h-screen bg-dark-900 text-white">
-          <Header />
-          <main>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/profile/:username" element={<ProfilePage />} />
-              <Route path="/playlist/:id" element={<PlaylistPage />} />
-              <Route path="/player" element={<PlayerPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-            </Routes>
-          </main>
-          <Footer />
-          <ChatWidget />
-        </div>
-      </Router>
+      <SpotifyProvider>
+        <Router>
+          <div className="min-h-screen bg-dark-900 text-white">
+            <Header />
+            <main>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/profile/:username" element={<ProfilePage />} />
+                <Route path="/playlist/:id" element={<PlaylistPage />} />
+                <Route path="/player" element={<PlayerPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/chat" element={<ChatPage />} />
+              </Routes>
+            </main>
+            <Footer />
+            <ChatWidget />
+          </div>
+        </Router>
+      </SpotifyProvider>
     </QueryClientProvider>
   );
 }

@@ -62,6 +62,17 @@ npm run db:push      # Push database schema changes to Supabase
 
 4. **Turborepo Pipeline**: Build tasks are orchestrated through `turbo.json`, ensuring dependencies are built in the correct order.
 
+5. **Spotify API Architecture** (CRITICAL):
+   - **ALL Spotify API calls MUST go through the backend server** (`apps/server`)
+   - **Frontend apps (web/mobile) MUST NEVER call Spotify Web API directly**
+   - The ONLY exception is the Spotify Web Playback SDK which must run in the browser
+   - Backend server handles:
+     - Spotify authentication & token management
+     - All search, track, album, artist, and playlist operations
+     - Rate limiting and error handling
+   - Frontend communicates with backend via `/api/spotify/*` endpoints
+   - This architecture ensures proper authentication, security, and API usage
+
 ## Development Workflow
 
 1. **Adding New Features**:
