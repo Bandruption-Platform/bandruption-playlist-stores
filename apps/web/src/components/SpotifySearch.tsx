@@ -1,6 +1,6 @@
 import React from 'react';
 import { SpotifyTrack, SpotifyAlbum, SpotifyArtist } from '@shared/types';
-import { useSpotify } from '../contexts/SpotifyContext';
+import { useSpotify } from '../hooks/useSpotify';
 import { useSpotifySearch } from '../hooks/useSpotifySearch';
 import { PlayButton } from './PlayButton';
 

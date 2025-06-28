@@ -1,6 +1,6 @@
 import React from 'react';
 import { SpotifySearch } from '../components/SpotifySearch';
-import { useSpotify } from '../contexts/SpotifyContext';
+import { useSpotify } from '../hooks/useSpotify';
 
 export const SearchPage: React.FC = () => {
   const { isAuthenticated, login } = useSpotify();

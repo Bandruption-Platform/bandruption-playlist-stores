@@ -62,6 +62,8 @@ This monorepo contains:
    ```bash
    npm install
    ```
+   
+   > **Note**: This project uses `legacy-peer-deps=true` in `.npmrc` to handle peer dependency conflicts. This is configured automatically.
 
 3. **Set up environment variables (Optional - currently using mock data)**
    

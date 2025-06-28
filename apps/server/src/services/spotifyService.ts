@@ -70,7 +70,7 @@ class SpotifyService {
     };
   }
 
-  async search(query: string, types: any[], accessToken: string): Promise<SpotifySearchResults> {
+  async search(query: string, types: string[], accessToken: string): Promise<SpotifySearchResults> {
     this.spotify.setAccessToken(accessToken);
     const data = await this.spotify.search(query, types as any);
     return data.body as SpotifySearchResults;
@@ -86,53 +86,53 @@ class SpotifyService {
   async getTrack(trackId: string, accessToken: string): Promise<SpotifyTrack> {
     this.spotify.setAccessToken(accessToken);
     const data = await this.spotify.getTrack(trackId);
-    return data.body as any;
+    return data.body as SpotifyTrack;
   }
 
   async getAlbum(albumId: string, accessToken: string): Promise<SpotifyAlbum> {
     this.spotify.setAccessToken(accessToken);
     const data = await this.spotify.getAlbum(albumId);
-    return data.body as any;
+    return data.body as unknown as SpotifyAlbum;
   }
 
   async getArtist(artistId: string, accessToken: string): Promise<SpotifyArtist> {
     this.spotify.setAccessToken(accessToken);
     const data = await this.spotify.getArtist(artistId);
-    return data.body as any;
+    return data.body as SpotifyArtist;
   }
 
   async getArtistAlbums(artistId: string, accessToken: string): Promise<SpotifyAlbum[]> {
     this.spotify.setAccessToken(accessToken);
     const data = await this.spotify.getArtistAlbums(artistId, { limit: 50 });
-    return data.body.items as any[];
+    return data.body.items as unknown as SpotifyAlbum[];
   }
 
   async getPublicTrack(trackId: string): Promise<SpotifyTrack> {
     const token = await this.getClientCredentialsToken();
     this.spotify.setAccessToken(token);
     const data = await this.spotify.getTrack(trackId);
-    return data.body as any;
+    return data.body as SpotifyTrack;
   }
 
   async getPublicAlbum(albumId: string): Promise<SpotifyAlbum> {
     const token = await this.getClientCredentialsToken();
     this.spotify.setAccessToken(token);
     const data = await this.spotify.getAlbum(albumId);
-    return data.body as any;
+    return data.body as unknown as SpotifyAlbum;
   }
 
   async getPublicArtist(artistId: string): Promise<SpotifyArtist> {
     const token = await this.getClientCredentialsToken();
     this.spotify.setAccessToken(token);
     const data = await this.spotify.getArtist(artistId);
-    return data.body as any;
+    return data.body as SpotifyArtist;
   }
 
   async getPublicArtistAlbums(artistId: string): Promise<SpotifyAlbum[]> {
     const token = await this.getClientCredentialsToken();
     this.spotify.setAccessToken(token);
     const data = await this.spotify.getArtistAlbums(artistId, { limit: 50 });
-    return data.body.items as any[];
+    return data.body.items as unknown as SpotifyAlbum[];
   }
 
   async getCurrentUser(accessToken: string): Promise<SpotifyUser> {

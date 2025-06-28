@@ -8,17 +8,7 @@ export const useSpotifyPlayer = (accessToken: string | null, isPremium: boolean)
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  useEffect(() => {
-    if (accessToken && isPremium) {
-      initializePlayer();
-    }
-
-    return () => {
-      spotifyPlayer.disconnect();
-    };
-  }, [accessToken, isPremium]);
-
-  const initializePlayer = async () => {
+  const initializePlayer = useCallback(async () => {
     try {
       spotifyPlayer.onPlayerReady = (deviceId) => {
         console.log('Player ready with device ID:', deviceId);
@@ -41,7 +31,18 @@ export const useSpotifyPlayer = (accessToken: string | null, isPremium: boolean)
     } catch (error) {
       console.error('Failed to initialize player:', error);
     }
-  };
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (accessToken && isPremium) {
+      initializePlayer();
+    }
+
+    return () => {
+      spotifyPlayer.disconnect();
+    };
+  }, [accessToken, isPremium, initializePlayer]);
+
 
   const playTrack = useCallback(async (spotifyUri: string) => {
     if (!isPlayerReady) throw new Error('Player not ready');
