@@ -4,8 +4,8 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import spotifyRoutes from './routes/spotify';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from root directory
+dotenv.config({ path: '../../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
