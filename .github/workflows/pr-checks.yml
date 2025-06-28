@@ -25,13 +25,8 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Clean npm cache
-        run: npm cache clean --force
-
-      - name: Install dependencies
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install
+      - name: Install dependencies with legacy peer deps
+        run: npm ci --legacy-peer-deps
 
       - name: Type check
         run: npm run type-check
@@ -69,6 +64,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install dependencies for security scan
+        run: npm install --legacy-peer-deps
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -91,7 +89,7 @@ jobs:
     steps:
       - name: Check all jobs
         run: |
-          if [[ "${{ needs.build-and-test.result }}" == "success" ]]; then
+          if [[ "${{ needs.build-and-test.result }}" == "success" && "${{ needs.security-scan.result }}" == "success" ]]; then
             echo "✅ All required checks passed!"
           else
             echo "❌ Some required checks failed:"
