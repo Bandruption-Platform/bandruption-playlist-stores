@@ -15,7 +15,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
+      "@shared/types": ["../../packages/shared/src/types/index.ts"]
     }
   },
   "include": ["src/**/*"],

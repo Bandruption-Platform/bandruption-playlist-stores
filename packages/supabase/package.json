@@ -19,7 +19,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.45.0",
-    "supabase": "^1.83.5",
+    "supabase": "^2.26.9",
     "typescript": "^5.1.6"
   }
-} 
+}

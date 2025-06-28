@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import spotifyRoutes from './routes/spotify';
 
 // Load environment variables
 dotenv.config();
@@ -19,6 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running!' });
 });
+
+// Spotify routes
+app.use('/api/spotify', spotifyRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
