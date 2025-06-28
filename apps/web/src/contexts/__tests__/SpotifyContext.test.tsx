@@ -1,5 +1,6 @@
 import { render, renderHook } from '@testing-library/react'
-import { SpotifyProvider, useSpotify } from '../SpotifyContext'
+import { SpotifyProvider } from '../SpotifyContext'
+import { useSpotify } from '../../hooks/useSpotify'
 import { ReactNode } from 'react'
 
 // Mock the hooks

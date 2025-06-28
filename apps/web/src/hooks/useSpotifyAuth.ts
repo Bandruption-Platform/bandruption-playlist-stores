@@ -36,6 +36,24 @@ export const useSpotifyAuth = () => {
       }
     };
 
+    const handleAuthCallback = async (code: string, state: string) => {
+      try {
+        const result = await spotifyApi.handleAuthCallback(code, state);
+        if (result.success) {
+          const userData = await spotifyApi.getUserProfile(result.userId, accessToken!);
+          
+          setUser(userData);
+          setIsAuthenticated(true);
+          
+          localStorage.setItem('spotify_user', JSON.stringify(userData));
+          localStorage.setItem('spotify_connected', 'true');
+          localStorage.setItem('spotify_user_id', result.userId);
+        }
+      } catch (error) {
+        console.error('Auth callback failed:', error);
+      }
+    };
+
     checkSpotifyConnection();
 
     window.addEventListener('spotify-auth-changed', checkSpotifyConnection);
@@ -54,23 +72,6 @@ export const useSpotifyAuth = () => {
     }
   };
 
-  const handleAuthCallback = async (code: string, state: string) => {
-    try {
-      const result = await spotifyApi.handleAuthCallback(code, state);
-      if (result.success) {
-        const userData = await spotifyApi.getUserProfile(result.userId, accessToken!);
-        
-        setUser(userData);
-        setIsAuthenticated(true);
-        
-        localStorage.setItem('spotify_user', JSON.stringify(userData));
-        localStorage.setItem('spotify_connected', 'true');
-        localStorage.setItem('spotify_user_id', result.userId);
-      }
-    } catch (error) {
-      console.error('Auth callback failed:', error);
-    }
-  };
 
   const logout = () => {
     setIsAuthenticated(false);

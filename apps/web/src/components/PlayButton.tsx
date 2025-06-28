@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSpotify } from '../contexts/SpotifyContext';
+import { useSpotify } from '../hooks/useSpotify';
 import { SpotifyTrack } from '@shared/types';
 
 interface PlayButtonProps {

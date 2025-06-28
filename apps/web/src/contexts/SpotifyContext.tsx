@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode } from 'react';
 import { SpotifyUser } from '@shared/types';
 import { useSpotifyAuth } from '../hooks/useSpotifyAuth';
 import { useSpotifyPlayer } from '../hooks/useSpotifyPlayer';
@@ -32,15 +32,8 @@ interface SpotifyContextType {
   setVolume: (volume: number) => Promise<void>;
 }
 
-const SpotifyContext = createContext<SpotifyContextType | undefined>(undefined);
+export const SpotifyContext = createContext<SpotifyContextType | undefined>(undefined);
 
-export const useSpotify = () => {
-  const context = useContext(SpotifyContext);
-  if (!context) {
-    throw new Error('useSpotify must be used within SpotifyProvider');
-  }
-  return context;
-};
 
 interface SpotifyProviderProps {
   children: ReactNode;
