@@ -14,9 +14,16 @@ export const useSpotifyAuth = () => {
       const storedUser = localStorage.getItem('spotify_user');
       
       if (storedToken && storedUser) {
-        setAccessToken(storedToken);
-        setUser(JSON.parse(storedUser));
-        setIsAuthenticated(true);
+        try {
+          setAccessToken(storedToken);
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error('Failed to parse stored user data:', error);
+          // Clear corrupted data
+          localStorage.removeItem('spotify_access_token');
+          localStorage.removeItem('spotify_user');
+        }
       }
       setLoading(false);
 
@@ -26,6 +33,24 @@ export const useSpotifyAuth = () => {
       
       if (code && state) {
         await handleAuthCallback(code, state);
+      }
+    };
+
+    const handleAuthCallback = async (code: string, state: string) => {
+      try {
+        const result = await spotifyApi.handleAuthCallback(code, state);
+        if (result.success) {
+          const userData = await spotifyApi.getUserProfile(result.userId, accessToken!);
+          
+          setUser(userData);
+          setIsAuthenticated(true);
+          
+          localStorage.setItem('spotify_user', JSON.stringify(userData));
+          localStorage.setItem('spotify_connected', 'true');
+          localStorage.setItem('spotify_user_id', result.userId);
+        }
+      } catch (error) {
+        console.error('Auth callback failed:', error);
       }
     };
 
@@ -47,23 +72,6 @@ export const useSpotifyAuth = () => {
     }
   };
 
-  const handleAuthCallback = async (code: string, state: string) => {
-    try {
-      const result = await spotifyApi.handleAuthCallback(code, state);
-      if (result.success) {
-        const userData = await spotifyApi.getUserProfile(result.userId, accessToken!);
-        
-        setUser(userData);
-        setIsAuthenticated(true);
-        
-        localStorage.setItem('spotify_user', JSON.stringify(userData));
-        localStorage.setItem('spotify_connected', 'true');
-        localStorage.setItem('spotify_user_id', result.userId);
-      }
-    } catch (error) {
-      console.error('Auth callback failed:', error);
-    }
-  };
 
   const logout = () => {
     setIsAuthenticated(false);

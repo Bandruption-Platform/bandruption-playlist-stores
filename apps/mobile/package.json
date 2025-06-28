@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
-    "build:web": "expo export --platform web",
+    "build:web": "npm run type-check && npm run lint && expo export --platform web",
+    "type-check": "tsc --noEmit",
     "lint": "expo lint",
     "test": "jest",
     "test:watch": "jest --watch"

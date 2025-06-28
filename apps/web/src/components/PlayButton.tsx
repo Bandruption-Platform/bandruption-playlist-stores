@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSpotify } from '../contexts/SpotifyContext';
+import { useSpotify } from '../hooks/useSpotify';
 import { SpotifyTrack } from '@shared/types';
 
 interface PlayButtonProps {
@@ -25,7 +25,7 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
         setTimeout(() => {
           window.open(webLink, '_blank');
         }, 1500);
-      } catch (error) {
+      } catch {
         window.open(webLink, '_blank');
       }
       return;

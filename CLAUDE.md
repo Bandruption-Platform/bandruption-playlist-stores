@@ -10,6 +10,11 @@ Bandruption Playlist Stores is a full-stack music platform built as a Turborepo 
 - API server (Express + TypeScript)
 - Shared packages for types, UI components, and Supabase integration
 
+## Important Configuration
+
+### NPM Configuration
+This project uses `legacy-peer-deps=true` in `.npmrc` to handle peer dependency conflicts with various packages. This setting is enforced project-wide, so all `npm install` commands automatically use `--legacy-peer-deps`.
+
 ## Essential Commands
 
 ### Development
