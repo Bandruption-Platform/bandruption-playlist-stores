@@ -7,6 +7,9 @@ export interface User {
   updated_at: string;
   profileImage?: string;
   spotifyConnected?: boolean;
+  spotify_user_id?: string;
+  spotify_display_name?: string;
+  spotify_image_url?: string;
   bio?: string;
   favoriteGenres?: string[];
   nftGallery?: NFT[];
@@ -39,6 +42,13 @@ export interface Track {
   trackNumber?: number;
   lyrics?: string;
   spotifyId?: string;
+  // Extended Spotify metadata
+  album_name?: string;
+  album_image_url?: string;
+  preview_url?: string;
+  external_url?: string;
+  artist_id?: string;
+  album_id?: string;
 }
 
 export interface Album {
@@ -140,4 +150,62 @@ export interface AppState {
   currentlyPlaying: Track | null;
   isGeneratingNFT: boolean;
   libraryView: 'blocks' | 'details' | 'stack' | 'list';
+}
+
+// Spotify Integration Types
+export interface SpotifyAuth {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+  scope: string;
+}
+
+export interface SpotifyUser {
+  id: string;
+  display_name: string;
+  email: string;
+  images: Array<{ url: string; width: number; height: number }>;
+  country: string;
+  product: 'free' | 'premium';
+}
+
+export interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: Array<{ id: string; name: string }>;
+  album: {
+    id: string;
+    name: string;
+    images: Array<{ url: string; width: number; height: number }>;
+  };
+  duration_ms: number;
+  preview_url: string | null;
+  external_urls: { spotify: string };
+}
+
+export interface SpotifyAlbum {
+  id: string;
+  name: string;
+  artists: Array<{ id: string; name: string }>;
+  images: Array<{ url: string; width: number; height: number }>;
+  release_date: string;
+  total_tracks: number;
+  tracks: { items: SpotifyTrack[] };
+  external_urls: { spotify: string };
+}
+
+export interface SpotifyArtist {
+  id: string;
+  name: string;
+  images: Array<{ url: string; width: number; height: number }>;
+  genres: string[];
+  followers: { total: number };
+  external_urls: { spotify: string };
+}
+
+export interface SpotifySearchResults {
+  tracks?: { items: SpotifyTrack[] };
+  albums?: { items: SpotifyAlbum[] };
+  artists?: { items: SpotifyArtist[] };
 } 
