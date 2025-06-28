@@ -27,7 +27,7 @@ export function SpotifyCallback() {
       processedCodeRef.current = code;
 
       // Exchange the code for tokens
-      spotifyApi.exchangeCodeForTokens(code, state)
+      spotifyApi.handleAuthCallback(code, state)
         .then(() => {
           // Redirect back to search page after successful auth
           navigate('/search');
