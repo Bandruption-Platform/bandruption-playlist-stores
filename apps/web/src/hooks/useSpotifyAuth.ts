@@ -14,9 +14,16 @@ export const useSpotifyAuth = () => {
       const storedUser = localStorage.getItem('spotify_user');
       
       if (storedToken && storedUser) {
-        setAccessToken(storedToken);
-        setUser(JSON.parse(storedUser));
-        setIsAuthenticated(true);
+        try {
+          setAccessToken(storedToken);
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error('Failed to parse stored user data:', error);
+          // Clear corrupted data
+          localStorage.removeItem('spotify_access_token');
+          localStorage.removeItem('spotify_user');
+        }
       }
       setLoading(false);
 
