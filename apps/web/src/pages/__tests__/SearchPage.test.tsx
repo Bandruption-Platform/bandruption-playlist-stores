@@ -27,8 +27,8 @@ const mockLocalStorage = {
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage })
 
 // Mock window.location
-delete (window as any).location
-window.location = { href: '' } as any
+delete (window as unknown as { location: unknown }).location
+window.location = { href: '' } as Location
 
 const renderSearchPageWithSpotify = () => {
   return render(
@@ -122,11 +122,11 @@ describe('SearchPage - Spotify Connection', () => {
   describe('auth callback handling', () => {
     beforeEach(() => {
       // Mock URL with auth callback parameters
-      delete window.location
+      delete (window as unknown as { location: unknown }).location
       window.location = {
         href: '',
         search: '?code=auth-code&state=auth-state'
-      } as any
+      } as Location
     })
 
     it('handles successful auth callback', async () => {

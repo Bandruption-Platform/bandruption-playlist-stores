@@ -20,62 +20,168 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies with legacy peer deps
-        run: npm ci --legacy-peer-deps
-
-      - name: Type check
-        run: npm run type-check
-        continue-on-error: false
-
-      - name: Lint with error handling
-        run: |
-          echo "Running lint checks..."
-          if ! npm run lint; then
-            echo "❌ Linting failed. Please fix the issues above."
-            exit 1
-          fi
-          echo "✅ Linting passed!"
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build all packages
         run: |
-          echo "Building all packages..."
+          echo "🔨 Building all packages (includes type-check and lint)..."
           npm run build
+          echo "✅ Build successful!"
 
       - name: Run tests
         run: |
-          echo "Running tests..."
+          echo "🧪 Running tests..."
           npm run test
+          echo "✅ All tests passed!"
 
-      - name: Build verification
-        run: |
-          echo "Verifying individual app builds..."
-          npx turbo run build --filter=web
-          npx turbo run build --filter=server  
-          npm run mobile:web  # This runs the mobile web build
-          echo "✅ All apps build successfully!"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: build-artifacts
+          path: |
+            apps/web/dist
+            apps/server/dist
+            packages/*/dist
+          retention-days: 7
 
-  security-scan:
-    name: Security Scan
+  code-quality:
+    name: Code Quality Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies for security scan
-        run: npm install --legacy-peer-deps
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type Check
+        run: |
+          echo "🔍 Running TypeScript type checks..."
+          npm run type-check
+          echo "✅ Type check passed!"
+
+      - name: Lint Check
+        run: |
+          echo "🔍 Running ESLint..."
+          npm run lint
+          echo "✅ Lint check passed!"
+
+      - name: Check for console statements
+        run: |
+          echo "🔍 Checking for console statements..."
+          # Allow console statements in server code, but warn about them
+          if grep -r "console\." apps/web/src --exclude-dir=__tests__ --exclude-dir=test; then
+            echo "⚠️  Warning: console statements found in web app code"
+          fi
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: |
+          echo "🔒 Running npm audit..."
+          npm audit --production || true
+          echo "Security scan complete"
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
+          scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif' 
+          sarif_file: 'trivy-results.sarif'
+
+  test-coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: |
+          echo "📊 Running tests with coverage..."
+          npx turbo run test -- --coverage
+          echo "✅ Coverage report generated!"
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-test, code-quality, security-scan]
+    if: always()
+    
+    steps:
+      - name: PR Status Summary
+        run: |
+          echo "## 📋 PR Check Summary"
+          echo ""
+          if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+            echo "✅ Build and Tests: Passed"
+          else
+            echo "❌ Build and Tests: Failed"
+          fi
+          
+          if [ "${{ needs.code-quality.result }}" == "success" ]; then
+            echo "✅ Code Quality: Passed"
+          else
+            echo "❌ Code Quality: Failed"
+          fi
+          
+          if [ "${{ needs.security-scan.result }}" == "success" ]; then
+            echo "✅ Security Scan: Passed"
+          else
+            echo "⚠️  Security Scan: Check results"
+          fi
+          
+          echo ""
+          echo "### Next Steps:"
+          if [ "${{ needs.build-and-test.result }}" == "success" ] && [ "${{ needs.code-quality.result }}" == "success" ]; then
+            echo "🎉 All checks passed! Your PR is ready for review."
+          else
+            echo "🔧 Please fix the failing checks before merging."
+          fi

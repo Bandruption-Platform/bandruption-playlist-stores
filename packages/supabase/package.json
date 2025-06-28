@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run type-check && npm run lint && tsc",
     "dev": "tsc --watch",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",

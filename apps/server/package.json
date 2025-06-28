@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "build": "npm run lint && tsc",
+    "build": "npm run type-check && npm run lint && tsc",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",

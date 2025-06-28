@@ -77,7 +77,7 @@ router.get('/auth/login', async (req, res) => {
     const state = jwt.sign({ timestamp: Date.now() }, process.env.JWT_SECRET!);
     const authUrl = await spotifyService.getAuthUrl(state);
     res.json({ authUrl });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to generate auth URL' });
   }
 });
@@ -159,7 +159,7 @@ router.get('/search', async (req, res) => {
     );
     
     res.json(results);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Search failed' });
   }
 });
@@ -176,7 +176,7 @@ router.get('/track/:id', async (req, res) => {
     
     const track = await spotifyService.getTrack(id, accessToken);
     res.json(track);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch track' });
   }
 });
@@ -192,7 +192,7 @@ router.get('/album/:id', async (req, res) => {
     
     const album = await spotifyService.getAlbum(id, accessToken);
     res.json(album);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch album' });
   }
 });
@@ -208,7 +208,7 @@ router.get('/artist/:id', async (req, res) => {
     
     const artist = await spotifyService.getArtist(id, accessToken);
     res.json(artist);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch artist' });
   }
 });
@@ -224,7 +224,7 @@ router.get('/artist/:id/albums', async (req, res) => {
     
     const albums = await spotifyService.getArtistAlbums(id, accessToken);
     res.json(albums);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch artist albums' });
   }
 });

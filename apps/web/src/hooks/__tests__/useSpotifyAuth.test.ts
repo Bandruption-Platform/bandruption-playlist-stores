@@ -25,12 +25,12 @@ const mockLocation = {
   href: '',
   search: ''
 }
-delete (window as any).location
-window.location = mockLocation as any
+delete (window as unknown as { location: unknown }).location
+window.location = mockLocation as Location
 
 // Mock URLSearchParams
 const mockURLSearchParams = vi.fn()
-global.URLSearchParams = mockURLSearchParams as any
+global.URLSearchParams = mockURLSearchParams as typeof URLSearchParams
 
 describe('useSpotifyAuth', () => {
   beforeEach(() => {

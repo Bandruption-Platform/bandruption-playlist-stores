@@ -27,8 +27,8 @@ const mockLocalStorage = {
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage })
 
 // Mock window.location
-delete (window as any).location
-window.location = { href: '', search: '' } as any
+delete (window as unknown as { location: unknown }).location
+window.location = { href: '', search: '' } as Location
 
 describe('Spotify Connection Flow Integration', () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe('Spotify Connection Flow Integration', () => {
       }
 
       // Step 1: Initial render shows connection prompt
-      const { rerender } = render(
+      render(
         <SpotifyProvider>
           <SearchPage />
         </SpotifyProvider>
