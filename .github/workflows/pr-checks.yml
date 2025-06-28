@@ -52,8 +52,8 @@ jobs:
       - name: Build verification
         run: |
           echo "Verifying individual app builds..."
-          npm run build --filter=web
-          npm run build --filter=server  
+          npx turbo run build --filter=web
+          npx turbo run build --filter=server  
           npm run mobile:web  # This runs the mobile web build
           echo "✅ All apps build successfully!"
 
