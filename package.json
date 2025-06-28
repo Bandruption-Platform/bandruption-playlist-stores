@@ -9,6 +9,9 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:ui": "vitest --ui",
+    "test:mobile": "turbo run test --filter=mobile",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "clean": "turbo run clean",
@@ -30,14 +33,17 @@
     "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "turbo": "^1.13.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^8.45.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.1.6"
+    "turbo": "^1.13.3",
+    "typescript": "^5.1.6",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "ajv": "^8.17.1"
   }
-} 
+}

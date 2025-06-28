@@ -10,6 +10,7 @@ import { PlaylistPage } from './pages/PlaylistPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ChatPage } from './pages/ChatPage';
 import { SearchPage } from './pages/SearchPage';
+import { SpotifyCallback } from './pages/SpotifyCallback';
 import { useAppStore } from './store/appStore';
 import { SpotifyProvider } from './contexts/SpotifyContext';
 
@@ -58,6 +59,7 @@ function App() {
                 <Route path="/player" element={<PlayerPage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/chat" element={<ChatPage />} />
+                <Route path="/auth/spotify/callback" element={<SpotifyCallback />} />
               </Routes>
             </main>
             <Footer />
