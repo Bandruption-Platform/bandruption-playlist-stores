@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { spotifyService } from '../services/spotifyService';
+import { spotifyService } from '../services/spotifyService.js';
 import jwt from 'jsonwebtoken';
 
 // Temporary in-memory storage for demo purposes

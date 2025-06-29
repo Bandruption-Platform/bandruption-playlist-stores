@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+// Load environment variables BEFORE any other imports
+dotenv.config();
+
 import SpotifyWebApi from 'spotify-web-api-node';
 import { SpotifyAuth, SpotifySearchResults, SpotifyTrack, SpotifyAlbum, SpotifyArtist, SpotifyUser } from '@shared/types';
 
