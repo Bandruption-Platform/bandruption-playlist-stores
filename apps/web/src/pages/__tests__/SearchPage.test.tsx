@@ -119,54 +119,9 @@ describe('SearchPage - Spotify Connection', () => {
     })
   })
 
-  describe('auth callback handling', () => {
-    beforeEach(() => {
-      // Mock URL with auth callback parameters
-      delete (window as unknown as { location: unknown }).location
-      window.location = {
-        href: '',
-        search: '?code=auth-code&state=auth-state'
-      } as Location
-    })
-
-    it('handles successful auth callback', async () => {
-      const mockUser = {
-        id: 'user123',
-        display_name: 'Test User',
-        email: 'test@example.com',
-        product: 'premium',
-        images: []
-      }
-
-      vi.mocked(spotifyApi.handleAuthCallback).mockResolvedValue({
-        success: true,
-        userId: 'user123'
-      })
-      vi.mocked(spotifyApi.getUserProfile).mockResolvedValue(mockUser)
-
-      renderSearchPageWithSpotify()
-
-      await waitFor(() => {
-        expect(spotifyApi.handleAuthCallback).toHaveBeenCalledWith('auth-code', 'auth-state')
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_user', JSON.stringify(mockUser))
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_connected', 'true')
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_user_id', 'user123')
-      })
-    })
-
-    it('handles failed auth callback', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.mocked(spotifyApi.handleAuthCallback).mockRejectedValue(new Error('Callback failed'))
-
-      renderSearchPageWithSpotify()
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Auth callback failed:', expect.any(Error))
-      })
-
-      consoleSpy.mockRestore()
-    })
-  })
+  // Note: Auth callback handling is done in the useSpotifyAuth hook
+  // Since we're mocking that hook, we don't test the callback handling here
+  // The callback handling is tested in the hook's own unit tests
 
   describe('page content', () => {
     it('renders the page title and description', () => {

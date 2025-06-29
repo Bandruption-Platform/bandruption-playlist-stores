@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSpotify } from '../hooks/useSpotify';
 import { SpotifyTrack } from '@shared/types';
 
@@ -8,15 +8,27 @@ interface PlayButtonProps {
 }
 
 export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' }) => {
-  const { isAuthenticated, isPremium, login, playTrack, isPlayerReady } = useSpotify();
+  const { isAuthenticated, isPremium, loginWithPopup, playTrack, isPlayerReady, isAuthenticating } = useSpotify();
+  const [showAuthError, setShowAuthError] = useState<string | null>(null);
 
   const handlePlay = async () => {
     if (!isAuthenticated) {
-      login();
+      // Use popup authentication
+      const result = await loginWithPopup();
+      
+      if (!result.success) {
+        setShowAuthError(result.error || 'Authentication failed');
+        setTimeout(() => setShowAuthError(null), 5000);
+        return;
+      }
+      
+      // Auth succeeded, but we need to wait for the hook to update
+      // The button will re-render and user can click again
       return;
     }
 
     if (!isPremium) {
+      // Free users - redirect to Spotify app
       const deepLink = `spotify:track:${track.id}`;
       const webLink = `https://open.spotify.com/track/${track.id}`;
       
@@ -32,6 +44,7 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
     }
 
     if (isPremium && isPlayerReady) {
+      // Premium users - play in browser
       try {
         await playTrack(`spotify:track:${track.id}`);
       } catch (error) {
@@ -42,6 +55,7 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
   };
 
   const getButtonText = () => {
+    if (isAuthenticating) return 'Connecting...';
     if (!isAuthenticated) return 'Login to Play';
     if (!isPremium) return 'Play in Spotify';
     if (!isPlayerReady) return 'Loading Player...';
@@ -49,18 +63,27 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
   };
 
   const getButtonIcon = () => {
+    if (isAuthenticating) return '⏳';
     if (!isAuthenticated || !isPremium) return '🎵';
     return '▶️';
   };
 
   return (
-    <button
-      onClick={handlePlay}
-      disabled={isPremium && !isPlayerReady}
-      className={`play-button ${className} ${!isPremium ? 'external' : 'internal'} px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors disabled:opacity-50`}
-    >
-      <span className="icon mr-1">{getButtonIcon()}</span>
-      <span className="text">{getButtonText()}</span>
-    </button>
+    <div className="relative">
+      <button
+        onClick={handlePlay}
+        disabled={isAuthenticating || (isPremium && !isPlayerReady)}
+        className={`play-button ${className} ${!isPremium ? 'external' : 'internal'} px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors disabled:opacity-50`}
+      >
+        <span className="icon mr-1">{getButtonIcon()}</span>
+        <span className="text">{getButtonText()}</span>
+      </button>
+      
+      {showAuthError && (
+        <div className="absolute top-full left-0 mt-1 bg-red-900 text-red-200 text-xs px-2 py-1 rounded shadow-lg z-10 whitespace-nowrap">
+          {showAuthError}
+        </div>
+      )}
+    </div>
   );
 };
