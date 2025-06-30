@@ -30,21 +30,28 @@ class AlgorandService {
     return await this.algod.accountInformation(address).do();
   }
 
-  async waitForConfirmation(txId: string) {
+  async waitForConfirmation(txId: string, maxRetries: number = 100) {
     const pendingInfo = await this.algod.pendingTransactionInformation(txId).do();
     if (pendingInfo.confirmedRound && pendingInfo.confirmedRound > 0) {
       return pendingInfo;
     }
 
-    const round = await this.algod.status().do();
-    while (true) {
+    const status = await this.algod.status().do();
+    let currentRound = status.lastRound;
+    let retries = 0;
+
+    while (retries < maxRetries) {
       const pendingInfo = await this.algod.pendingTransactionInformation(txId).do();
       if (pendingInfo.confirmedRound && pendingInfo.confirmedRound > 0) {
         return pendingInfo;
       }
-      round.lastRound++;
-      await this.algod.statusAfterBlock(round.lastRound).do();
+      
+      currentRound++;
+      retries++;
+      await this.algod.statusAfterBlock(currentRound).do();
     }
+
+    throw new Error(`Transaction ${txId} was not confirmed after ${maxRetries} rounds`);
   }
 
   async getTransactionParams(): Promise<any> {

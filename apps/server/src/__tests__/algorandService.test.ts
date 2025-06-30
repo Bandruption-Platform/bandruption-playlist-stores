@@ -97,11 +97,16 @@ describe('AlgorandService', () => {
         do: vi.fn().mockResolvedValue({ lastRound: 1000 }) 
       });
       
-      // First call returns pending, then we mock the status call, then confirmed
+      // Mock statusAfterBlock
+      mockAlgod.statusAfterBlock.mockReturnValue({ 
+        do: vi.fn().mockResolvedValue({}) 
+      });
+      
+      // First two calls return pending, third call confirmed
       mockAlgod.pendingTransactionInformation.mockReturnValue({
         do: vi.fn().mockImplementation(() => {
           callCount++;
-          if (callCount === 1) {
+          if (callCount <= 2) {
             return Promise.resolve({ confirmedRound: 0 });
           } else {
             return Promise.resolve({ confirmedRound: 1001 });
@@ -111,8 +116,63 @@ describe('AlgorandService', () => {
 
       const result = await service.waitForConfirmation(txId);
       
-      expect(mockAlgod.pendingTransactionInformation).toHaveBeenCalledTimes(2);
+      expect(mockAlgod.pendingTransactionInformation).toHaveBeenCalledTimes(3);
+      expect(mockAlgod.statusAfterBlock).toHaveBeenCalledTimes(1);
+      expect(mockAlgod.statusAfterBlock).toHaveBeenCalledWith(1001);
       expect(result).toEqual({ confirmedRound: 1001 });
+    });
+
+    it('should throw error if transaction is not confirmed within retry limit', async () => {
+      const txId = 'test-tx-id';
+      const maxRetries = 3;
+      
+      // Mock status to return a round
+      mockAlgod.status.mockReturnValue({ 
+        do: vi.fn().mockResolvedValue({ lastRound: 1000 }) 
+      });
+      
+      // Mock statusAfterBlock
+      mockAlgod.statusAfterBlock.mockReturnValue({ 
+        do: vi.fn().mockResolvedValue({}) 
+      });
+      
+      // Always return pending transaction
+      mockAlgod.pendingTransactionInformation.mockReturnValue({
+        do: vi.fn().mockResolvedValue({ confirmedRound: 0 })
+      });
+
+      await expect(service.waitForConfirmation(txId, maxRetries)).rejects.toThrow(
+        `Transaction ${txId} was not confirmed after ${maxRetries} rounds`
+      );
+      
+      expect(mockAlgod.pendingTransactionInformation).toHaveBeenCalledTimes(maxRetries + 1); // Initial call + retries
+      expect(mockAlgod.statusAfterBlock).toHaveBeenCalledTimes(maxRetries);
+    });
+
+    it('should use default retry limit of 100 if not specified', async () => {
+      const txId = 'test-tx-id';
+      
+      // Mock status to return a round
+      mockAlgod.status.mockReturnValue({ 
+        do: vi.fn().mockResolvedValue({ lastRound: 1000 }) 
+      });
+      
+      // Mock statusAfterBlock
+      mockAlgod.statusAfterBlock.mockReturnValue({ 
+        do: vi.fn().mockResolvedValue({}) 
+      });
+      
+      // Always return pending transaction
+      mockAlgod.pendingTransactionInformation.mockReturnValue({
+        do: vi.fn().mockResolvedValue({ confirmedRound: 0 })
+      });
+
+      await expect(service.waitForConfirmation(txId)).rejects.toThrow(
+        `Transaction ${txId} was not confirmed after 100 rounds`
+      );
+      
+      expect(mockAlgod.pendingTransactionInformation).toHaveBeenCalledTimes(101); // Initial call + 100 retries
+      expect(mockAlgod.statusAfterBlock).toHaveBeenCalledTimes(100);
     });
   });
 

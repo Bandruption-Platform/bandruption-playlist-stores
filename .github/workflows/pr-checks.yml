@@ -35,12 +35,24 @@ jobs:
         run: npm ci
 
       - name: Build all packages
+        env:
+          WALLET_MNEMONIC_ENCRYPTION_KEY: ${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}
+          NODELY_API_URL: ${{ secrets.NODELY_API_URL }}
+          NODELY_INDEXER_URL: ${{ secrets.NODELY_INDEXER_URL }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
         run: |
           echo "🔨 Building all packages (includes type-check and lint)..."
           npm run build
           echo "✅ Build successful!"
 
       - name: Run tests
+        env:
+          WALLET_MNEMONIC_ENCRYPTION_KEY: ${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}
+          NODELY_API_URL: ${{ secrets.NODELY_API_URL }}
+          NODELY_INDEXER_URL: ${{ secrets.NODELY_INDEXER_URL }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
         run: |
           echo "🧪 Running tests..."
           npm run test

@@ -13,8 +13,9 @@ vi.mock('algosdk', () => ({
 vi.mock('crypto', () => ({
   default: {
     randomBytes: vi.fn(),
-    createCipher: vi.fn(),
-    createDecipher: vi.fn()
+    createHash: vi.fn(),
+    createCipheriv: vi.fn(),
+    createDecipheriv: vi.fn()
   }
 }));
 
@@ -48,17 +49,22 @@ describe('WalletService', () => {
     
     // Mock crypto functions
     const mockCipher = {
-      update: vi.fn().mockReturnValue('encrypted'),
-      final: vi.fn().mockReturnValue('data')
+      update: vi.fn().mockReturnValue('deadbeef'),
+      final: vi.fn().mockReturnValue('cafe')
     };
     const mockDecipher = {
       update: vi.fn().mockReturnValue('decrypted'),
       final: vi.fn().mockReturnValue('mnemonic')
     };
+    const mockHash = {
+      update: vi.fn().mockReturnThis(),
+      digest: vi.fn().mockReturnValue(Buffer.from('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef', 'hex'))
+    };
     
     (mockCrypto.randomBytes as any).mockReturnValue(Buffer.from('1234567890123456'));
-    mockCrypto.createCipher.mockReturnValue(mockCipher as any);
-    mockCrypto.createDecipher.mockReturnValue(mockDecipher as any);
+    mockCrypto.createHash.mockReturnValue(mockHash as any);
+    mockCrypto.createCipheriv.mockReturnValue(mockCipher as any);
+    mockCrypto.createDecipheriv.mockReturnValue(mockDecipher as any);
     
     // Mock algosdk functions
     const mockAccount = {
@@ -119,7 +125,7 @@ describe('WalletService', () => {
       expect(mockSupabase.insert).toHaveBeenCalledWith({
         user_id: userId,
         address: 'TESTADDRESS123',
-        encrypted_mnemonic: '31323334353637383930313233343536:encrypteddata'
+        encrypted_mnemonic: '31323334353637383930313233343536:deadbeefcafe'
       });
       expect(result).toEqual({
         address: 'TESTADDRESS123',
@@ -269,7 +275,7 @@ describe('WalletService', () => {
       
       // Test encryption
       const encrypted = service.encryptMnemonic(testMnemonic);
-      expect(encrypted).toBe('31323334353637383930313233343536:encrypteddata');
+      expect(encrypted).toBe('31323334353637383930313233343536:deadbeefcafe');
       
       // Test decryption
       const decrypted = service.decryptMnemonic('iv:encrypted');
@@ -278,6 +284,47 @@ describe('WalletService', () => {
 
     it('should throw error for invalid encrypted mnemonic format', () => {
       expect(() => service.decryptMnemonic('invalid-format')).toThrow('Invalid encrypted mnemonic format');
+    });
+
+    it('should use secure encryption methods (would catch security vulnerability)', () => {
+      const testMnemonic = 'test mnemonic phrase';
+      
+      // Test that encryption calls the secure methods
+      service.encryptMnemonic(testMnemonic);
+      
+      // Verify createHash is called for key derivation (not the old createCipher)
+      expect(mockCrypto.createHash).toHaveBeenCalledWith('sha256');
+      expect(mockCrypto.createCipheriv).toHaveBeenCalledWith('aes-256-cbc', expect.any(Buffer), expect.any(Buffer));
+      
+      // Verify old insecure methods are not called
+      expect(mockCrypto.createCipher).not.toBeDefined();
+    });
+
+    it('should use proper IV handling (would catch security vulnerability)', () => {
+      const testMnemonic = 'test mnemonic phrase';
+      
+      // Test encryption with proper IV
+      const encrypted = service.encryptMnemonic(testMnemonic);
+      
+      // Should have IV:encrypted format
+      expect(encrypted).toMatch(/^[a-f0-9]{32}:[a-f0-9]+$/);
+      
+      // Test decryption uses IV properly
+      service.decryptMnemonic('1234567890123456789012345678901234567890:encrypted');
+      
+      expect(mockCrypto.createDecipheriv).toHaveBeenCalledWith('aes-256-cbc', expect.any(Buffer), expect.any(Buffer));
+    });
+
+    it('should derive consistent keys (would catch security vulnerability)', () => {
+      const testMnemonic = 'test mnemonic phrase';
+      
+      // Multiple encryptions should use consistent key derivation
+      service.encryptMnemonic(testMnemonic);
+      service.encryptMnemonic(testMnemonic);
+      
+      // Should call createHash multiple times with same algorithm
+      expect(mockCrypto.createHash).toHaveBeenCalledTimes(2);
+      expect(mockCrypto.createHash).toHaveBeenCalledWith('sha256');
     });
   });
 });

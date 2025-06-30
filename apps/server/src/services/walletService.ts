@@ -110,7 +110,10 @@ class WalletService {
   private encryptMnemonic(mnemonic: string): string {
     const iv = crypto.randomBytes(16);
     
-    const cipher = crypto.createCipher('aes256', this.encryptionKey);
+    // Create a consistent 32-byte key for AES-256
+    const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
+    
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     let encrypted = cipher.update(mnemonic, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     
@@ -123,9 +126,13 @@ class WalletService {
       throw new Error('Invalid encrypted mnemonic format');
     }
 
-    const [, encrypted] = parts;
+    const [ivHex, encrypted] = parts;
+    const iv = Buffer.from(ivHex, 'hex');
     
-    const decipher = crypto.createDecipher('aes256', this.encryptionKey);
+    // Create a consistent 32-byte key for AES-256
+    const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
+    
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     
