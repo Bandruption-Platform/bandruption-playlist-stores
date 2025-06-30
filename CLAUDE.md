@@ -78,6 +78,19 @@ npm run db:push      # Push database schema changes to Supabase
    - Frontend communicates with backend via `/api/spotify/*` endpoints
    - This architecture ensures proper authentication, security, and API usage
 
+6. **Environment Variable Loading Pattern** (CRITICAL):
+   - **ALL service files that use environment variables MUST load them at the top of the file**
+   - Add these lines at the very beginning of any service file that uses `process.env`:
+   ```typescript
+   import dotenv from 'dotenv';
+   // Load environment variables BEFORE any other imports
+   dotenv.config();
+   ```
+   - This pattern ensures environment variables are loaded before the service class is instantiated
+   - Examples: `spotifyService.ts`, `algorandService.ts`, `bandruptionService.ts`
+   - There are tests in `env-import-order.test.ts` that verify this pattern is followed
+   - Failure to follow this pattern results in `undefined` environment variables at runtime
+
 ## Development Workflow
 
 1. **Adding New Features**:
