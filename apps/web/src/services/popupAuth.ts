@@ -1,5 +1,7 @@
 import { SpotifyUser } from '@shared/types';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 export interface PopupAuthResult {
   success: boolean;
   userId?: string;
@@ -22,7 +24,7 @@ class PopupAuthService {
   private async openAuthPopup(): Promise<PopupAuthResult> {
     try {
       // Get auth URL from backend
-      const response = await fetch('http://localhost:3001/api/spotify/auth/login');
+      const response = await fetch(`${API_BASE}/api/spotify/auth/login`);
       const { authUrl } = await response.json();
 
       // Open popup window
