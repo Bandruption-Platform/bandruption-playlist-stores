@@ -7,6 +7,7 @@ import { walletService } from './walletService.js';
 import { supabase } from '@shared/supabase';
 import algosdk from 'algosdk';
 import axios from 'axios';
+import FormData from 'form-data';
 
 class NFTService {
   async mintNFT(params: {
@@ -299,16 +300,29 @@ class NFTService {
   }
 
   private async uploadToIPFS(data: Buffer, filename: string): Promise<string> {
+    // Validate required environment variables
+    const apiKey = process.env.PINATA_API_KEY;
+    const secretKey = process.env.PINATA_SECRET;
+    
+    if (!apiKey || !secretKey) {
+      throw new Error('PINATA_API_KEY and PINATA_SECRET environment variables are required');
+    }
+
+    // Use Node.js compatible FormData
     const formData = new FormData();
-    formData.append('file', new Blob([data]), filename);
+    formData.append('file', data, {
+      filename,
+      contentType: filename.endsWith('.json') ? 'application/json' : 'application/octet-stream'
+    });
 
     const response = await axios.post(
       'https://api.pinata.cloud/pinning/pinFileToIPFS',
       formData,
       {
         headers: {
-          'pinata_api_key': process.env.PINATA_API_KEY!,
-          'pinata_secret_api_key': process.env.PINATA_SECRET!,
+          ...formData.getHeaders(),
+          'pinata_api_key': apiKey,
+          'pinata_secret_api_key': secretKey,
         }
       }
     );

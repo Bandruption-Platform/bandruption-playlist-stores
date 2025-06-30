@@ -49,7 +49,7 @@ class WalletService {
     if (error) throw error;
 
     return {
-      address: account.addr,
+      address: account.addr.toString(),
       walletId: data.id
     };
   }

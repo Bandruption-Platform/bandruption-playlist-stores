@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import algosdk from 'algosdk';
 import axios from 'axios';
+import FormData from 'form-data';
 
 // Mock dependencies
 vi.mock('algosdk');
@@ -333,13 +334,35 @@ describe('NFTService', () => {
         'https://api.pinata.cloud/pinning/pinFileToIPFS',
         expect.any(FormData),
         {
-          headers: {
+          headers: expect.objectContaining({
             'pinata_api_key': 'test-pinata-key',
             'pinata_secret_api_key': 'test-pinata-secret'
-          }
+          })
         }
       );
       expect(result).toBe('https://gateway.pinata.cloud/ipfs/QmTestHash123');
+    });
+
+    it('should throw error when PINATA_API_KEY is missing', async () => {
+      delete process.env.PINATA_API_KEY;
+      
+      const buffer = Buffer.from('test data');
+      const filename = 'test.json';
+      
+      await expect(service.uploadToIPFS(buffer, filename)).rejects.toThrow(
+        'PINATA_API_KEY and PINATA_SECRET environment variables are required'
+      );
+    });
+
+    it('should throw error when PINATA_SECRET is missing', async () => {
+      delete process.env.PINATA_SECRET;
+      
+      const buffer = Buffer.from('test data');
+      const filename = 'test.json';
+      
+      await expect(service.uploadToIPFS(buffer, filename)).rejects.toThrow(
+        'PINATA_API_KEY and PINATA_SECRET environment variables are required'
+      );
     });
   });
 

@@ -9,15 +9,24 @@ class AlgorandService {
   private indexer: algosdk.Indexer;
 
   constructor() {
+    // Validate required environment variables
+    if (!process.env.NODELY_API_URL) {
+      throw new Error('NODELY_API_URL environment variable is required');
+    }
+    
+    if (!process.env.NODELY_INDEXER_URL) {
+      throw new Error('NODELY_INDEXER_URL environment variable is required');
+    }
+
     this.algod = new algosdk.Algodv2(
       '', // No token needed for Nodely
-      process.env.NODELY_API_URL!,
+      process.env.NODELY_API_URL,
       ''
     );
     
     this.indexer = new algosdk.Indexer(
       '',
-      process.env.NODELY_INDEXER_URL!,
+      process.env.NODELY_INDEXER_URL,
       ''
     );
   }
