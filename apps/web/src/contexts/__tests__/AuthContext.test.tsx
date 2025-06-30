@@ -58,6 +58,13 @@ const TestComponent = () => {
   );
 };
 
+// Mock fetch globally
+const mockFetch = vi.fn();
+Object.defineProperty(global, 'fetch', {
+  writable: true,
+  value: mockFetch,
+});
+
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -76,6 +83,12 @@ describe('AuthContext', () => {
     Object.defineProperty(window, 'open', {
       writable: true,
       value: vi.fn(),
+    });
+    
+    // Default fetch mock - no Spotify access
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 500,
     });
   });
 
@@ -156,6 +169,16 @@ describe('AuthContext', () => {
     mockSupabase.auth.getSession.mockResolvedValue({
       data: { session: mockSession },
     });
+    
+    // Mock the API response for primary Spotify auth with access
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        linked: true,
+        hasSpotifyAccess: true,
+        accessMethod: 'primary'
+      }),
+    });
 
     render(
       <AuthProvider>
@@ -187,19 +210,14 @@ describe('AuthContext', () => {
       data: { session: mockSession },
     });
 
-    // Mock spotify_tokens query with valid tokens
-    mockSupabase.from.mockReturnValue({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({
-            data: {
-              access_token: 'spotify-token',
-              expires_at: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
-            },
-            error: null,
-          }),
-        })),
-      })),
+    // Mock the API response for linked Spotify access
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        linked: true,
+        hasSpotifyAccess: true,
+        accessMethod: 'linked'
+      }),
     });
 
     render(

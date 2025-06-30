@@ -66,27 +66,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
-    // Check if user authenticated with Spotify as primary
-    const spotifyIdentity = session.user.identities?.find(
-      identity => identity.provider === 'spotify'
-    );
+    try {
+      // Check Spotify link status via backend API
+      const response = await fetch('/api/spotify/link-status', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
 
-    if (spotifyIdentity) {
-      setHasSpotifyAccess(true);
-      return;
-    }
-
-    // Check if user has linked Spotify account
-    const { data: linkedTokens } = await supabase
-      .from('spotify_tokens')
-      .select('access_token, expires_at')
-      .eq('user_id', session.user.id)
-      .single();
-
-    if (linkedTokens) {
-      const expiresAt = new Date(linkedTokens.expires_at);
-      setHasSpotifyAccess(expiresAt > new Date());
-    } else {
+      if (response.ok) {
+        const statusData = await response.json();
+        setHasSpotifyAccess(statusData.hasSpotifyAccess);
+      } else {
+        setHasSpotifyAccess(false);
+      }
+    } catch (error) {
+      console.error('Failed to check Spotify access:', error);
       setHasSpotifyAccess(false);
     }
   };
@@ -180,7 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       email,
       password,
     });
-    return { error };
+    return { error: error || undefined };
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
@@ -188,7 +183,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       email,
       password,
     });
-    return { error };
+    return { error: error || undefined };
   };
 
   const signOut = async () => {

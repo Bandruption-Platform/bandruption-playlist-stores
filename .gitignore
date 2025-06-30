@@ -144,4 +144,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log* 
+lerna-debug.log*
+
+# Vite timestamp files (temporary build artifacts)
+*.timestamp-*.mjs 

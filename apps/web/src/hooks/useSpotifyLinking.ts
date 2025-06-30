@@ -21,15 +21,25 @@ export const useSpotifyLinking = () => {
       const spotifyResult = await popupAuthService.loginWithPopup();
       
       if (spotifyResult.success && spotifyResult.accessToken && spotifyResult.userData) {
+        // Validate required fields
+        if (!spotifyResult.userId) {
+          return { success: false, error: 'Spotify user ID not available' };
+        }
+
+        // Calculate expiration time using actual expires_in from Spotify API
+        const expiresInSeconds = spotifyResult.expiresIn || 3600; // Default to 1 hour if not provided
+        const expiresAt = new Date(Date.now() + (expiresInSeconds * 1000));
+
         // Store Spotify tokens linked to Supabase user
         const { error: dbError } = await supabase
           .from('spotify_tokens')
           .upsert({
             user_id: user.id,
             access_token: spotifyResult.accessToken,
-            refresh_token: spotifyResult.refreshToken || '',
-            expires_at: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
-            spotify_user_id: spotifyResult.userId!,
+            refresh_token: spotifyResult.refreshToken || '', // Schema requires non-null; empty string used when unavailable
+            // Note: Server-side refresh logic should check for empty string and handle as missing refresh token
+            expires_at: expiresAt.toISOString(),
+            spotify_user_id: spotifyResult.userId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
@@ -43,7 +53,7 @@ export const useSpotifyLinking = () => {
         localStorage.setItem('spotify_access_token', spotifyResult.accessToken);
         localStorage.setItem('spotify_user', JSON.stringify(spotifyResult.userData));
         localStorage.setItem('spotify_connected', 'true');
-        localStorage.setItem('spotify_user_id', spotifyResult.userId!);
+        localStorage.setItem('spotify_user_id', spotifyResult.userId);
 
         // Notify other components
         window.dispatchEvent(new CustomEvent('spotify-auth-changed'));

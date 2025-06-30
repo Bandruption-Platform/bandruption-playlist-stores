@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { spotifyService } from '../services/spotifyService.js';
 import { supabase } from '@shared/supabase';
 import jwt from 'jsonwebtoken';
+import type { User } from '@supabase/supabase-js';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ const getSupabaseUser = async (req: any, res: any, next: any) => {
     }
 
     req.user = user;
+    req.accessToken = token; // Store the access token for potential use in getting OAuth tokens
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
@@ -30,21 +32,13 @@ const getSupabaseUser = async (req: any, res: any, next: any) => {
 
 // Helper function to get Spotify tokens for a Supabase user
 // Supports both primary Spotify auth and linked Spotify accounts
-const getSpotifyTokensForUser = async (supabaseUser: any) => {
+const getSpotifyTokensForUser = async (supabaseUser: User, _accessToken?: string) => {
   // Check if user authenticated with Spotify as primary method
   const spotifyIdentity = supabaseUser.identities?.find(
     (identity: any) => identity.provider === 'spotify'
   );
   
-  if (spotifyIdentity) {
-    // User authenticated with Spotify as primary - get tokens from Supabase session
-    // For now, we'll use the linked token approach until Supabase provides session tokens
-    // This is a temporary implementation that will be enhanced once we have proper
-    // access to Supabase OAuth tokens for primary authentication
-    console.log('User authenticated with Spotify as primary, falling back to linked tokens');
-  }
-  
-  // Get tokens from custom spotify_tokens table (works for both linked and primary scenarios)
+  // Get tokens from custom spotify_tokens table (works for both linked accounts and primary auth users)
   const { data, error } = await supabase
     .from('spotify_tokens')
     .select('*')
@@ -52,10 +46,19 @@ const getSpotifyTokensForUser = async (supabaseUser: any) => {
     .single();
 
   if (error || !data) {
-    throw new Error('Spotify account not linked');
+    if (spotifyIdentity) {
+      // User authenticated with Spotify as primary but no tokens in our table
+      // This happens because Supabase doesn't expose OAuth tokens for security reasons
+      // The user needs to link their account to enable full Spotify functionality
+      console.log('Primary Spotify authentication detected, but no linked tokens found');
+      throw new Error('SPOTIFY_PRIMARY_AUTH_DETECTED');
+    } else {
+      // User authenticated with another provider and hasn't linked Spotify
+      throw new Error('Spotify account not linked');
+    }
   }
 
-  // Check if token is expired
+  // Check if token is expired and refresh if needed
   const expiresAt = new Date(data.expires_at);
   const now = new Date();
   
@@ -82,9 +85,10 @@ const getSpotifyTokensForUser = async (supabaseUser: any) => {
         return {
           access_token: refreshedTokens.access_token,
           refresh_token: data.refresh_token,
-          spotify_user_id: (data as any).spotify_user_id
+          spotify_user_id: data.spotify_user_id
         };
-      } catch {
+      } catch (refreshError) {
+        console.error('Failed to refresh Spotify token:', refreshError);
         throw new Error('Failed to refresh Spotify token');
       }
     } else {
@@ -95,7 +99,7 @@ const getSpotifyTokensForUser = async (supabaseUser: any) => {
   return {
     access_token: data.access_token,
     refresh_token: data.refresh_token,
-    spotify_user_id: (data as any).spotify_user_id
+    spotify_user_id: data.spotify_user_id
   };
 };
 
@@ -163,7 +167,7 @@ router.get('/public/artist/:id/albums', async (req, res) => {
 });
 
 // Authentication routes
-router.get('/auth/login', async (req, res) => {
+router.get('/auth/login', async (_req, res) => {
   try {
     const state = jwt.sign({ timestamp: Date.now() }, process.env.JWT_SECRET!);
     const authUrl = await spotifyService.getAuthUrl(state);
@@ -203,6 +207,7 @@ router.post('/auth/callback', async (req, res) => {
         userId: user.id,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
+        expiresIn: tokens.expires_in,
         userData: user
       });
     } catch (spotifyError) {
@@ -216,9 +221,9 @@ router.post('/auth/callback', async (req, res) => {
 });
 
 // New endpoint to get tokens for primary Spotify auth users
-router.get('/tokens', getSupabaseUser, async (req: any, res) => {
+router.get('/tokens', getSupabaseUser, async (req: any, res: any) => {
   try {
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const user = await spotifyService.getCurrentUser(tokens.access_token);
     res.json({ 
       access_token: tokens.access_token,
@@ -226,14 +231,59 @@ router.get('/tokens', getSupabaseUser, async (req: any, res) => {
     });
   } catch (error) {
     console.error('Failed to get Spotify tokens:', error);
+    
+    if (error instanceof Error && error.message === 'SPOTIFY_PRIMARY_AUTH_DETECTED') {
+      return res.status(409).json({ 
+        error: 'SPOTIFY_PRIMARY_AUTH_DETECTED',
+        message: 'Primary Spotify authentication detected. Please link your Spotify account to enable full functionality.',
+        requiresLinking: true
+      });
+    }
+    
     res.status(500).json({ error: 'Failed to get Spotify tokens' });
   }
 });
 
-// User routes (require Supabase authentication)
-router.get('/me', getSupabaseUser, async (req: any, res) => {
+// New endpoint to link Spotify account for primary auth users
+router.post('/link', getSupabaseUser, async (req: any, res: any) => {
   try {
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const { accessToken, refreshToken, expiresIn, spotifyUserId } = req.body;
+    
+    if (!accessToken || !refreshToken || !expiresIn || !spotifyUserId) {
+      return res.status(400).json({ error: 'Missing required token data' });
+    }
+
+    // Calculate expiration time
+    const expiresAt = new Date(Date.now() + (expiresIn * 1000)).toISOString();
+
+    // Store tokens in database
+    const { error } = await supabase
+      .from('spotify_tokens')
+      .upsert({
+        user_id: req.user.id,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expires_at: expiresAt,
+        spotify_user_id: spotifyUserId,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Failed to store Spotify tokens:', error);
+      return res.status(500).json({ error: 'Failed to link Spotify account' });
+    }
+
+    res.json({ success: true, message: 'Spotify account linked successfully' });
+  } catch (error) {
+    console.error('Failed to link Spotify account:', error);
+    res.status(500).json({ error: 'Failed to link Spotify account' });
+  }
+});
+
+// User routes (require Supabase authentication)
+router.get('/me', getSupabaseUser, async (req: any, res: any) => {
+  try {
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const user = await spotifyService.getCurrentUser(tokens.access_token);
     res.json(user);
   } catch (error) {
@@ -243,20 +293,47 @@ router.get('/me', getSupabaseUser, async (req: any, res) => {
 });
 
 // Route to check if user has linked Spotify
-router.get('/link-status', getSupabaseUser, async (req: any, res) => {
+router.get('/link-status', getSupabaseUser, async (req: any, res: any) => {
   try {
-    await getSpotifyTokensForUser(req.user);
-    res.json({ linked: true });
-  } catch {
-    res.json({ linked: false });
+    await getSpotifyTokensForUser(req.user, req.accessToken);
+    res.json({ 
+      linked: true,
+      hasSpotifyAccess: true,
+      accessMethod: 'linked'
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'SPOTIFY_PRIMARY_AUTH_DETECTED') {
+      // User authenticated with Spotify as primary but hasn't linked for token access
+      const spotifyIdentity = req.user.identities?.find(
+        (identity: any) => identity.provider === 'spotify'
+      );
+      
+      res.json({ 
+        linked: false,
+        hasSpotifyAccess: false,
+        accessMethod: 'primary',
+        isPrimarySpotifyUser: true,
+        requiresLinking: true,
+        spotifyUserId: spotifyIdentity?.identity_data?.sub || null
+      });
+    } else {
+      // User hasn't linked Spotify and didn't authenticate with Spotify
+      res.json({ 
+        linked: false,
+        hasSpotifyAccess: false,
+        accessMethod: 'none',
+        isPrimarySpotifyUser: false,
+        requiresLinking: false
+      });
+    }
   }
 });
 
 // Search routes (require Supabase authentication and Spotify linking)
-router.get('/search', getSupabaseUser, async (req: any, res) => {
+router.get('/search', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { q, type } = req.query;
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     
     const results = await spotifyService.search(
       q as string, 
@@ -272,10 +349,10 @@ router.get('/search', getSupabaseUser, async (req: any, res) => {
 });
 
 // Content routes (require Supabase authentication and Spotify linking)
-router.get('/track/:id', getSupabaseUser, async (req: any, res) => {
+router.get('/track/:id', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const track = await spotifyService.getTrack(id, tokens.access_token);
     res.json(track);
   } catch (error) {
@@ -284,10 +361,10 @@ router.get('/track/:id', getSupabaseUser, async (req: any, res) => {
   }
 });
 
-router.get('/album/:id', getSupabaseUser, async (req: any, res) => {
+router.get('/album/:id', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const album = await spotifyService.getAlbum(id, tokens.access_token);
     res.json(album);
   } catch (error) {
@@ -296,10 +373,10 @@ router.get('/album/:id', getSupabaseUser, async (req: any, res) => {
   }
 });
 
-router.get('/artist/:id', getSupabaseUser, async (req: any, res) => {
+router.get('/artist/:id', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const artist = await spotifyService.getArtist(id, tokens.access_token);
     res.json(artist);
   } catch (error) {
@@ -308,10 +385,10 @@ router.get('/artist/:id', getSupabaseUser, async (req: any, res) => {
   }
 });
 
-router.get('/artist/:id/albums', getSupabaseUser, async (req: any, res) => {
+router.get('/artist/:id/albums', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const tokens = await getSpotifyTokensForUser(req.user);
+    const tokens = await getSpotifyTokensForUser(req.user, req.accessToken);
     const albums = await spotifyService.getArtistAlbums(id, tokens.access_token);
     res.json(albums);
   } catch (error) {

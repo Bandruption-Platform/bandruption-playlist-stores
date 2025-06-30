@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSpotifyAccess } from '../hooks/useSpotifyAccess';
 import { useSpotify } from '../hooks/useSpotify';
@@ -64,23 +64,34 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
   const [showAuthError, setShowAuthError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  // Use a ref to store the current modal promise handlers - component-specific, no global state
+  const authModalHandlersRef = useRef<{
+    resolve: (provider: 'google' | 'spotify' | 'facebook' | 'discord') => void;
+    reject: (error: Error) => void;
+  } | null>(null);
+
   const showAuthOptionsModal = (): Promise<'google' | 'spotify' | 'facebook' | 'discord'> => {
     return new Promise((resolve, reject) => {
+      // Store the promise handlers in the component-specific ref
+      authModalHandlersRef.current = { resolve, reject };
       setShowAuthModal(true);
-      
-      const handleSelect = (provider: 'google' | 'spotify' | 'facebook' | 'discord') => {
-        setShowAuthModal(false);
-        resolve(provider);
-      };
-      
-      const handleCancel = () => {
-        setShowAuthModal(false);
-        reject(new Error('Authentication cancelled'));
-      };
-      
-      // Store handlers for modal component
-      (window as unknown as { __authModalHandlers?: { handleSelect: typeof handleSelect; handleCancel: typeof handleCancel } }).__authModalHandlers = { handleSelect, handleCancel };
     });
+  };
+
+  const handleAuthSelect = (provider: 'google' | 'spotify' | 'facebook' | 'discord') => {
+    setShowAuthModal(false);
+    if (authModalHandlersRef.current) {
+      authModalHandlersRef.current.resolve(provider);
+      authModalHandlersRef.current = null; // Clean up
+    }
+  };
+
+  const handleAuthCancel = () => {
+    setShowAuthModal(false);
+    if (authModalHandlersRef.current) {
+      authModalHandlersRef.current.reject(new Error('Authentication cancelled'));
+      authModalHandlersRef.current = null; // Clean up
+    }
   };
 
   const handlePlay = async () => {
@@ -190,8 +201,8 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
       
       {showAuthModal && (
         <AuthOptionsModal
-          onSelect={(window as unknown as { __authModalHandlers?: { handleSelect: (provider: 'google' | 'spotify' | 'facebook' | 'discord') => void } }).__authModalHandlers?.handleSelect || (() => {})}
-          onCancel={(window as unknown as { __authModalHandlers?: { handleCancel: () => void } }).__authModalHandlers?.handleCancel || (() => {})}
+          onSelect={handleAuthSelect}
+          onCancel={handleAuthCancel}
         />
       )}
     </>

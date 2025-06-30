@@ -130,9 +130,14 @@ describe('useSpotifyAccess', () => {
       getSpotifyAccessMethod: vi.fn(() => 'linked'),
     });
 
-    mockLocalStorage.getItem
-      .mockReturnValueOnce('spotify-access-token') // spotify_access_token
-      .mockReturnValueOnce(JSON.stringify(mockUserData)); // spotify_user
+    // Mock the API response for linked authentication
+    (global.fetch as vi.Mock).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        access_token: 'spotify-access-token',
+        user_data: mockUserData,
+      }),
+    });
 
     const { result } = renderHook(() => useSpotifyAccess());
 
@@ -144,8 +149,11 @@ describe('useSpotifyAccess', () => {
       expect(result.current.isPremium).toBe(false);
     });
 
-    expect(mockLocalStorage.getItem).toHaveBeenCalledWith('spotify_access_token');
-    expect(mockLocalStorage.getItem).toHaveBeenCalledWith('spotify_user');
+    expect(fetch).toHaveBeenCalledWith('/api/spotify/tokens', {
+      headers: {
+        'Authorization': 'Bearer supabase-token',
+      },
+    });
   });
 
   it('should handle failed primary auth token fetch', async () => {
@@ -303,9 +311,14 @@ describe('useSpotifyAccess', () => {
       getSpotifyAccessMethod: vi.fn(() => 'linked'),
     });
 
-    mockLocalStorage.getItem
-      .mockReturnValueOnce('token')
-      .mockReturnValueOnce(JSON.stringify(premiumUser));
+    // Mock the API response with premium user data
+    (global.fetch as vi.Mock).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        access_token: 'spotify-token',
+        user_data: premiumUser,
+      }),
+    });
 
     const { result } = renderHook(() => useSpotifyAccess());
 
