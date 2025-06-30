@@ -41,6 +41,8 @@ jobs:
           NODELY_INDEXER_URL: ${{ secrets.NODELY_INDEXER_URL }}
           PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
           PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           echo "🔨 Building all packages (includes type-check and lint)..."
           npm run build
@@ -53,6 +55,8 @@ jobs:
           NODELY_INDEXER_URL: ${{ secrets.NODELY_INDEXER_URL }}
           PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
           PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           echo "🧪 Running tests..."
           npm run test
