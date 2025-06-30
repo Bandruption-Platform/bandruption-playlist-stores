@@ -482,11 +482,20 @@ export const mockPlaylists: Playlist[] = [
 export const mockNFTs: NFT[] = [
   {
     id: 'nft1',
+    asset_id: 123456789,
     name: 'Midnight Synth - Cyberpunk Edition',
     description: 'AI-generated cyberpunk interpretation of the iconic Midnight Synth album cover',
+    image_url: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=300',
+    metadata_url: 'https://gateway.pinata.cloud/ipfs/QmExampleHash1',
+    creator_address: 'ALGORAND_ADDRESS_1',
+    current_owner_address: 'ALGORAND_ADDRESS_1',
+    price: 500000, // 0.5 ALGO in microAlgos
+    for_sale: true,
+    created_at: '2024-01-20T00:00:00Z',
+    updated_at: '2024-01-20T00:00:00Z',
+    // Legacy fields for compatibility
     imageUrl: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=300',
     originalAlbumArt: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg?auto=compress&cs=tinysrgb&w=300',
-    price: 0.5,
     userId: 'user1',
     algorandId: 'algo1',
     createdAt: new Date('2024-01-20'),
@@ -494,11 +503,20 @@ export const mockNFTs: NFT[] = [
   },
   {
     id: 'nft2',
+    asset_id: 987654321,
     name: 'Urban Jazz - Abstract Vision',
     description: 'Abstract AI interpretation of urban jazz vibes',
+    image_url: 'https://images.pexels.com/photos/1631677/pexels-photo-1631677.jpeg?auto=compress&cs=tinysrgb&w=300',
+    metadata_url: 'https://gateway.pinata.cloud/ipfs/QmExampleHash2',
+    creator_address: 'ALGORAND_ADDRESS_1',
+    current_owner_address: 'ALGORAND_ADDRESS_1',
+    price: 300000, // 0.3 ALGO in microAlgos
+    for_sale: false,
+    created_at: '2024-01-18T00:00:00Z',
+    updated_at: '2024-01-18T00:00:00Z',
+    // Legacy fields for compatibility
     imageUrl: 'https://images.pexels.com/photos/1631677/pexels-photo-1631677.jpeg?auto=compress&cs=tinysrgb&w=300',
     originalAlbumArt: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300',
-    price: 0.3,
     userId: 'user1',
     algorandId: 'algo2',
     createdAt: new Date('2024-01-18'),

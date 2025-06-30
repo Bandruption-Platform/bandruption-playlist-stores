@@ -7,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import spotifyRoutes from './routes/spotify.js';
 import bandruptionRoutes from './routes/bandruption.js';
+import algorandRoutes from './routes/algorand.js';
 
 const app = express();
 
@@ -26,6 +27,9 @@ app.use('/api/spotify', spotifyRoutes);
 
 // Bandruption routes
 app.use('/api/bandruption', bandruptionRoutes);
+
+// Algorand routes
+app.use('/api/algorand', algorandRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

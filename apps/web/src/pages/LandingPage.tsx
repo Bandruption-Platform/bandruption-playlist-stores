@@ -44,11 +44,12 @@ export const LandingPage: React.FC = () => {
   ];
 
   const partners = [
-    { name: 'Spotify', color: 'text-green-400' },
-    { name: 'Algorand', color: 'text-blue-400' },
-    { name: 'Cloudflare', color: 'text-orange-400' },
-    { name: 'Supabase', color: 'text-emerald-400' },
-    { name: 'RevenueCat', color: 'text-purple-400' },
+    { name: 'Spotify', logo: '/images/Spotify_Full_Logo_RGB_Green.png' },
+    { name: 'Algorand', logo: '/images/algorand-white.svg' },
+    { name: 'Cloudflare', logo: '/images/Cloudflare_Logo.svg' },
+    { name: 'Supabase', logo: '/images/supabase-color.svg' },
+    { name: 'RevenueCat', logo: '/images/revenue-cat-color.svg' },
+    { name: 'Entri', logo: '/images/entri-white.svg' },
   ];
 
   return (
@@ -58,6 +59,13 @@ export const LandingPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 to-secondary-900/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
+            <div className="flex justify-center mb-8">
+              <img 
+                src="/images/bandruption-big-logo.png" 
+                alt="Bandruption Logo" 
+                className="w-32 h-32 object-contain animate-fade-in"
+              />
+            </div>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fade-in">
               Discover Music.
               <br />
@@ -157,9 +165,22 @@ export const LandingPage: React.FC = () => {
             {partners.map((partner, index) => (
               <div
                 key={index}
-                className={`text-2xl font-bold ${partner.color} transition-all duration-300 hover:scale-110 hover:opacity-100`}
+                className="transition-all duration-300 hover:scale-110 hover:opacity-100"
               >
-                {partner.name}
+                {partner.logo ? (
+                  <img
+                    src={partner.logo}
+                    alt={`${partner.name} Logo`}
+                    className="h-8 w-auto object-contain filter brightness-75 hover:brightness-100 transition-all duration-300"
+                  />
+                ) : (
+                  <span className={`text-2xl font-bold ${
+                    partner.name === 'Spotify' ? 'text-green-400' : 
+                    partner.name === 'Cloudflare' ? 'text-orange-400' : 'text-gray-400'
+                  }`}>
+                    {partner.name}
+                  </span>
+                )}
               </div>
             ))}
           </div>

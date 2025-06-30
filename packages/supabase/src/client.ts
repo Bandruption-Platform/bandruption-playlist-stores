@@ -24,7 +24,7 @@ const getEnvVar = (name: string): string => {
 const supabaseUrl = getEnvVar('SUPABASE_URL');
 const supabaseAnonKey = getEnvVar('SUPABASE_ANON_KEY');
 
-// Create a mock client for tests when environment variables are not available
+// Create Supabase client with proper error handling
 const createSupabaseClient = () => {
   const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
   
@@ -32,7 +32,16 @@ const createSupabaseClient = () => {
     if (isTest) {
       return createClient<Database>('https://mock.supabase.co', 'mock-anon-key');
     }
-    throw new Error('Missing Supabase environment variables');
+    
+    const isBrowser = typeof window !== 'undefined';
+    const prefix = isBrowser ? 'VITE_' : '';
+    const envVars = [`${prefix}SUPABASE_URL`, `${prefix}SUPABASE_ANON_KEY`];
+    
+    throw new Error(
+      `Missing Supabase environment variables. ` +
+      `Please ensure these are set in your .env file: ${envVars.join(', ')}. ` +
+      `Current values: URL=${supabaseUrl || 'undefined'}, KEY=${supabaseAnonKey ? '[SET]' : 'undefined'}`
+    );
   }
   
   return createClient<Database>(supabaseUrl, supabaseAnonKey);

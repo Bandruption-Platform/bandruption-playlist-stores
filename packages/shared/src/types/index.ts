@@ -92,15 +92,24 @@ export interface ChatMessage {
 
 export interface NFT {
   id: string;
+  asset_id: number;
   name: string;
-  description: string;
-  imageUrl: string;
-  originalAlbumArt: string;
-  price: number;
-  userId: string;
+  description?: string;
+  image_url: string;
+  metadata_url: string;
+  creator_address: string;
+  current_owner_address?: string;
+  price?: number;
+  for_sale: boolean;
+  created_at: string;
+  updated_at: string;
+  // Legacy fields for compatibility
+  imageUrl?: string;
+  originalAlbumArt?: string;
+  userId?: string;
   algorandId?: string;
-  createdAt: Date;
-  forSale: boolean;
+  createdAt?: Date;
+  forSale?: boolean;
 }
 
 export interface AIArtGeneration {
@@ -129,7 +138,7 @@ export interface MerchItem {
 }
 
 // API Response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   message?: string;
@@ -243,4 +252,82 @@ export interface BandruptionApiResponse {
 
 export interface BandruptionError {
   error: string;
+}
+
+// Algorand Integration Types
+export interface AlgorandWallet {
+  id: string;
+  user_id: string;
+  address: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NFTTransaction {
+  id: string;
+  nft_id: string;
+  transaction_id: string;
+  from_address?: string;
+  to_address: string;
+  transaction_type: 'mint' | 'buy' | 'transfer';
+  amount?: number;
+  block_number?: number;
+  created_at: string;
+}
+
+export interface MintNFTRequest {
+  name: string;
+  description: string;
+  metadata?: object;
+}
+
+export interface BuyNFTRequest {
+  price: number;
+}
+
+export interface TransferNFTRequest {
+  toAddress: string;
+}
+
+export interface ListNFTRequest {
+  price: number;
+}
+
+export interface WalletInfo {
+  address: string;
+  balance: number;
+  assets: AlgorandAsset[];
+}
+
+export interface AlgorandAsset {
+  'asset-id': number;
+  amount: number;
+  'is-frozen': boolean;
+}
+
+export interface WalletStatus {
+  hasWallet: boolean;
+  address?: string;
+}
+
+export interface MintNFTResponse {
+  assetId: number;
+  txId: string;
+  nft: NFT;
+}
+
+export interface TransferNFTResponse {
+  txId: string;
+  blockNumber: number;
+}
+
+export interface AlgorandNetworkStatus {
+  'last-round': number;
+  'last-version': string;
+  'next-version': string;
+  'next-version-round': number;
+  'next-version-supported': boolean;
+  'stopped-at-unsupported-round': boolean;
+  'time-since-last-round': number;
 } 

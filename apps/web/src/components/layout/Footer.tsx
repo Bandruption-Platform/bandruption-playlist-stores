@@ -1,5 +1,5 @@
 import React from 'react';
-import { Music, Github, Twitter, Instagram, Mail } from 'lucide-react';
+import { Github, Twitter, Instagram, Mail } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -8,11 +8,12 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <Music className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">Bandruption</span>
+            <div className="mb-4">
+              <img 
+                src="/images/bandruption-logo.png" 
+                alt="Bandruption" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
             <p className="text-gray-400 mb-4 max-w-md">
               Discover music through AI-powered conversations, create unique NFT art from album covers, and own your digital music collectibles on the blockchain.
@@ -60,11 +61,12 @@ export const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-dark-700">
           <h3 className="text-white font-semibold mb-6 text-center">Powered By</h3>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="text-green-400 font-semibold">Spotify</div>
-            <div className="text-blue-400 font-semibold">Algorand</div>
-            <div className="text-orange-400 font-semibold">Cloudflare</div>
-            <div className="text-emerald-400 font-semibold">Supabase</div>
-            <div className="text-purple-400 font-semibold">RevenueCat</div>
+            <span className="text-green-400 font-semibold">Spotify</span>
+            <img src="/images/algorand-white.svg" alt="Algorand" className="h-6 w-auto object-contain filter brightness-75" />
+            <span className="text-orange-400 font-semibold">Cloudflare</span>
+            <img src="/images/supabase-color.svg" alt="Supabase" className="h-6 w-auto object-contain filter brightness-75" />
+            <img src="/images/revenue-cat-color.svg" alt="RevenueCat" className="h-6 w-auto object-contain filter brightness-75" />
+            <img src="/images/entri-white.svg" alt="Entri" className="h-6 w-auto object-contain filter brightness-75" />
           </div>
         </div>
 
