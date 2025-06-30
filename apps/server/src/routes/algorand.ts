@@ -89,12 +89,25 @@ router.post('/nft/mint', getSupabaseUser, upload.single('image'), async (req: an
       return res.status(400).json({ error: 'NFT name is required' });
     }
 
+    // Parse metadata with specific error handling
+    let parsedMetadata;
+    if (metadata) {
+      try {
+        parsedMetadata = JSON.parse(metadata);
+      } catch (parseError) {
+        if (parseError instanceof SyntaxError) {
+          return res.status(400).json({ error: 'Invalid JSON format in metadata parameter' });
+        }
+        throw parseError; // Re-throw if it's not a JSON parsing error
+      }
+    }
+
     const result = await nftService.mintNFT({
       userId: req.user.id,
       name,
       description: description || '',
       imageFile,
-      metadata: metadata ? JSON.parse(metadata) : undefined
+      metadata: parsedMetadata
     });
 
     res.json(result);

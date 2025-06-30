@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+// Load environment variables BEFORE any other imports
+dotenv.config();
+
 import fetch from 'node-fetch';
 
 export interface BandruptionRequest {

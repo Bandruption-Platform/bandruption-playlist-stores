@@ -89,4 +89,82 @@ describe('Environment Variable Import Order', () => {
     expect(serviceContent).toContain('catch')
     expect(serviceContent).toContain('throw new Error')
   })
+
+  it('should have dotenv.config() before any imports in bandruptionService.ts', () => {
+    const servicePath = join(process.cwd(), 'src/services/bandruptionService.ts')
+    const serviceContent = readFileSync(servicePath, 'utf-8')
+    
+    const lines = serviceContent.split('\n')
+    let dotenvConfigLine = -1
+    let firstProcessEnvUsage = -1
+    let nodeEnvUsage = -1
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      
+      // Find dotenv.config() call
+      if (line.includes('dotenv.config()')) {
+        dotenvConfigLine = i
+      }
+      
+      // Find first usage of process.env
+      if (line.includes('process.env.BANDRUPTION_API_KEY') && firstProcessEnvUsage === -1) {
+        firstProcessEnvUsage = i
+      }
+      
+      // Find node-fetch import
+      if (line.includes("import fetch from 'node-fetch'")) {
+        nodeEnvUsage = i
+      }
+    }
+    
+    // dotenv.config() must be called before node-fetch import
+    expect(dotenvConfigLine).toBeGreaterThan(-1)
+    expect(nodeEnvUsage).toBeGreaterThan(-1)
+    expect(dotenvConfigLine).toBeLessThan(nodeEnvUsage)
+    
+    // And before any process.env usage
+    if (firstProcessEnvUsage > -1) {
+      expect(dotenvConfigLine).toBeLessThan(firstProcessEnvUsage)
+    }
+  })
+
+  it('should have dotenv.config() before any imports in algorandService.ts', () => {
+    const servicePath = join(process.cwd(), 'src/services/algorandService.ts')
+    const serviceContent = readFileSync(servicePath, 'utf-8')
+    
+    const lines = serviceContent.split('\n')
+    let dotenvConfigLine = -1
+    let firstProcessEnvUsage = -1
+    let algosdkImport = -1
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      
+      // Find dotenv.config() call
+      if (line.includes('dotenv.config()')) {
+        dotenvConfigLine = i
+      }
+      
+      // Find first usage of process.env
+      if (line.includes('process.env.NODELY_') && firstProcessEnvUsage === -1) {
+        firstProcessEnvUsage = i
+      }
+      
+      // Find algosdk import
+      if (line.includes("import algosdk from 'algosdk'")) {
+        algosdkImport = i
+      }
+    }
+    
+    // dotenv.config() must be called before algosdk import
+    expect(dotenvConfigLine).toBeGreaterThan(-1)
+    expect(algosdkImport).toBeGreaterThan(-1)
+    expect(dotenvConfigLine).toBeLessThan(algosdkImport)
+    
+    // And before any process.env usage
+    if (firstProcessEnvUsage > -1) {
+      expect(dotenvConfigLine).toBeLessThan(firstProcessEnvUsage)
+    }
+  })
 })

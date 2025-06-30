@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Music, Search, Menu, X, LogOut } from 'lucide-react';
+import { Search, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@shared/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAppStore } from '../../store/appStore';
@@ -39,11 +39,12 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-white hidden sm:block">Bandruption</span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/images/bandruption-logo.png" 
+              alt="Bandruption" 
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           {/* Navigation - Desktop */}
@@ -176,12 +177,14 @@ export const Header: React.FC = () => {
           href="https://bolt.new/"
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center justify-center w-12 h-12 bg-white hover:bg-gray-100 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+          className="group flex items-center justify-center w-12 h-12 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
           title="Built with Bolt.new"
         >
-          <svg className="w-6 h-6 text-gray-900" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13 3L4 14h6.5l-1.5 7 9-11h-6.5L13 3z"/>
-          </svg>
+          <img 
+            src="/images/bolt_white_circle.png" 
+            alt="Bolt.new" 
+            className="w-12 h-12 object-contain rounded-full"
+          />
         </a>
       </div>
     </header>

@@ -291,6 +291,20 @@ describe('Algorand Routes', () => {
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('NFT name is required');
     });
+
+    it('should return 400 for invalid JSON metadata', async () => {
+      const response = await request(app)
+        .post('/api/algorand/nft/mint')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({
+          name: 'Test NFT',
+          description: 'A test NFT',
+          metadata: '{invalid json'
+        });
+      
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Invalid JSON format in metadata parameter');
+    });
   });
 
   describe('POST /nft/:nftId/buy', () => {
