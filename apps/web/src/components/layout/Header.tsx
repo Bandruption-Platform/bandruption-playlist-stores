@@ -1,13 +1,32 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Music, Search, Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Music, Search, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@shared/ui';
+import { useAuth } from '../../contexts/AuthContext';
 import { useAppStore } from '../../store/appStore';
 
 export const Header: React.FC = () => {
   const location = useLocation();
-  const { user, isAuthenticated, toggleChat } = useAppStore();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { toggleChat } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showUserMenu, setShowUserMenu] = React.useState(false);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
+
+  // Close user menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showUserMenu]);
 
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/' },
@@ -62,19 +81,50 @@ export const Header: React.FC = () => {
             </Button>
 
             {/* Auth */}
-            {isAuthenticated && user ? (
-              <Link to={`/profile/${user.username}`} className="flex items-center space-x-2">
-                <img
-                  src={user.avatar_url || 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&fit=crop'}
-                  alt={user.username}
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="text-sm text-white hidden sm:block">{user.username}</span>
-              </Link>
+            {user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm text-white hidden sm:block">{user.email?.split('@')[0]}</span>
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
+                    <div className="p-2">
+                      <div className="px-3 py-2 border-b border-gray-700">
+                        <p className="text-sm text-white font-medium">{user.email}</p>
+                        <p className="text-xs text-gray-400">Signed in via {user.app_metadata?.provider || 'email'}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setShowUserMenu(false);
+                          navigate('/');
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-gray-700 rounded transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">Login</Button>
-                <Button variant="primary" size="sm" className="hidden sm:flex">Sign Up</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
+                  Login
+                </Button>
+                <Button variant="primary" size="sm" className="hidden sm:flex" onClick={() => navigate('/signup')}>
+                  Sign Up
+                </Button>
               </div>
             )}
 

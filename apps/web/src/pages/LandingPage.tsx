@@ -1,9 +1,15 @@
 import React from 'react';
 import { Play, Download, Palette, Coins, Users, Zap, Music, Smartphone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
+import { useAuth } from '../contexts/AuthContext';
+import { SpotifyConnectionFlow } from '../components/SpotifyConnectionFlow';
 
 export const LandingPage: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   const features = [
     {
       icon: Music,
@@ -66,16 +72,41 @@ export const LandingPage: React.FC = () => {
               blockchain-verified ownership, and artist-supporting royalties.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="text-lg px-8 py-4">
-                Get the Mobile App
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                Explore Web Player
-              </Button>
+              {user ? (
+                <Button size="lg" className="text-lg px-8 py-4" onClick={() => navigate('/search')}>
+                  Explore Web Player
+                </Button>
+              ) : (
+                <>
+                  <Button size="lg" className="text-lg px-8 py-4" onClick={() => navigate('/signup')}>
+                    Get Started Free
+                  </Button>
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-4" onClick={() => navigate('/login')}>
+                    Sign In
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Spotify Connection Section - Only show for authenticated users */}
+      {user && (
+        <section className="py-16 bg-dark-800">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Connect Your Spotify Account
+              </h2>
+              <p className="text-gray-300 text-lg">
+                Link your Spotify account to unlock premium features, playlists, and personalized music discovery.
+              </p>
+            </div>
+            <SpotifyConnectionFlow />
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-24 bg-dark-800/50">
