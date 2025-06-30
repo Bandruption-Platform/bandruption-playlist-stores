@@ -36,8 +36,7 @@ export const useSpotifyLinking = () => {
           .upsert({
             user_id: user.id,
             access_token: spotifyResult.accessToken,
-            refresh_token: spotifyResult.refreshToken || '', // Schema requires non-null; empty string used when unavailable
-            // Note: Server-side refresh logic should check for empty string and handle as missing refresh token
+            refresh_token: spotifyResult.refreshToken || '', // Use empty string when unavailable (schema requires non-null)
             expires_at: expiresAt.toISOString(),
             spotify_user_id: spotifyResult.userId,
             created_at: new Date().toISOString(),

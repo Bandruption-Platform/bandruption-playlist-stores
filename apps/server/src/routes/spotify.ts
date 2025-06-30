@@ -64,7 +64,9 @@ const getSpotifyTokensForUser = async (supabaseUser: User, _accessToken?: string
   
   if (expiresAt <= now) {
     // Token expired, attempt to refresh
-    if (data.refresh_token) {
+    // Check for valid refresh token (not null, undefined, or empty string)
+    // Note: Frontend may store empty strings when refresh tokens are unavailable due to DB schema constraints
+    if (data.refresh_token && data.refresh_token.trim() !== '') {
       try {
         const refreshedTokens = await spotifyService.refreshAccessToken(data.refresh_token);
         
@@ -92,7 +94,7 @@ const getSpotifyTokensForUser = async (supabaseUser: User, _accessToken?: string
         throw new Error('Failed to refresh Spotify token');
       }
     } else {
-      throw new Error('Spotify token expired and no refresh token available');
+      throw new Error('Spotify token expired and no valid refresh token available');
     }
   }
 
@@ -249,8 +251,13 @@ router.post('/link', getSupabaseUser, async (req: any, res: any) => {
   try {
     const { accessToken, refreshToken, expiresIn, spotifyUserId } = req.body;
     
-    if (!accessToken || !refreshToken || !expiresIn || !spotifyUserId) {
+    if (!accessToken || !expiresIn || !spotifyUserId) {
       return res.status(400).json({ error: 'Missing required token data' });
+    }
+
+    // Validate refresh token is not just an empty string
+    if (refreshToken && refreshToken.trim() === '') {
+      console.warn('Empty refresh token provided for linking, storing as empty string');
     }
 
     // Calculate expiration time

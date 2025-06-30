@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSpotifyAccess } from '../hooks/useSpotifyAccess';
 import { useSpotify } from '../hooks/useSpotify';
@@ -70,8 +70,26 @@ export const PlayButton: React.FC<PlayButtonProps> = ({ track, className = '' })
     reject: (error: Error) => void;
   } | null>(null);
 
+  // Cleanup function to properly handle pending promises
+  const cleanupAuthModalHandlers = () => {
+    if (authModalHandlersRef.current) {
+      authModalHandlersRef.current.reject(new Error('Authentication flow cancelled'));
+      authModalHandlersRef.current = null;
+    }
+  };
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      cleanupAuthModalHandlers();
+    };
+  }, []);
+
   const showAuthOptionsModal = (): Promise<'google' | 'spotify' | 'facebook' | 'discord'> => {
     return new Promise((resolve, reject) => {
+      // Clean up any existing handlers before setting new ones
+      cleanupAuthModalHandlers();
+      
       // Store the promise handlers in the component-specific ref
       authModalHandlersRef.current = { resolve, reject };
       setShowAuthModal(true);
