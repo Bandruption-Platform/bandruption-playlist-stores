@@ -8,13 +8,13 @@ const getEnvVar = (name: string): string => {
     return (import.meta as any).env[`VITE_${name}`] || '';
   }
   
-  // React Native (Expo)
-  if (typeof process !== 'undefined' && process.env) {
+  // React Native (Expo) - check for Expo-specific globals
+  if (typeof process !== 'undefined' && process.env && (typeof global !== 'undefined' && (global as any).__expo)) {
     return process.env[`EXPO_PUBLIC_${name}`] || process.env[name] || '';
   }
   
   // Node.js environment
-  if (typeof process !== 'undefined' && process.env) {
+  if (typeof process !== 'undefined' && process.env && typeof window === 'undefined') {
     return process.env[name] || '';
   }
   
@@ -26,14 +26,15 @@ const supabaseAnonKey = getEnvVar('SUPABASE_ANON_KEY');
 
 // Create a mock client for tests when environment variables are not available
 const createSupabaseClient = () => {
+  const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+  
   if (!supabaseUrl || !supabaseAnonKey) {
-    // Return a mock client for tests or when env vars are missing
-    const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
-    if (isTest || !supabaseUrl || !supabaseAnonKey) {
+    if (isTest) {
       return createClient<Database>('https://mock.supabase.co', 'mock-anon-key');
     }
     throw new Error('Missing Supabase environment variables');
   }
+  
   return createClient<Database>(supabaseUrl, supabaseAnonKey);
 };
 
