@@ -97,7 +97,7 @@ describe('Bandruption Routes', () => {
         .expect(200);
 
       expect(response.body).toEqual({ reply: mockResponse });
-      expect(bandruptionService.askAxel).toHaveBeenCalledWith('  What music should I listen to?  ');
+      expect(bandruptionService.askAxel).toHaveBeenCalledWith('What music should I listen to?');
     });
   });
 });

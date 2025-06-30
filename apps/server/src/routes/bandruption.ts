@@ -12,7 +12,7 @@ router.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const reply = await bandruptionService.askAxel(message);
+    const reply = await bandruptionService.askAxel(message.trim());
     
     res.json({ reply });
   } catch (error) {
