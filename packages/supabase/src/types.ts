@@ -106,6 +106,7 @@ export type Database = {
           expires_at: string
           id: string
           refresh_token: string
+          spotify_user_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -115,6 +116,7 @@ export type Database = {
           expires_at: string
           id?: string
           refresh_token: string
+          spotify_user_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -124,6 +126,7 @@ export type Database = {
           expires_at?: string
           id?: string
           refresh_token?: string
+          spotify_user_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
