@@ -43,6 +43,8 @@ jobs:
           PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           echo "🔨 Building all packages (includes type-check and lint)..."
           npm run build
@@ -57,6 +59,8 @@ jobs:
           PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           echo "🧪 Running tests..."
           npm run test
