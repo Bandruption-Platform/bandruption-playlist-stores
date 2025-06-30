@@ -1,4 +1,4 @@
-import { bandruptionService } from '../bandruptionService';
+import { bandruptionService, BandruptionService } from '../bandruptionService';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -15,7 +15,7 @@ describe('BandruptionService (Mobile)', () => {
   });
 
   describe('chatWithAxel', () => {
-    it('should send message to API and return response', async () => {
+    it('should send message to API and return response using default URL', async () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Great music recommendations for mobile!' }),
@@ -24,6 +24,7 @@ describe('BandruptionService (Mobile)', () => {
 
       const result = await bandruptionService.chatWithAxel('Recommend electronic music');
 
+      // The singleton service uses the default URL since env var wasn't set at module load time
       expect(global.fetch).toHaveBeenCalledWith(
         'http://localhost:3001/api/bandruption/chat',
         {
@@ -37,9 +38,27 @@ describe('BandruptionService (Mobile)', () => {
       expect(result).toBe('Great music recommendations for mobile!');
     });
 
+    it('should use custom base URL when env variable is set', async () => {
+      // Create a new service instance after setting the env var
+      const service = new BandruptionService();
+      
+      const mockResponse = {
+        ok: true,
+        json: jest.fn().mockResolvedValue({ reply: 'Response' }),
+      };
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+
+      await service.chatWithAxel('Test message');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://test-mobile-api.com/api/bandruption/chat',
+        expect.any(Object)
+      );
+    });
+
     it('should use default base URL when env variable is not set', async () => {
       delete process.env.EXPO_PUBLIC_API_BASE_URL;
-      const service = new (bandruptionService.constructor as typeof bandruptionService.constructor)();
+      const service = new BandruptionService();
       
       const mockResponse = {
         ok: true,
