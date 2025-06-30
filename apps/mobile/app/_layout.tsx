@@ -25,7 +25,7 @@ export default function RootLayout() {
       width: 56,
       height: 56,
       borderRadius: 28,
-      backgroundColor: '#10B981',
+      backgroundColor: '#70c3ed',
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: '#000',
@@ -60,7 +60,7 @@ export default function RootLayout() {
           style={styles.aiChatButton}
           onPress={() => setShowAIChat(true)}
         >
-          <MessageCircle size={24} color="#FFFFFF" />
+          <MessageCircle size={24} color="#000000" />
         </TouchableOpacity>
       </View>
 

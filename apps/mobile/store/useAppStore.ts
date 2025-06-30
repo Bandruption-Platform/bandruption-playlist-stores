@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { AppState, Album, AIArtGeneration, NFT, ChatMessage, Track, User } from '@shared/types';
-import { mockAlbums, mockUser, mockNFTs, mockDrafts } from '@shared/types';
+import { AppState, Album, AIArtGeneration, NFT, ChatMessage, Track, User, Playlist } from '../types';
+import { mockAlbums, mockUser, mockNFTs, mockDrafts, mockPlaylists } from '@/data/mockData';
 
 interface AppStore extends AppState {
   // Actions
@@ -13,12 +13,15 @@ interface AppStore extends AppState {
   addChatMessage: (message: ChatMessage) => void;
   setCurrentlyPlaying: (track: Track | null) => void;
   addNFTToGallery: (nft: NFT) => void;
+  addPlaylist: (playlist: Playlist) => void;
+  removePlaylist: (playlistId: string) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
   // Initial state
   user: mockUser,
   library: mockAlbums,
+  playlists: mockPlaylists,
   drafts: mockDrafts,
   nftGallery: mockNFTs,
   chatHistory: [],
@@ -63,5 +66,15 @@ export const useAppStore = create<AppStore>((set, get) => ({
   addNFTToGallery: (nft) =>
     set((state) => ({ 
       nftGallery: [...state.nftGallery, nft] 
+    })),
+
+  addPlaylist: (playlist) =>
+    set((state) => ({
+      playlists: [...state.playlists, playlist]
+    })),
+
+  removePlaylist: (playlistId) =>
+    set((state) => ({
+      playlists: state.playlists.filter(playlist => playlist.id !== playlistId)
     })),
 }));

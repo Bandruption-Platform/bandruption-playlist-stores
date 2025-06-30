@@ -27,11 +27,11 @@ export default function HomeScreen() {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
+        <Search size={20} color="#A78BFA" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search artists, albums, genres..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor="#A78BFA"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -42,16 +42,16 @@ export default function HomeScreen() {
         style={styles.aiChatButton}
         onPress={() => setShowAIChat(true)}
       >
-        <Sparkles size={20} color="#10B981" />
-        <Text style={styles.aiChatText}>Want something new?</Text>
-        <MessageCircle size={16} color="#10B981" />
+        <Sparkles size={20} color="#CDFF6A" />
+        <Text style={styles.aiChatText}>Want to hear something new?</Text>
+        <MessageCircle size={16} color="#000000" />
       </TouchableOpacity>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Featured Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <TrendingUp size={20} color="#10B981" />
+            <TrendingUp size={20} color="#70C3ED" />
             <Text style={styles.sectionTitle}>Trending Now</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
@@ -69,7 +69,7 @@ export default function HomeScreen() {
         {/* Recently Played */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Clock size={20} color="#10B981" />
+            <Clock size={20} color="#70C3ED" />
             <Text style={styles.sectionTitle}>Recently Played</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
@@ -86,7 +86,10 @@ export default function HomeScreen() {
 
         {/* Feed */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Community Feed</Text>
+          <View style={styles.sectionHeader}>
+            <Clock size={20} color="#70C3ED" />
+            <Text style={styles.sectionTitle}>Community Feed</Text>
+          </View>
           <FeedCard
             type="nft_created"
             user="synthmaster"
@@ -116,7 +119,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     paddingHorizontal: 20,
@@ -126,20 +129,22 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     marginHorizontal: 20,
     marginBottom: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
     paddingHorizontal: 16,
     height: 48,
   },
@@ -148,13 +153,13 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     fontSize: 16,
   },
   aiChatButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#064E3B',
+    backgroundColor: '#9BC53D',
     marginHorizontal: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -163,7 +168,7 @@ const styles = StyleSheet.create({
   },
   aiChatText: {
     flex: 1,
-    color: '#10B981',
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginLeft: 8,
   },
   horizontalScroll: {

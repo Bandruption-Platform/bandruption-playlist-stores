@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Settings, CreditCard as Edit, Wallet, Crown, Music, Palette, Users, ChartBar as BarChart3 } from 'lucide-react-native';
+import { Settings, Edit, Wallet, Crown, Music, Palette, Users, ChartBar as BarChart3 } from 'lucide-react-native';
 import { useAppStore } from '@/store/useAppStore';
 import { NFTGallery } from '@/components/NFTGallery';
 
@@ -22,61 +22,49 @@ export default function ProfileScreen() {
             <View style={styles.profileInfo}>
               <Text style={styles.username}>{user?.username}</Text>
               <Text style={styles.email}>{user?.email}</Text>
-              {user?.spotifyConnected && (
-                <View style={styles.spotifyBadge}>
-                  <Music size={12} color="#1DB954" />
-                  <Text style={styles.spotifyText}>Spotify Connected</Text>
-                </View>
-              )}
+              <View style={styles.badgeContainer}>
+                {user?.spotifyConnected && (
+                  <View style={styles.spotifyBadge}>
+                    <Music size={12} color="#1DB954" />
+                    <Text style={styles.spotifyText}>Spotify Connected</Text>
+                  </View>
+                )}
+                <TouchableOpacity style={styles.walletBadge}>
+                  <Wallet size={12} color="#70C3ED" />
+                  <Text style={styles.walletText}>Wallet</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             <TouchableOpacity style={styles.settingsButton}>
-              <Settings size={24} color="#9CA3AF" />
+              <Settings size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
 
           {user?.bio && (
-            <Text style={styles.bio}>{user.bio}</Text>
+            <View style={styles.bioSection}>
+              <Text style={styles.bio}>{user.bio}</Text>
+              <TouchableOpacity style={styles.editProfileButton}>
+                <Edit size={14} color="#CDFF6A" />
+                <Text style={styles.editProfileText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
           )}
-        </View>
-
-        {/* Stats Cards */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Music size={20} color="#10B981" />
-            <Text style={styles.statNumber}>{library.length}</Text>
-            <Text style={styles.statLabel}>Albums</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Palette size={20} color="#8B5CF6" />
-            <Text style={styles.statNumber}>{nftGallery.length}</Text>
-            <Text style={styles.statLabel}>NFTs</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Crown size={20} color="#F59E0B" />
-            <Text style={styles.statNumber}>12</Text>
-            <Text style={styles.statLabel}>Merch</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Users size={20} color="#EF4444" />
-            <Text style={styles.statNumber}>847</Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionContainer}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Edit size={20} color="#10B981" />
-            <Text style={styles.actionText}>Edit Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Wallet size={20} color="#10B981" />
-            <Text style={styles.actionText}>Wallet</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Tabs */}
         <View style={styles.tabContainer}>
+          
+          {/* Playlists Tab */}
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'nfts' && styles.activeTab]}
+            onPress={() => setActiveTab('nfts')}
+          >
+            <Text style={[styles.tabText, activeTab === 'nfts' && styles.activeTabText]}>
+              Playlists
+            </Text>
+          </TouchableOpacity>
+          
+          {/* NFT Gallery Tab */}
           <TouchableOpacity
             style={[styles.tab, activeTab === 'nfts' && styles.activeTab]}
             onPress={() => setActiveTab('nfts')}
@@ -85,6 +73,8 @@ export default function ProfileScreen() {
               NFT Gallery
             </Text>
           </TouchableOpacity>
+
+          {/* Analytics Tab */}
           <TouchableOpacity
             style={[styles.tab, activeTab === 'stats' && styles.activeTab]}
             onPress={() => setActiveTab('stats')}
@@ -93,16 +83,50 @@ export default function ProfileScreen() {
               Analytics
             </Text>
           </TouchableOpacity>
+
         </View>
 
         {/* Tab Content */}
         {activeTab === 'nfts' ? (
           <NFTGallery nfts={nftGallery} />
         ) : (
+
+          // Analytics Tab
           <View style={styles.analyticsContainer}>
+
+            {/* Stats Cards */}
             <View style={styles.analyticsCard}>
               <View style={styles.analyticsHeader}>
-                <BarChart3 size={20} color="#10B981" />
+                <BarChart3 size={20} color="#70C3ED" />
+                <Text style={styles.analyticsTitle}>Statistics</Text>
+              </View>
+              <View style={styles.statsContainer}>
+                <View style={styles.statCard}>
+                  <Music size={20} color="#CDFF6A" />
+                  <Text style={styles.statNumber}>{library.length}</Text>
+                  <Text style={styles.statLabel}>Albums</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Palette size={20} color="#A78BFA" />
+                  <Text style={styles.statNumber}>{nftGallery.length}</Text>
+                  <Text style={styles.statLabel}>NFTs</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Crown size={20} color="#CDFF6A" />
+                  <Text style={styles.statNumber}>12</Text>
+                  <Text style={styles.statLabel}>Merch</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Users size={20} color="#70C3ED" />
+                  <Text style={styles.statNumber}>847</Text>
+                  <Text style={styles.statLabel}>Followers</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.analyticsCard}>
+              <View style={styles.analyticsHeader}>
+                <BarChart3 size={20} color="#70C3ED" />
                 <Text style={styles.analyticsTitle}>This Month</Text>
               </View>
               <View style={styles.analyticsRow}>
@@ -120,7 +144,10 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.analyticsCard}>
-              <Text style={styles.analyticsTitle}>Top Genres</Text>
+              <View style={styles.analyticsHeader}>
+                <BarChart3 size={20} color="#70C3ED" />
+                <Text style={styles.analyticsTitle}>Top Genres</Text>
+              </View>
               {user?.favoriteGenres?.map((genre, index) => (
                 <View key={genre} style={styles.genreRow}>
                   <Text style={styles.genreText}>{genre}</Text>
@@ -135,6 +162,7 @@ export default function ProfileScreen() {
                 </View>
               ))}
             </View>
+            
           </View>
         )}
       </ScrollView>
@@ -145,7 +173,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     paddingHorizontal: 20,
@@ -174,17 +202,19 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginBottom: 8,
   },
   spotifyBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#064E3B',
+    backgroundColor: '#065F46',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#1DB954',
   },
   spotifyText: {
     fontSize: 12,
@@ -192,26 +222,70 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontWeight: '600',
   },
+  badgeContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  walletBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2D1B69',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#70C3ED',
+  },
+  walletText: {
+    fontSize: 12,
+    color: '#70C3ED',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
   settingsButton: {
     padding: 8,
   },
+  bioSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
   bio: {
     fontSize: 16,
-    color: '#D1D5DB',
+    color: '#E0E7FF',
     lineHeight: 22,
+    flex: 1,
+    marginRight: 12,
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CDFF6A',
+  },
+  editProfileText: {
+    fontSize: 12,
+    color: '#CDFF6A',
+    fontWeight: '500',
+    marginLeft: 4,
   },
   statsContainer: {
     flexDirection: 'row',
     paddingHorizontal: 20,
-    marginBottom: 24,
+    marginBottom: 5,
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   statNumber: {
     fontSize: 24,
@@ -222,7 +296,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     fontWeight: '600',
   },
   actionContainer: {
@@ -235,13 +309,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     paddingVertical: 12,
     borderRadius: 12,
     marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   actionText: {
-    color: '#10B981',
+    color: '#CDFF6A',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -259,25 +335,27 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   activeTab: {
-    borderBottomColor: '#10B981',
+    borderBottomColor: '#70C3ED',
   },
   tabText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#A78BFA',
   },
   activeTabText: {
-    color: '#10B981',
+    color: '#70C3ED',
   },
   analyticsContainer: {
     paddingHorizontal: 20,
     paddingBottom: 32,
   },
   analyticsCard: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   analyticsHeader: {
     flexDirection: 'row',
@@ -297,7 +375,7 @@ const styles = StyleSheet.create({
   },
   analyticsLabel: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
   },
   analyticsValue: {
     fontSize: 16,
@@ -317,13 +395,13 @@ const styles = StyleSheet.create({
   genreBar: {
     flex: 1,
     height: 8,
-    backgroundColor: '#374151',
+    backgroundColor: '#4C1D95',
     borderRadius: 4,
     marginLeft: 12,
   },
   genreBarFill: {
     height: '100%',
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
     borderRadius: 4,
   },
 });

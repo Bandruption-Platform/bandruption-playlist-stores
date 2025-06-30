@@ -43,10 +43,10 @@ export function AlbumListItem({ album, onPress }: AlbumListItemProps) {
 
       <View style={styles.actions}>
         <TouchableOpacity style={styles.actionButton}>
-          <Play size={18} color="#10B981" />
+          <Play size={18} color="#CDFF6A" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
-          <MoreVertical size={18} color="#9CA3AF" />
+          <MoreVertical size={18} color="#A78BFA" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   image: {
     width: 60,
@@ -73,12 +73,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginBottom: 4,
   },
   artist: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginBottom: 4,
   },
   metadata: {
@@ -87,18 +87,18 @@ const styles = StyleSheet.create({
   },
   metadataText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#A78BFA',
   },
   dot: {
     width: 2,
     height: 2,
     borderRadius: 1,
-    backgroundColor: '#6B7280',
+    backgroundColor: '#A78BFA',
     marginHorizontal: 6,
   },
   genre: {
     fontSize: 12,
-    color: '#10B981',
+    color: '#CDFF6A',
     fontWeight: '500',
   },
   actions: {

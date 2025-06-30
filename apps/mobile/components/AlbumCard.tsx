@@ -27,7 +27,7 @@ export function AlbumCard({ album, style, showArtist = false, onPress }: AlbumCa
         <Image source={{ uri: album.imageUrl }} style={styles.image} />
         <View style={styles.overlay}>
           <TouchableOpacity style={styles.playButton}>
-            <Play size={20} color="#FFFFFF" fill="#FFFFFF" />
+            <Play size={20} color="#000000" fill="#000000" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.moreButton}>
             <MoreVertical size={16} color="#FFFFFF" />
@@ -47,8 +47,10 @@ export function AlbumCard({ album, style, showArtist = false, onPress }: AlbumCa
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
     overflow: 'hidden',
   },
   imageContainer: {
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(16, 185, 129, 0.9)',
+    backgroundColor: 'rgba(205, 255, 106, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -94,17 +96,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginBottom: 4,
   },
   artist: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginBottom: 4,
   },
   genre: {
     fontSize: 12,
-    color: '#10B981',
+    color: '#CDFF6A',
     fontWeight: '500',
   },
 });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
 import { X, Sparkles, Wand as Wand2 } from 'lucide-react-native';
-import { Album, ArtStyle, AIArtGeneration } from '@shared/types';
+import { Album, ArtStyle, AIArtGeneration } from '../types';
 import { useAppStore } from '@/store/useAppStore';
 
 interface NFTGenerationModalProps {
@@ -66,11 +66,11 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Sparkles size={24} color="#10B981" />
+            <Sparkles size={24} color="#CDFF6A" />
             <Text style={styles.title}>Generate NFT</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <X size={24} color="#9CA3AF" />
+            <X size={24} color="#A78BFA" />
           </TouchableOpacity>
         </View>
 
@@ -127,7 +127,7 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
             <TextInput
               style={styles.promptInput}
               placeholder="Describe your vision or leave blank for default..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#A78BFA"
               value={customPrompt}
               onChangeText={setCustomPrompt}
               multiline
@@ -156,12 +156,12 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
           >
             {isGenerating ? (
               <>
-                <Wand2 size={20} color="#FFFFFF" />
+                <Wand2 size={20} color="#000000" />
                 <Text style={styles.generateButtonText}>Generating...</Text>
               </>
             ) : (
               <>
-                <Sparkles size={20} color="#FFFFFF" />
+                <Sparkles size={20} color="#000000" />
                 <Text style={styles.generateButtonText}>Generate NFT</Text>
               </>
             )}
@@ -175,17 +175,17 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
+    borderBottomColor: '#4C1D95',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -222,12 +222,14 @@ const styles = StyleSheet.create({
     marginRight: 12,
     padding: 12,
     borderRadius: 12,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   selectedAlbum: {
-    backgroundColor: '#064E3B',
+    backgroundColor: '#9BC53D',
     borderWidth: 2,
-    borderColor: '#10B981',
+    borderColor: '#CDFF6A',
   },
   albumImage: {
     width: 96,
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
   },
   albumArtist: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
   },
   styleGrid: {
     flexDirection: 'row',
@@ -253,14 +255,16 @@ const styles = StyleSheet.create({
   styleCard: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     padding: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   selectedStyle: {
-    backgroundColor: '#064E3B',
+    backgroundColor: '#4A9BC7',
     borderWidth: 2,
-    borderColor: '#10B981',
+    borderColor: '#70C3ED',
   },
   styleLabel: {
     fontSize: 16,
@@ -269,29 +273,33 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   selectedStyleText: {
-    color: '#10B981',
+    color: '#70C3ED',
   },
   styleDescription: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     lineHeight: 16,
   },
   promptInput: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     color: '#FFFFFF',
     minHeight: 80,
     textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   consentNotice: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
     borderLeftColor: '#F59E0B',
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   consentTitle: {
     fontSize: 16,
@@ -301,30 +309,30 @@ const styles = StyleSheet.create({
   },
   consentText: {
     fontSize: 14,
-    color: '#D1D5DB',
+    color: '#E0E7FF',
     lineHeight: 20,
   },
   footer: {
     paddingHorizontal: 20,
     paddingVertical: 20,
     borderTopWidth: 1,
-    borderTopColor: '#1A1A1A',
+    borderTopColor: '#4C1D95',
   },
   generateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
     paddingVertical: 16,
     borderRadius: 12,
   },
   generateButtonDisabled: {
-    backgroundColor: '#374151',
+    backgroundColor: '#4C1D95',
   },
   generateButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#000000',
     marginLeft: 8,
   },
 });

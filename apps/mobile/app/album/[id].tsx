@@ -74,7 +74,7 @@ export default function AlbumDetailsScreen() {
             
             {/* Play Button Overlay */}
             <TouchableOpacity style={styles.playButtonOverlay}>
-              <Play size={32} color="#FFFFFF" fill="#FFFFFF" />
+              <Play size={32} color="#000000" fill="#000000" />
             </TouchableOpacity>
           </View>
 
@@ -89,7 +89,7 @@ export default function AlbumDetailsScreen() {
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.primaryButton}>
-              <Play size={20} color="#FFFFFF" fill="#FFFFFF" />
+              <Play size={20} color="#000000" fill="#000000" />
               <Text style={styles.primaryButtonText}>Play</Text>
             </TouchableOpacity>
             
@@ -97,11 +97,11 @@ export default function AlbumDetailsScreen() {
               style={[styles.secondaryButton, isLiked && styles.likedButton]}
               onPress={() => setIsLiked(!isLiked)}
             >
-              <Heart size={20} color={isLiked ? "#EF4444" : "#9CA3AF"} fill={isLiked ? "#EF4444" : "none"} />
+              <Heart size={20} color={isLiked ? "#EF4444" : "#A78BFA"} fill={isLiked ? "#EF4444" : "none"} />
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.secondaryButton}>
-              <Plus size={20} color="#9CA3AF" />
+              <Plus size={20} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -115,7 +115,7 @@ export default function AlbumDetailsScreen() {
             onPress={() => router.push('/ai-art-generation')}
           >
             <View style={styles.creativeCardIcon}>
-              <Palette size={24} color="#8B5CF6" />
+              <Palette size={24} color="#A78BFA" />
             </View>
             <View style={styles.creativeCardContent}>
               <Text style={styles.creativeCardTitle}>Generate AI Artwork</Text>
@@ -133,7 +133,7 @@ export default function AlbumDetailsScreen() {
             onPress={() => router.push('/merchandise')}
           >
             <View style={styles.creativeCardIcon}>
-              <ShoppingBag size={24} color="#10B981" />
+              <ShoppingBag size={24} color="#A78BFA" />
             </View>
             <View style={styles.creativeCardContent}>
               <Text style={styles.creativeCardTitle}>View Merchandise</Text>
@@ -171,7 +171,7 @@ export default function AlbumDetailsScreen() {
               </View>
               
               <TouchableOpacity style={styles.trackAction}>
-                <Play size={16} color="#9CA3AF" />
+                <Play size={16} color="#A78BFA" />
               </TouchableOpacity>
             </TouchableOpacity>
           ))}
@@ -218,7 +218,7 @@ export default function AlbumDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     flexDirection: 'row',
@@ -231,9 +231,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(45, 27, 105, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   headerActions: {
     flexDirection: 'row',
@@ -263,7 +265,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -274,6 +276,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.30,
     shadowRadius: 4.65,
     elevation: 8,
+    borderWidth: 1,
+    borderColor: '#9BC53D',
   },
   albumInfo: {
     alignItems: 'center',
@@ -288,13 +292,13 @@ const styles = StyleSheet.create({
   },
   artistName: {
     fontSize: 20,
-    color: '#10B981',
+    color: '#A78BFA',
     fontWeight: '600',
     marginBottom: 8,
   },
   albumMeta: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#8B5CF6',
     textAlign: 'center',
   },
   actionButtons: {
@@ -305,14 +309,16 @@ const styles = StyleSheet.create({
   primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
     gap: 8,
+    borderWidth: 1,
+    borderColor: '#9BC53D',
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -320,12 +326,15 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   likedButton: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#F87171',
+    borderColor: '#EF4444',
   },
   creativeSection: {
     paddingHorizontal: 20,
@@ -340,16 +349,18 @@ const styles = StyleSheet.create({
   creativeCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   creativeCardIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#4C1D95',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -365,7 +376,7 @@ const styles = StyleSheet.create({
   },
   creativeCardDescription: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#A78BFA',
     lineHeight: 20,
   },
   creativeCardArrow: {
@@ -373,7 +384,7 @@ const styles = StyleSheet.create({
   },
   arrowText: {
     fontSize: 18,
-    color: '#10B981',
+    color: '#CDFF6A',
     fontWeight: '600',
   },
   trackSection: {
@@ -385,7 +396,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
+    borderBottomColor: '#4C1D95',
   },
   trackNumber: {
     width: 32,
@@ -394,7 +405,7 @@ const styles = StyleSheet.create({
   },
   trackNumberText: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#A78BFA',
     fontWeight: '500',
   },
   trackInfo: {
@@ -408,22 +419,24 @@ const styles = StyleSheet.create({
   },
   trackLyrics: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#8B5CF6',
   },
   trackDuration: {
     marginRight: 16,
   },
   trackDurationText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#A78BFA',
   },
   trackAction: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   detailsSection: {
     paddingHorizontal: 20,
@@ -435,11 +448,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
+    borderBottomColor: '#4C1D95',
   },
   detailLabel: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#A78BFA',
   },
   detailValue: {
     fontSize: 16,
@@ -461,13 +474,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#70c3ed',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#9BC53D',
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
   },

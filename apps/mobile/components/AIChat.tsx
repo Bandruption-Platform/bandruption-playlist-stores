@@ -54,11 +54,11 @@ export function AIChat({ visible, onClose }: AIChatProps) {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Sparkles size={24} color="#10B981" />
+            <Sparkles size={24} color="#CDFF6A" />
             <Text style={styles.title}>Music Discovery AI</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <X size={24} color="#9CA3AF" />
+            <X size={24} color="#A78BFA" />
           </TouchableOpacity>
         </View>
 
@@ -66,7 +66,7 @@ export function AIChat({ visible, onClose }: AIChatProps) {
         <ScrollView style={styles.messagesContainer} showsVerticalScrollIndicator={false}>
           {chatHistory.length === 0 && (
             <View style={styles.welcomeContainer}>
-              <Sparkles size={48} color="#10B981" />
+              <Sparkles size={48} color="#CDFF6A" />
               <Text style={styles.welcomeTitle}>Hey there! 👋</Text>
               <Text style={styles.welcomeText}>
                 I'm your personal music discovery AI. Tell me what you're in the mood for, and I'll recommend the perfect albums!
@@ -122,7 +122,7 @@ export function AIChat({ visible, onClose }: AIChatProps) {
           <TextInput
             style={styles.textInput}
             placeholder="What kind of music are you looking for?"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#A78BFA"
             value={message}
             onChangeText={setMessage}
             multiline
@@ -132,7 +132,7 @@ export function AIChat({ visible, onClose }: AIChatProps) {
             onPress={handleSendMessage}
             disabled={!message.trim()}
           >
-            <Send size={20} color={message.trim() ? "#FFFFFF" : "#6B7280"} />
+            <Send size={20} color={message.trim() ? "#000000" : "#A78BFA"} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -143,17 +143,17 @@ export function AIChat({ visible, onClose }: AIChatProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
+    borderBottomColor: '#4C1D95',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginLeft: 12,
   },
   closeButton: {
@@ -179,13 +179,13 @@ const styles = StyleSheet.create({
   welcomeTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginTop: 16,
     marginBottom: 8,
   },
   welcomeText: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 24,
@@ -194,16 +194,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   suggestionButton: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#10B981',
+    borderColor: '#70c3ed',
   },
   suggestionText: {
     fontSize: 14,
-    color: '#10B981',
+    color: '#70c3ed',
     fontWeight: '500',
   },
   messageWrapper: {
@@ -217,21 +217,23 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#10B981',
+    backgroundColor: '#70C3ED',
   },
   aiMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   messageText: {
     fontSize: 16,
     lineHeight: 20,
   },
   userMessageText: {
-    color: '#FFFFFF',
+    color: '#000000',
   },
   aiMessageText: {
-    color: '#D1D5DB',
+    color: '#E0E7FF',
   },
   recommendations: {
     marginTop: 12,
@@ -247,16 +249,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 20,
     borderTopWidth: 1,
-    borderTopColor: '#1A1A1A',
+    borderTopColor: '#4C1D95',
   },
   textInput: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     maxHeight: 100,
     marginRight: 12,
   },
@@ -264,11 +268,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#10B981',
+    backgroundColor: '#70c3ed',
     justifyContent: 'center',
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: '#374151',
+    backgroundColor: '#4C1D95',
   },
 });

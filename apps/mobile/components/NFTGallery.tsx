@@ -28,7 +28,7 @@ export function NFTGallery({ nfts }: NFTGalleryProps) {
         
         <View style={styles.nftFooter}>
           <View style={styles.priceContainer}>
-            <DollarSign size={14} color="#10B981" />
+            <DollarSign size={14} color="#CDFF6A" />
             <Text style={styles.price}>{item.price} ALGO</Text>
           </View>
           {item.forSale && (
@@ -44,7 +44,7 @@ export function NFTGallery({ nfts }: NFTGalleryProps) {
   if (nfts.length === 0) {
     return (
       <View style={styles.emptyState}>
-        <Palette size={48} color="#6B7280" />
+        <Palette size={48} color="#A78BFA" />
         <Text style={styles.emptyStateTitle}>No NFTs yet</Text>
         <Text style={styles.emptyStateText}>
           Generate your first NFT from your music collection
@@ -72,8 +72,10 @@ const styles = StyleSheet.create({
   },
   nftCard: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
     overflow: 'hidden',
     margin: 8,
   },
@@ -106,12 +108,12 @@ const styles = StyleSheet.create({
   nftTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginBottom: 4,
   },
   nftDescription: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     lineHeight: 16,
     marginBottom: 12,
   },
@@ -127,11 +129,11 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#CDFF6A',
     marginLeft: 4,
   },
   forSaleBadge: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#CDFF6A',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
   forSaleText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#000000',
   },
   emptyState: {
     alignItems: 'center',
@@ -149,13 +151,13 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#A78BFA',
     textAlign: 'center',
     lineHeight: 22,
   },
