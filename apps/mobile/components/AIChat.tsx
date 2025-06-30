@@ -4,6 +4,7 @@ import { X, Send, Sparkles } from 'lucide-react-native';
 import { useAppStore } from '@/store/useAppStore';
 import { ChatMessage } from '@shared/types';
 import { AlbumCard } from './AlbumCard';
+import { bandruptionService } from '../services/bandruptionService';
 
 interface AIChatProps {
   visible: boolean;
@@ -11,13 +12,12 @@ interface AIChatProps {
 }
 
 export function AIChat({ visible, onClose }: AIChatProps) {
-  const { chatHistory, addChatMessage, library } = useAppStore();
+  const { chatHistory, addChatMessage } = useAppStore();
   const [message, setMessage] = useState('');
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!message.trim()) return;
 
-    // Add user message
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       content: message,
@@ -26,17 +26,26 @@ export function AIChat({ visible, onClose }: AIChatProps) {
     };
     addChatMessage(userMessage);
 
-    // Mock AI response with album recommendations
-    setTimeout(() => {
+    try {
+      const axelResponse = await bandruptionService.chatWithAxel(message);
+      
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: "Based on your taste, I think you'd love these albums! They blend electronic elements with organic sounds perfectly.",
+        content: axelResponse,
         isUser: false,
         timestamp: new Date(),
-        albumRecommendations: library.slice(0, 2),
       };
       addChatMessage(aiMessage);
-    }, 1000);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: "Sorry, I'm having trouble connecting to Axel right now. Please try again later.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      addChatMessage(errorMessage);
+    }
 
     setMessage('');
   };

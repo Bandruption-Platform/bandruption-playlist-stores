@@ -5,8 +5,6 @@ node_modules/
 
 # Production builds
 /build
-/dist
-/.next/
 /out/
 
 # Runtime data
@@ -25,11 +23,7 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
 
-# Bower dependency directory (https://bower.io/)
-bower_components
 
 # node-waf configuration
 .lock-wscript
@@ -38,11 +32,9 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 
-# Snowpack dependency directory (https://snowpack.dev/)
-web_modules/
+
 
 # TypeScript cache
 *.tsbuildinfo
@@ -75,29 +67,10 @@ web_modules/
 .env.test.local
 .env.production.local
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
+# Build outputs
 dist
 
-# Gatsby files
-.cache/
-public
 
-# Vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
 
 # DynamoDB Local files
 .dynamodb/
@@ -146,5 +119,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# Vite timestamp files (temporary build artifacts)
-*.timestamp-*.mjs 
+# Vite
+.vite/
+*.timestamp-*.mjs
+
+# Supabase local development
+.supabase/ 

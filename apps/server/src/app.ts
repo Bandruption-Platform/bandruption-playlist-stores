@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import spotifyRoutes from './routes/spotify.js';
+import bandruptionRoutes from './routes/bandruption.js';
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.get('/health', (req, res) => {
 
 // Spotify routes
 app.use('/api/spotify', spotifyRoutes);
+
+// Bandruption routes
+app.use('/api/bandruption', bandruptionRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
