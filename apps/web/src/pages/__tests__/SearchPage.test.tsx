@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SearchPage } from '../SearchPage'
 import { SpotifyProvider } from '../../contexts/SpotifyContext'
-import { spotifyApi } from '../../services/spotifyApi'
+import { popupAuthService } from '../../services/popupAuth'
 
 // Mock the SpotifySearch component since we're testing the connection flow
 vi.mock('../../components/SpotifySearch', () => ({
@@ -15,6 +15,13 @@ vi.mock('../../services/spotifyApi', () => ({
     handleAuthCallback: vi.fn(),
     getUserProfile: vi.fn(),
     disconnect: vi.fn()
+  }
+}))
+
+// Mock the popup auth service
+vi.mock('../../services/popupAuth', () => ({
+  popupAuthService: {
+    loginWithPopup: vi.fn()
   }
 }))
 
@@ -54,9 +61,21 @@ describe('SearchPage - Spotify Connection', () => {
       expect(screen.getByRole('button', { name: 'Connect Spotify' })).toBeInTheDocument()
     })
 
-    it('initiates Spotify login when Connect button is clicked', async () => {
-      const mockAuthUrl = 'https://accounts.spotify.com/authorize?...'
-      vi.mocked(spotifyApi.getAuthUrl).mockResolvedValue({ authUrl: mockAuthUrl })
+    it('initiates Spotify popup login when Connect button is clicked', async () => {
+      const mockUser = {
+        id: 'user123',
+        display_name: 'Test User',
+        email: 'test@example.com',
+        product: 'premium',
+        images: []
+      }
+
+      vi.mocked(popupAuthService.loginWithPopup).mockResolvedValue({
+        success: true,
+        userId: 'user123',
+        accessToken: 'popup-token',
+        userData: mockUser
+      })
 
       renderSearchPageWithSpotify()
       
@@ -64,14 +83,13 @@ describe('SearchPage - Spotify Connection', () => {
       fireEvent.click(connectButton)
 
       await waitFor(() => {
-        expect(spotifyApi.getAuthUrl).toHaveBeenCalled()
-        expect(window.location.href).toBe(mockAuthUrl)
+        expect(popupAuthService.loginWithPopup).toHaveBeenCalled()
       })
     })
 
-    it('handles login errors gracefully', async () => {
+    it('handles popup login errors gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.mocked(spotifyApi.getAuthUrl).mockRejectedValue(new Error('Auth failed'))
+      vi.mocked(popupAuthService.loginWithPopup).mockRejectedValue(new Error('Popup auth failed'))
 
       renderSearchPageWithSpotify()
       
@@ -79,7 +97,7 @@ describe('SearchPage - Spotify Connection', () => {
       fireEvent.click(connectButton)
 
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Login failed:', expect.any(Error))
+        expect(consoleSpy).toHaveBeenCalledWith('Popup authentication failed:', expect.any(Error))
       })
 
       consoleSpy.mockRestore()
@@ -119,54 +137,9 @@ describe('SearchPage - Spotify Connection', () => {
     })
   })
 
-  describe('auth callback handling', () => {
-    beforeEach(() => {
-      // Mock URL with auth callback parameters
-      delete (window as unknown as { location: unknown }).location
-      window.location = {
-        href: '',
-        search: '?code=auth-code&state=auth-state'
-      } as Location
-    })
-
-    it('handles successful auth callback', async () => {
-      const mockUser = {
-        id: 'user123',
-        display_name: 'Test User',
-        email: 'test@example.com',
-        product: 'premium',
-        images: []
-      }
-
-      vi.mocked(spotifyApi.handleAuthCallback).mockResolvedValue({
-        success: true,
-        userId: 'user123'
-      })
-      vi.mocked(spotifyApi.getUserProfile).mockResolvedValue(mockUser)
-
-      renderSearchPageWithSpotify()
-
-      await waitFor(() => {
-        expect(spotifyApi.handleAuthCallback).toHaveBeenCalledWith('auth-code', 'auth-state')
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_user', JSON.stringify(mockUser))
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_connected', 'true')
-        expect(mockLocalStorage.setItem).toHaveBeenCalledWith('spotify_user_id', 'user123')
-      })
-    })
-
-    it('handles failed auth callback', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.mocked(spotifyApi.handleAuthCallback).mockRejectedValue(new Error('Callback failed'))
-
-      renderSearchPageWithSpotify()
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Auth callback failed:', expect.any(Error))
-      })
-
-      consoleSpy.mockRestore()
-    })
-  })
+  // Note: Auth callback handling is done in the useSpotifyAuth hook
+  // Since we're mocking that hook, we don't test the callback handling here
+  // The callback handling is tested in the hook's own unit tests
 
   describe('page content', () => {
     it('renders the page title and description', () => {
