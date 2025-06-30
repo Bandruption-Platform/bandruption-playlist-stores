@@ -199,11 +199,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#70c3ed',
+    borderColor: '#CDFF6A',
   },
   suggestionText: {
     fontSize: 14,
-    color: '#70c3ed',
+    color: '#CDFF6A',
     fontWeight: '500',
   },
   messageWrapper: {

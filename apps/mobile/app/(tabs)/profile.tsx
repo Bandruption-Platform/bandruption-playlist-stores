@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Settings, Edit, Wallet, Crown, Music, Palette, Users, ChartBar as BarChart3 } from 'lucide-react-native';
+import { Settings, Edit, Wallet, Crown, Music, Palette, Users, ChartBar as BarChart3, Plus, ChevronRight } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { useAppStore } from '@/store/useAppStore';
 import { NFTGallery } from '@/components/NFTGallery';
+import { PlaylistItem } from '@/components/PlaylistItem';
 
 export default function ProfileScreen() {
-  const { user, nftGallery, library } = useAppStore();
-  const [activeTab, setActiveTab] = useState<'nfts' | 'stats'>('nfts');
+  const { user, nftGallery, library, playlists } = useAppStore();
+  const [activeTab, setActiveTab] = useState<'music' | 'gallery' | 'stats'>('music');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,40 +56,144 @@ export default function ProfileScreen() {
         {/* Tabs */}
         <View style={styles.tabContainer}>
           
-          {/* Playlists Tab */}
+          {/* Music Tab */}
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'nfts' && styles.activeTab]}
-            onPress={() => setActiveTab('nfts')}
+            style={[styles.tab, activeTab === 'music' && styles.activeTab]}
+            onPress={() => setActiveTab('music')}
           >
-            <Text style={[styles.tabText, activeTab === 'nfts' && styles.activeTabText]}>
-              Playlists
+            <Text style={[styles.tabText, activeTab === 'music' && styles.activeTabText]}>
+              Music
             </Text>
           </TouchableOpacity>
           
-          {/* NFT Gallery Tab */}
+          {/* Gallery Tab */}
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'nfts' && styles.activeTab]}
-            onPress={() => setActiveTab('nfts')}
+            style={[styles.tab, activeTab === 'gallery' && styles.activeTab]}
+            onPress={() => setActiveTab('gallery')}
           >
-            <Text style={[styles.tabText, activeTab === 'nfts' && styles.activeTabText]}>
-              NFT Gallery
+            <Text style={[styles.tabText, activeTab === 'gallery' && styles.activeTabText]}>
+              Gallery
             </Text>
           </TouchableOpacity>
 
-          {/* Analytics Tab */}
+          {/* Statistics Tab */}
           <TouchableOpacity
             style={[styles.tab, activeTab === 'stats' && styles.activeTab]}
             onPress={() => setActiveTab('stats')}
           >
             <Text style={[styles.tabText, activeTab === 'stats' && styles.activeTabText]}>
-              Analytics
+              Statistics
             </Text>
           </TouchableOpacity>
 
         </View>
 
         {/* Tab Content */}
-        {activeTab === 'nfts' ? (
+        {activeTab === 'music' ? (
+          <ScrollView style={styles.musicContainer} showsVerticalScrollIndicator={false}>
+            {/* Featured Music Section */}
+            <View style={styles.featuredSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Featured Music</Text>
+                <TouchableOpacity style={styles.viewAllButton}>
+                  <Text style={styles.viewAllText}>View All</Text>
+                  <ChevronRight size={16} color="#70C3ED" />
+                </TouchableOpacity>
+              </View>
+              
+              <FlatList
+                data={playlists.filter(playlist => playlist.isFeatured)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity 
+                    style={styles.featuredPlaylistCard}
+                    onPress={() => router.push(`/playlist/${item.id}`)}
+                  >
+                    <Image 
+                      source={{ uri: item.coverImage || item.cover_image }} 
+                      style={styles.featuredPlaylistImage} 
+                    />
+                    <Text style={styles.featuredPlaylistTitle} numberOfLines={2}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.featuredPlaylistDescription} numberOfLines={2}>
+                      {item.description}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.horizontalList}
+              />
+            </View>
+
+            {/* Followed Artists Section */}
+            <View style={styles.followedArtistsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Followed Artists</Text>
+                <TouchableOpacity style={styles.viewAllButton}>
+                  <Text style={styles.viewAllText}>View All</Text>
+                  <ChevronRight size={16} color="#70C3ED" />
+                </TouchableOpacity>
+              </View>
+              
+              <FlatList
+                data={user?.followedArtists?.slice(0, 6) || []}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.artistCard}>
+                    <Image 
+                      source={{ uri: item.imageUrl }} 
+                      style={styles.artistImage} 
+                    />
+                    <Text style={styles.artistName} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                    <Text style={styles.artistGenre} numberOfLines={1}>
+                      {item.genre}
+                    </Text>
+                  </View>
+                )}
+                contentContainerStyle={styles.horizontalList}
+              />
+            </View>
+
+            {/* Favorite Albums Section */}
+            <View style={styles.favoriteAlbumsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Favorite Albums</Text>
+                <TouchableOpacity style={styles.viewAllButton}>
+                  <Text style={styles.viewAllText}>View All</Text>
+                  <ChevronRight size={16} color="#70C3ED" />
+                </TouchableOpacity>
+              </View>
+              
+              <FlatList
+                data={library.slice(0, 6)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.albumCard}>
+                    <Image 
+                      source={{ uri: item.imageUrl }} 
+                      style={styles.albumImage} 
+                    />
+                    <Text style={styles.albumTitle} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                    <Text style={styles.albumArtist} numberOfLines={1}>
+                      {item.artist}
+                    </Text>
+                  </View>
+                )}
+                contentContainerStyle={styles.horizontalList}
+              />
+            </View>
+          </ScrollView>
+        ) : activeTab === 'gallery' ? (
           <NFTGallery nfts={nftGallery} />
         ) : (
 
@@ -127,25 +233,6 @@ export default function ProfileScreen() {
             <View style={styles.analyticsCard}>
               <View style={styles.analyticsHeader}>
                 <BarChart3 size={20} color="#70C3ED" />
-                <Text style={styles.analyticsTitle}>This Month</Text>
-              </View>
-              <View style={styles.analyticsRow}>
-                <Text style={styles.analyticsLabel}>NFTs Created</Text>
-                <Text style={styles.analyticsValue}>3</Text>
-              </View>
-              <View style={styles.analyticsRow}>
-                <Text style={styles.analyticsLabel}>Total Earnings</Text>
-                <Text style={styles.analyticsValue}>$127.50</Text>
-              </View>
-              <View style={styles.analyticsRow}>
-                <Text style={styles.analyticsLabel}>Merch Sales</Text>
-                <Text style={styles.analyticsValue}>8 items</Text>
-              </View>
-            </View>
-
-            <View style={styles.analyticsCard}>
-              <View style={styles.analyticsHeader}>
-                <BarChart3 size={20} color="#70C3ED" />
                 <Text style={styles.analyticsTitle}>Top Genres</Text>
               </View>
               {user?.favoriteGenres?.map((genre, index) => (
@@ -163,6 +250,25 @@ export default function ProfileScreen() {
               ))}
             </View>
             
+            <View style={styles.analyticsCard}>
+              <View style={styles.analyticsHeader}>
+                <BarChart3 size={20} color="#70C3ED" />
+                <Text style={styles.analyticsTitle}>This Month</Text>
+              </View>
+              <View style={styles.analyticsRow}>
+                <Text style={styles.analyticsLabel}>NFTs Created</Text>
+                <Text style={styles.analyticsValue}>3</Text>
+              </View>
+              <View style={styles.analyticsRow}>
+                <Text style={styles.analyticsLabel}>Total Earnings</Text>
+                <Text style={styles.analyticsValue}>$127.50</Text>
+              </View>
+              <View style={styles.analyticsRow}>
+                <Text style={styles.analyticsLabel}>Merch Sales</Text>
+                <Text style={styles.analyticsValue}>8 items</Text>
+              </View>
+            </View>
+
           </View>
         )}
       </ScrollView>
@@ -403,5 +509,127 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#CDFF6A',
     borderRadius: 4,
+  },
+  playlistsContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+  },
+  featuredSection: {
+    marginBottom: 32,
+  },
+  allPlaylistsSection: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  // New Music Section Styles
+  musicContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#70C3ED',
+    fontWeight: '600',
+    marginRight: 4,
+  },
+  horizontalList: {
+    paddingRight: 20,
+  },
+  // Featured Playlist Card Styles
+  featuredPlaylistCard: {
+    width: 200,
+    marginRight: 16,
+    backgroundColor: '#2D1B69',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
+  },
+  featuredPlaylistImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#4C1D95',
+  },
+  featuredPlaylistTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  featuredPlaylistDescription: {
+    fontSize: 12,
+    color: '#C4B5FD',
+    lineHeight: 16,
+  },
+  // Artist Card Styles
+  followedArtistsSection: {
+    marginBottom: 32,
+  },
+  artistCard: {
+    width: 100,
+    marginRight: 16,
+    alignItems: 'center',
+  },
+  artistImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 8,
+    backgroundColor: '#4C1D95',
+  },
+  artistName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  artistGenre: {
+    fontSize: 12,
+    color: '#A78BFA',
+    textAlign: 'center',
+  },
+  // Album Card Styles
+  favoriteAlbumsSection: {
+    marginBottom: 32,
+  },
+  albumCard: {
+    width: 120,
+    marginRight: 16,
+  },
+  albumImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: '#4C1D95',
+  },
+  albumTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  albumArtist: {
+    fontSize: 12,
+    color: '#A78BFA',
   },
 });

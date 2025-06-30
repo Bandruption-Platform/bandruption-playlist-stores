@@ -10,6 +10,16 @@ export interface User {
   bio?: string;
   favoriteGenres?: string[];
   nftGallery?: NFT[];
+  followedArtists?: Artist[];
+  favoriteAlbums?: Album[];
+}
+
+export interface Artist {
+  id: string;
+  name: string;
+  imageUrl: string;
+  genre?: string;
+  isFollowed?: boolean;
 }
 
 export interface Playlist {
@@ -23,6 +33,16 @@ export interface Playlist {
   updated_at: string;
   albums?: Album[];
   coverImage?: string;
+  isFeatured?: boolean;
+  items?: PlaylistItem[];
+}
+
+export interface PlaylistItem {
+  id: string;
+  trackId: string;
+  albumId: string;
+  addedAt: Date;
+  addedBy: string;
 }
 
 export interface Track {
@@ -134,6 +154,7 @@ export type MerchType = 'tshirt' | 'hoodie' | 'poster' | 'sticker' | 'vinyl';
 export interface AppState {
   user: User | null;
   library: Album[];
+  playlists: Playlist[];
   drafts: AIArtGeneration[];
   nftGallery: NFT[];
   chatHistory: ChatMessage[];

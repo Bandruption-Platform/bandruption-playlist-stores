@@ -1,4 +1,4 @@
-import { User, Album, NFT, AIArtGeneration, Track } from '../types';
+import { User, Album, NFT, AIArtGeneration, Track, Playlist, Artist } from '../types';
 
 // Mobile app specific types for mock data
 interface PlaylistItem {
@@ -156,6 +156,37 @@ export const mockTracks: Track[] = [
   }
 ];
 
+export const mockArtists: Artist[] = [
+  {
+    id: 'artist1',
+    name: 'Neon Waves',
+    imageUrl: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300',
+    genre: 'Electronic',
+    isFollowed: true
+  },
+  {
+    id: 'artist2',
+    name: 'City Collective',
+    imageUrl: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300',
+    genre: 'Jazz',
+    isFollowed: true
+  },
+  {
+    id: 'artist3',
+    name: 'Cyber Symphony',
+    imageUrl: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=300',
+    genre: 'Electronic',
+    isFollowed: true
+  },
+  {
+    id: 'artist4',
+    name: 'Acoustic Soul',
+    imageUrl: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?auto=compress&cs=tinysrgb&w=300',
+    genre: 'Folk',
+    isFollowed: true
+  }
+];
+
 export const mockUser: User = {
   id: 'user1',
   email: 'user@bandruption.com',
@@ -167,8 +198,73 @@ export const mockUser: User = {
   spotifyConnected: true,
   bio: 'Music enthusiast and NFT collector',
   favoriteGenres: ['Electronic', 'Jazz', 'Rock'],
-  nftGallery: []
+  nftGallery: [],
+  followedArtists: mockArtists,
+  favoriteAlbums: [] // Will be populated with references to albums from mockAlbums
 };
+
+export const mockFanUsers: User[] = [
+  {
+    id: 'user5',
+    email: 'elena@example.com',
+    username: 'electronica_lover',
+    avatar_url: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=150',
+    created_at: '2024-02-01T00:00:00Z',
+    updated_at: '2024-02-15T00:00:00Z',
+    profileImage: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=150',
+    spotifyConnected: true,
+    bio: 'Electronic music producer and vinyl collector 🎵',
+    favoriteGenres: ['Electronic', 'Techno', 'House'],
+    nftGallery: [],
+    followedArtists: mockArtists.slice(0, 3),
+    favoriteAlbums: []
+  },
+  {
+    id: 'user6',
+    email: 'jake@example.com',
+    username: 'indie_vibes',
+    avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
+    created_at: '2024-02-10T00:00:00Z',
+    updated_at: '2024-02-20T00:00:00Z',
+    profileImage: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
+    spotifyConnected: false,
+    bio: 'Indie rock enthusiast | Coffee addict ☕',
+    favoriteGenres: ['Indie', 'Alternative', 'Rock'],
+    nftGallery: [],
+    followedArtists: mockArtists.slice(1, 4),
+    favoriteAlbums: []
+  },
+  {
+    id: 'user7',
+    email: 'maria@example.com',
+    username: 'classical_symphony',
+    avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150',
+    created_at: '2024-02-15T00:00:00Z',
+    updated_at: '2024-02-25T00:00:00Z',
+    profileImage: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150',
+    spotifyConnected: true,
+    bio: 'Classical pianist and composer 🎹',
+    favoriteGenres: ['Classical', 'Piano', 'Orchestra'],
+    nftGallery: [],
+    followedArtists: mockArtists.slice(2, 5),
+    favoriteAlbums: []
+  },
+  {
+    id: 'user8',
+    email: 'marcus@example.com',
+    username: 'hip_hop_head',
+    avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+    created_at: '2024-02-20T00:00:00Z',
+    updated_at: '2024-03-01T00:00:00Z',
+    profileImage: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+    spotifyConnected: true,
+    bio: 'Hip-hop producer and beat maker 🔥',
+    favoriteGenres: ['Hip-Hop', 'Rap', 'R&B'],
+    nftGallery: [],
+    followedArtists: mockArtists.slice(0, 2),
+    favoriteAlbums: []
+  }
+];
 
 export const mockAlbums: Album[] = [
   {
@@ -236,163 +332,150 @@ export const mockAlbums: Album[] = [
 export const mockPlaylists: Playlist[] = [
   {
     id: 'playlist1',
-    name: 'Electronic Vibes',
+    user_id: 'user1',
+    title: 'Electronic Vibes',
     description: 'The best electronic tracks for late night coding sessions',
-    imageUrl: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg?auto=compress&cs=tinysrgb&w=300',
-    userId: 'user1',
-    isPublic: true,
+    cover_image: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg?auto=compress&cs=tinysrgb&w=300',
+    coverImage: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg?auto=compress&cs=tinysrgb&w=300',
+    is_public: true,
+    isFeatured: true,
+    created_at: '2024-01-20T00:00:00Z',
+    updated_at: '2024-01-22T00:00:00Z',
     items: [
       {
         id: 'item1',
         trackId: 'track1',
         albumId: 'album1',
-        addedAt: new Date('2024-01-20'),
+        addedAt: new Date('2024-01-20T00:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item2',
         trackId: 'track2',
         albumId: 'album1',
-        addedAt: new Date('2024-01-20'),
+        addedAt: new Date('2024-01-20T01:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item3',
-        trackId: 'track7',
-        albumId: 'album3',
-        addedAt: new Date('2024-01-21'),
+        trackId: 'track3',
+        albumId: 'album1',
+        addedAt: new Date('2024-01-20T02:00:00Z'),
         addedBy: 'user1'
-      },
+      }
+    ]
+  },
+  {
+    id: 'playlist2',
+    user_id: 'user1',
+    title: 'Chill Jazz Sessions',
+    description: 'Smooth jazz for relaxing evenings',
+    cover_image: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300',
+    coverImage: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300',
+    is_public: false,
+    isFeatured: false,
+    created_at: '2024-01-18T00:00:00Z',
+    updated_at: '2024-01-18T00:00:00Z',
+    items: [
       {
         id: 'item4',
-        trackId: 'track8',
-        albumId: 'album3',
-        addedAt: new Date('2024-01-21'),
+        trackId: 'track4',
+        albumId: 'album2',
+        addedAt: new Date('2024-01-18T00:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item5',
-        trackId: 'track13',
-        albumId: 'album5',
-        addedAt: new Date('2024-01-22'),
+        trackId: 'track5',
+        albumId: 'album2',
+        addedAt: new Date('2024-01-18T01:00:00Z'),
         addedBy: 'user1'
       }
-    ],
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-22')
+    ]
   },
   {
-    id: 'playlist2',
-    name: 'Chill Jazz Sessions',
-    description: 'Smooth jazz for relaxing evenings',
-    imageUrl: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300',
-    userId: 'user1',
-    isPublic: false,
+    id: 'playlist3',
+    user_id: 'user1',
+    title: 'Nature Sounds',
+    description: 'Acoustic and ambient tracks inspired by nature',
+    cover_image: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?auto=compress&cs=tinysrgb&w=300',
+    coverImage: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?auto=compress&cs=tinysrgb&w=300',
+    is_public: true,
+    isFeatured: true,
+    created_at: '2024-01-15T00:00:00Z',
+    updated_at: '2024-01-16T00:00:00Z',
     items: [
       {
         id: 'item6',
-        trackId: 'track4',
-        albumId: 'album2',
-        addedAt: new Date('2024-01-18'),
+        trackId: 'track6',
+        albumId: 'album3',
+        addedAt: new Date('2024-01-15T00:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item7',
-        trackId: 'track5',
-        albumId: 'album2',
-        addedAt: new Date('2024-01-18'),
+        trackId: 'track7',
+        albumId: 'album3',
+        addedAt: new Date('2024-01-15T01:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item8',
-        trackId: 'track6',
-        albumId: 'album2',
-        addedAt: new Date('2024-01-18'),
+        trackId: 'track8',
+        albumId: 'album3',
+        addedAt: new Date('2024-01-15T02:00:00Z'),
         addedBy: 'user1'
       }
-    ],
-    createdAt: new Date('2024-01-18'),
-    updatedAt: new Date('2024-01-18')
+    ]
   },
   {
-    id: 'playlist3',
-    name: 'Nature Sounds',
-    description: 'Acoustic and ambient tracks inspired by nature',
-    imageUrl: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?auto=compress&cs=tinysrgb&w=300',
-    userId: 'user1',
-    isPublic: true,
+    id: 'playlist4',
+    user_id: 'user1',
+    title: 'Synthwave Dreams',
+    description: 'Retro-futuristic synthwave collection',
+    cover_image: 'https://images.pexels.com/photos/1204649/pexels-photo-1204649.jpeg?auto=compress&cs=tinysrgb&w=300',
+    coverImage: 'https://images.pexels.com/photos/1204649/pexels-photo-1204649.jpeg?auto=compress&cs=tinysrgb&w=300',
+    is_public: true,
+    isFeatured: false,
+    created_at: '2024-01-10T00:00:00Z',
+    updated_at: '2024-01-11T00:00:00Z',
     items: [
       {
         id: 'item9',
-        trackId: 'track10',
-        albumId: 'album4',
-        addedAt: new Date('2024-01-15'),
+        trackId: 'track1',
+        albumId: 'album1',
+        addedAt: new Date('2024-01-10T00:00:00Z'),
         addedBy: 'user1'
-      },
+      }
+    ]
+  },
+  {
+    id: 'playlist5',
+    user_id: 'user1',
+    title: 'Indie Rock Favorites',
+    description: 'Hand-picked indie rock gems',
+    cover_image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300',
+    coverImage: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300',
+    is_public: true,
+    isFeatured: true,
+    created_at: '2024-01-05T00:00:00Z',
+    updated_at: '2024-01-06T00:00:00Z',
+    items: [
       {
         id: 'item10',
-        trackId: 'track11',
-        albumId: 'album4',
-        addedAt: new Date('2024-01-15'),
+        trackId: 'track4',
+        albumId: 'album2',
+        addedAt: new Date('2024-01-08T00:00:00Z'),
         addedBy: 'user1'
       },
       {
         id: 'item11',
-        trackId: 'track16',
-        albumId: 'album6',
-        addedAt: new Date('2024-01-16'),
-        addedBy: 'user1'
-      },
-      {
-        id: 'item12',
-        trackId: 'track17',
-        albumId: 'album6',
-        addedAt: new Date('2024-01-16'),
+        trackId: 'track5',
+        albumId: 'album2',
+        addedAt: new Date('2024-01-08T01:00:00Z'),
         addedBy: 'user1'
       }
-    ],
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-16')
-  },
-  {
-    id: 'playlist4',
-    name: 'Synthwave Dreams',
-    description: 'Retro-futuristic synthwave collection',
-    imageUrl: 'https://images.pexels.com/photos/1204649/pexels-photo-1204649.jpeg?auto=compress&cs=tinysrgb&w=300',
-    userId: 'user1',
-    isPublic: true,
-    items: [
-      {
-        id: 'item13',
-        trackId: 'track13',
-        albumId: 'album5',
-        addedAt: new Date('2024-01-10'),
-        addedBy: 'user1'
-      },
-      {
-        id: 'item14',
-        trackId: 'track14',
-        albumId: 'album5',
-        addedAt: new Date('2024-01-10'),
-        addedBy: 'user1'
-      },
-      {
-        id: 'item15',
-        trackId: 'track15',
-        albumId: 'album5',
-        addedAt: new Date('2024-01-10'),
-        addedBy: 'user1'
-      },
-      {
-        id: 'item16',
-        trackId: 'track3',
-        albumId: 'album1',
-        addedAt: new Date('2024-01-11'),
-        addedBy: 'user1'
-      }
-    ],
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-11')
+    ]
   }
 ];
 
@@ -448,4 +531,4 @@ export const mockDrafts: AIArtGeneration[] = [
     needsApproval: true,
     artistApproved: false
   }
-]; 
+];

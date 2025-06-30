@@ -1,40 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Play, MoveVertical as MoreVertical, Lock, Globe } from 'lucide-react-native';
+import { Play, MoveVertical as MoreVertical, Lock, Globe, Star } from 'lucide-react-native';
 import { router } from 'expo-router';
-import { Playlist } from '@/types';
-import { useAppStore } from '@/store/useAppStore';
+import { Playlist } from '@shared/types';
 
 interface PlaylistItemProps {
   playlist: Playlist;
   onPress?: () => void;
+  showFeaturedBadge?: boolean;
 }
 
-export function PlaylistItem({ playlist, onPress }: PlaylistItemProps) {
-  const { library } = useAppStore();
-  
-  const getTotalDuration = () => {
-    let totalSeconds = 0;
-    playlist.items.forEach(item => {
-      const album = library.find(a => a.id === item.albumId);
-      const track = album?.tracks.find(t => t.id === item.trackId);
-      if (track) {
-        totalSeconds += track.duration;
-      }
-    });
-    return totalSeconds;
-  };
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
-  const formatDate = (date: Date) => {
+export function PlaylistItem({ playlist, onPress, showFeaturedBadge = false }: PlaylistItemProps) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric',
@@ -52,13 +30,23 @@ export function PlaylistItem({ playlist, onPress }: PlaylistItemProps) {
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      <Image source={{ uri: playlist.imageUrl }} style={styles.image} />
+      <View style={styles.imageContainer}>
+        <Image 
+          source={{ uri: playlist.coverImage || playlist.cover_image }} 
+          style={styles.image} 
+        />
+        {playlist.isFeatured && showFeaturedBadge && (
+          <View style={styles.featuredBadge}>
+            <Star size={12} color="#CDFF6A" fill="#CDFF6A" />
+          </View>
+        )}
+      </View>
       
       <View style={styles.info}>
         <View style={styles.header}>
-          <Text style={styles.title} numberOfLines={1}>{playlist.name}</Text>
+          <Text style={styles.title} numberOfLines={1}>{playlist.title}</Text>
           <View style={styles.privacyIcon}>
-            {playlist.isPublic ? (
+            {playlist.is_public ? (
               <Globe size={14} color="#70C3ED" />
             ) : (
               <Lock size={14} color="#A78BFA" />
@@ -71,11 +59,11 @@ export function PlaylistItem({ playlist, onPress }: PlaylistItemProps) {
         )}
         
         <View style={styles.metadata}>
-          <Text style={styles.metadataText}>{playlist.items.length} songs</Text>
+          <Text style={styles.metadataText}>
+            {playlist.is_public ? 'Public' : 'Private'} playlist
+          </Text>
           <View style={styles.dot} />
-          <Text style={styles.metadataText}>{formatDuration(getTotalDuration())}</Text>
-          <View style={styles.dot} />
-          <Text style={styles.metadataText}>Updated {formatDate(playlist.updatedAt)}</Text>
+          <Text style={styles.metadataText}>Updated {formatDate(playlist.updated_at)}</Text>
         </View>
       </View>
 
@@ -99,11 +87,27 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#1E1B4B',
   },
+  imageContainer: {
+    position: 'relative',
+    marginRight: 16,
+  },
   image: {
     width: 60,
     height: 60,
     borderRadius: 8,
-    marginRight: 16,
+  },
+  featuredBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#1E1B4B',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#CDFF6A',
   },
   info: {
     flex: 1,

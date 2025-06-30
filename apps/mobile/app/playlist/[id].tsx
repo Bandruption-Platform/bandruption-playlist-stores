@@ -31,7 +31,7 @@ export default function PlaylistDetailScreen() {
   }
 
   // Get all tracks with their album information
-  const playlistTracks: PlaylistTrack[] = playlist.items.map(item => {
+  const playlistTracks: PlaylistTrack[] = (playlist.items || []).map(item => {
     const album = library.find(a => a.id === item.albumId);
     const track = album?.tracks.find(t => t.id === item.trackId);
     
@@ -109,19 +109,19 @@ export default function PlaylistDetailScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Playlist Header */}
         <View style={styles.playlistHeader}>
-          <Image source={{ uri: playlist.imageUrl }} style={styles.playlistImage} />
+          <Image source={{ uri: playlist.coverImage || playlist.cover_image }} style={styles.playlistImage} />
           
           <View style={styles.playlistInfo}>
             <View style={styles.playlistTitleRow}>
-              <Text style={styles.playlistTitle}>{playlist.name}</Text>
+              <Text style={styles.playlistTitle}>{playlist.title}</Text>
               <View style={styles.privacyBadge}>
-                {playlist.isPublic ? (
+                {playlist.is_public ? (
                   <Globe size={16} color="#70C3ED" />
                 ) : (
                   <Lock size={16} color="#A78BFA" />
                 )}
-                <Text style={[styles.privacyText, { color: playlist.isPublic ? '#70C3ED' : '#A78BFA' }]}>
-                  {playlist.isPublic ? 'Public' : 'Private'}
+                <Text style={[styles.privacyText, { color: playlist.is_public ? '#70C3ED' : '#A78BFA' }]}>
+                  {playlist.is_public ? 'Public' : 'Private'}
                 </Text>
               </View>
             </View>
@@ -135,7 +135,7 @@ export default function PlaylistDetailScreen() {
                 {playlistTracks.length} songs • {formatDuration(getTotalDuration())}
               </Text>
               <Text style={styles.statsText}>
-                Created {formatDate(playlist.createdAt)}
+                Created {formatDate(new Date(playlist.created_at))}
               </Text>
             </View>
           </View>

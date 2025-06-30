@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Library, ShoppingBag, User } from 'lucide-react-native';
+import { Home, Library, ShoppingBag, UsersRound, User } from 'lucide-react-native';
 
 export default function TabLayout() {
 
@@ -22,6 +22,7 @@ export default function TabLayout() {
           fontWeight: '600',
         },
       }}>
+
       <Tabs.Screen
         name="index"
         options={{
@@ -31,6 +32,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="library"
         options={{
@@ -41,6 +43,16 @@ export default function TabLayout() {
         }}
       />
       
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: 'Community',
+          tabBarIcon: ({ size, color }) => (
+            <UsersRound size={size} color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="profile"
         options={{

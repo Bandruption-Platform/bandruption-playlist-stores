@@ -25,7 +25,7 @@ export default function RootLayout() {
       width: 56,
       height: 56,
       borderRadius: 28,
-      backgroundColor: '#70c3ed',
+      backgroundColor: '#CDFF6A',
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: '#000',

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AppState, Album, AIArtGeneration, NFT, ChatMessage, Track, User, Playlist } from '../types';
-import { mockAlbums, mockUser, mockNFTs, mockDrafts, mockPlaylists } from '@/data/mockData';
+import { mockAlbums, mockUser, mockNFTs, mockDrafts, mockPlaylists, mockFanUsers } from '@/data/mockData';
 
 interface AppStore extends AppState {
   // Actions
@@ -15,6 +15,9 @@ interface AppStore extends AppState {
   addNFTToGallery: (nft: NFT) => void;
   addPlaylist: (playlist: Playlist) => void;
   removePlaylist: (playlistId: string) => void;
+  // Fan users
+  fanUsers: User[];
+  getFanUserById: (id: string) => User | null;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -28,6 +31,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   currentlyPlaying: null,
   isGeneratingNFT: false,
   libraryView: 'blocks',
+  followedArtists: mockUser.followedArtists,
+  favoriteAlbums: mockUser.favoriteAlbums || [],
+  fanUsers: mockFanUsers,
 
   // Actions
   setUser: (user) => set({ user }),
@@ -77,4 +83,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((state) => ({
       playlists: state.playlists.filter(playlist => playlist.id !== playlistId)
     })),
+
+  getFanUserById: (id: string) => {
+    const state = get();
+    return state.fanUsers.find(user => user.id === id) || null;
+  },
 }));

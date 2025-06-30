@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ArrowLeft, Play, Heart, Share, Clock, Palette, ShoppingBag, Plus } from 'lucide-react-native';
+import { ArrowLeft, Play, Heart, Share, Clock, Palette, ShoppingBag, Plus, Zap } from 'lucide-react-native';
 import { useAppStore } from '@/store/useAppStore';
 import { Album } from '@shared/types';
+import { NFTGenerationModal } from '@/components/NFTGenerationModal';
 
 export default function AlbumDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { library } = useAppStore();
   const [isLiked, setIsLiked] = useState(false);
+  const [showNFTModal, setShowNFTModal] = useState(false);
 
   // Find the album by ID
   const album = library.find(a => a.id === id);
@@ -94,15 +96,23 @@ export default function AlbumDetailsScreen() {
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={[styles.secondaryButton, isLiked && styles.likedButton]}
+              style={[styles.addButton, isLiked && styles.likedButton]}
               onPress={() => setIsLiked(!isLiked)}
             >
               <Heart size={20} color={isLiked ? "#EF4444" : "#A78BFA"} fill={isLiked ? "#EF4444" : "none"} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.secondaryButton}>
+            <TouchableOpacity style={styles.addButton}>
               <Plus size={20} color="#A78BFA" />
             </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.createButton}
+              onPress={() => setShowNFTModal(true)}
+            >
+              <Zap size={20} color="#CDFF6A" />
+            </TouchableOpacity>
+            
           </View>
         </View>
 
@@ -112,7 +122,7 @@ export default function AlbumDetailsScreen() {
           
           <TouchableOpacity 
             style={styles.creativeCard}
-            onPress={() => router.push('/ai-art-generation')}
+            onPress={() => setShowNFTModal(true)}
           >
             <View style={styles.creativeCardIcon}>
               <Palette size={24} color="#A78BFA" />
@@ -211,6 +221,13 @@ export default function AlbumDetailsScreen() {
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
+
+      {/* NFT Generation Modal */}
+      <NFTGenerationModal
+        visible={showNFTModal}
+        onClose={() => setShowNFTModal(false)}
+        albums={[album]}
+      />
     </SafeAreaView>
   );
 }
@@ -322,7 +339,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  secondaryButton: {
+  addButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -331,6 +348,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#4C1D95',
+  },
+  createButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1A0D33',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#CDFF6A',
   },
   likedButton: {
     backgroundColor: '#F87171',

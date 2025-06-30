@@ -67,7 +67,7 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Sparkles size={24} color="#CDFF6A" />
-            <Text style={styles.title}>Generate NFT</Text>
+            <Text style={styles.title}>Create Fan Art</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color="#A78BFA" />
@@ -115,7 +115,12 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
                   ]}>
                     {style.label}
                   </Text>
-                  <Text style={styles.styleDescription}>{style.description}</Text>
+                  <Text style={[
+                    styles.styleDescription,
+                    selectedStyle === style.value && styles.selectedStyleDescription
+                  ]}>
+                    {style.description}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -162,7 +167,7 @@ export function NFTGenerationModal({ visible, onClose, albums }: NFTGenerationMo
             ) : (
               <>
                 <Sparkles size={20} color="#000000" />
-                <Text style={styles.generateButtonText}>Generate NFT</Text>
+                <Text style={styles.generateButtonText}>Generate Artwork</Text>
               </>
             )}
           </TouchableOpacity>
@@ -273,7 +278,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   selectedStyleText: {
-    color: '#70C3ED',
+    color: '#2D1B69',
+  },
+  selectedStyleDescription: {
+    fontSize: 12,
+    color: '#461a48',
+    lineHeight: 16,
   },
   styleDescription: {
     fontSize: 12,

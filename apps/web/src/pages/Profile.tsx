@@ -7,7 +7,7 @@ import AlbumCard from '../components/AlbumCard';
 function Profile() {
   const { user, updateProfile } = useAuth();
   const { playlists } = usePlaylist();
-  const [activeTab, setActiveTab] = useState<'playlists' | 'nfts' | 'about'>('playlists');
+  const [activeTab, setActiveTab] = useState<'music' | 'collections' | 'statistics'>('music');
 
   if (!user) return null;
 
@@ -66,17 +66,17 @@ function Profile() {
                   <div className="text-sm text-gray-400">Playlists</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{user.nftGallery.length}</div>
+                  <div className="text-2xl font-bold text-white">{user.nftGallery?.length || 0}</div>
                   <div className="text-sm text-gray-400">NFTs</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{user.favoriteGenres.length}</div>
+                  <div className="text-2xl font-bold text-white">{user.favoriteGenres?.length || 0}</div>
                   <div className="text-sm text-gray-400">Genres</div>
                 </div>
               </div>
 
               {/* Favorite Genres */}
-              {user.favoriteGenres.length > 0 && (
+              {user.favoriteGenres && user.favoriteGenres.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {user.favoriteGenres.map((genre, index) => (
                     <span 
@@ -112,9 +112,9 @@ function Profile() {
           {/* Tab Navigation */}
           <div className="flex border-b border-white/10">
             {[
-              { key: 'playlists', label: 'Playlists' },
-              { key: 'nfts', label: 'NFT Gallery' },
-              { key: 'about', label: 'About' }
+              { key: 'music', label: 'Music' },
+              { key: 'collections', label: 'Art Collections' },
+              { key: 'statistics', label: 'Statistics' }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -132,7 +132,7 @@ function Profile() {
 
           {/* Tab Content */}
           <div className="p-8">
-            {activeTab === 'playlists' && (
+            {activeTab === 'music' && (
               <div>
                 {userPlaylists.length > 0 ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -168,7 +168,7 @@ function Profile() {
               </div>
             )}
 
-            {activeTab === 'nfts' && (
+            {activeTab === 'collections' && (
               <div>
                 {user.nftGallery.length > 0 ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -207,37 +207,62 @@ function Profile() {
               </div>
             )}
 
-            {activeTab === 'about' && (
+            {activeTab === 'statistics' && (
               <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-4">About</h3>
-                  <p className="text-gray-300">
-                    {user.bio || "This user hasn't added a bio yet."}
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-4">Joined</h3>
-                  <p className="text-gray-300">
-                    {user.createdAt.toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                  <div className="glass-effect rounded-lg p-6 text-center">
+                    <div className="text-3xl font-bold text-white mb-2">{userPlaylists.length}</div>
+                    <div className="text-gray-400">Albums</div>
+                  </div>
+                  <div className="glass-effect rounded-lg p-6 text-center">
+                    <div className="text-3xl font-bold text-white mb-2">{user.nftGallery?.length || 0}</div>
+                    <div className="text-gray-400">NFTs</div>
+                  </div>
+                  <div className="glass-effect rounded-lg p-6 text-center">
+                    <div className="text-3xl font-bold text-white mb-2">12</div>
+                    <div className="text-gray-400">Merch</div>
+                  </div>
+                  <div className="glass-effect rounded-lg p-6 text-center">
+                    <div className="text-3xl font-bold text-white mb-2">847</div>
+                    <div className="text-gray-400">Followers</div>
+                  </div>
                 </div>
 
-                {user.favoriteGenres.length > 0 && (
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-4">Favorite Genres</h3>
-                    <div className="flex flex-wrap gap-2">
+                {/* Monthly Stats */}
+                <div className="glass-effect rounded-lg p-6 mb-6">
+                  <h3 className="text-xl font-bold text-white mb-4">This Month</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">NFTs Created</span>
+                      <span className="text-white font-semibold">3</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Earnings</span>
+                      <span className="text-white font-semibold">$127.50</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Merch Sales</span>
+                      <span className="text-white font-semibold">8 items</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Genres */}
+                {user.favoriteGenres && user.favoriteGenres.length > 0 && (
+                  <div className="glass-effect rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-white mb-4">Top Genres</h3>
+                    <div className="space-y-3">
                       {user.favoriteGenres.map((genre, index) => (
-                        <span 
-                          key={index}
-                          className="px-3 py-2 bg-purple-600/20 text-purple-300 rounded-lg border border-purple-500/30"
-                        >
-                          {genre}
-                        </span>
+                        <div key={genre} className="flex items-center space-x-4">
+                          <span className="text-white w-20">{genre}</span>
+                          <div className="flex-1 bg-gray-700 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full"
+                              style={{ width: `${100 - index * 20}%` }}
+                            />
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
