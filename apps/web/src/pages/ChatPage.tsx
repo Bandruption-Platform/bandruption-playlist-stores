@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Music, Palette, Lightbulb, Trash2 } from 'lucide-react';
 import { Button } from '@shared/ui';
 import { Card } from '../components/ui/Card';
+import { bandruptionApi } from '../services/bandruptionApi';
 
 interface Message {
   id: string;
@@ -48,36 +49,31 @@ export const ChatPage: React.FC = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        {
-          content: "Great question! Based on your music taste, I'd recommend checking out some ambient electronic artists like Boards of Canada or Tycho. Their atmospheric soundscapes are perfect for late-night listening. Would you like me to create a playlist with similar artists?",
-          type: 'music' as const
-        },
-        {
-          content: "I can help you transform that album cover into unique NFT art! The synthwave aesthetic would work beautifully with neon color gradients and geometric patterns. Here are some AI art prompts you could try:\n\n• 'Neon cityscape with retro-futuristic elements'\n• 'Synthwave sunset with geometric mountains'\n• 'Cyberpunk grid landscape in purple and teal'\n\nWant me to generate more specific prompts?",
-          type: 'art' as const
-        },
-        {
-          content: "Here's a curated playlist idea based on your request: 'Midnight Coding Session' featuring ambient electronica, lo-fi hip-hop, and atmospheric post-rock. Perfect for deep focus work. I can also suggest artists like Emancipator, Kiasmos, and Helios. Should I create this playlist for you?",
-          type: 'suggestion' as const
-        }
-      ];
-
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    try {
+      const axelResponse = await bandruptionApi.chatWithAxel(newMessage.content);
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: randomResponse.content,
+        content: axelResponse,
         isUser: false,
         timestamp: new Date(),
-        type: randomResponse.type
+        type: 'text' // We can enhance this later based on response content
       };
-
+      
       setMessages(prev => [...prev, aiMessage]);
       setIsTyping(false);
-    }, 1500);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "Sorry, I'm having trouble connecting to Axel right now. Please try again later.",
+        isUser: false,
+        timestamp: new Date(),
+        type: 'text'
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      setIsTyping(false);
+    }
   };
 
   const clearChat = () => {

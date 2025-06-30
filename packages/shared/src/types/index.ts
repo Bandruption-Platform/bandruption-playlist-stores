@@ -229,4 +229,18 @@ export interface SpotifySearchResults {
   tracks?: { items: SpotifyTrack[] };
   albums?: { items: SpotifyAlbum[] };
   artists?: { items: SpotifyArtist[] };
+}
+
+// Bandruption AI Integration Types
+export interface BandruptionChatMessage extends ChatMessage {
+  type: 'bandruption';
+  axelResponse?: string;
+}
+
+export interface BandruptionApiResponse {
+  reply: string;
+}
+
+export interface BandruptionError {
+  error: string;
 } 
