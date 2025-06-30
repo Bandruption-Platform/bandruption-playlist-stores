@@ -134,8 +134,7 @@ describe('Popup Authentication Integration', () => {
       loading: false,
       isAuthenticating: false,
       loginWithPopup: mockLoginWithPopup,
-      loginWithRedirect: vi.fn(),
-      login: vi.fn(),
+      login: mockLoginWithPopup, // login method uses popup in popup-only mode
       logout: vi.fn(),
       isPremium: false
     });

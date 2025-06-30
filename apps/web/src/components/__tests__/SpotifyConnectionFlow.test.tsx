@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SpotifyProvider } from '../../contexts/SpotifyContext'
 import { SearchPage } from '../../pages/SearchPage'
 import { spotifyApi } from '../../services/spotifyApi'
+import { popupAuthService } from '../../services/popupAuth'
 
 // Mock the SpotifySearch component
 vi.mock('../../components/SpotifySearch', () => ({
@@ -15,6 +16,13 @@ vi.mock('../../services/spotifyApi', () => ({
     handleAuthCallback: vi.fn(),
     getUserProfile: vi.fn(),
     disconnect: vi.fn()
+  }
+}))
+
+// Mock the popup auth service
+vi.mock('../../services/popupAuth', () => ({
+  popupAuthService: {
+    loginWithPopup: vi.fn()
   }
 }))
 
@@ -39,8 +47,15 @@ describe('Spotify Connection Flow Integration', () => {
   })
 
   describe('Complete connection flow', () => {
-    it('handles full authentication flow from connection to success', async () => {
-      const mockAuthUrl = 'https://accounts.spotify.com/authorize?client_id=...'
+    it('handles full popup authentication flow from connection to success', async () => {
+      const mockUser = {
+        id: 'user123',
+        display_name: 'Test User',
+        email: 'test@example.com',
+        product: 'premium',
+        images: []
+      }
+
       // Step 1: Initial render shows connection prompt
       render(
         <SpotifyProvider>
@@ -51,29 +66,29 @@ describe('Spotify Connection Flow Integration', () => {
       expect(screen.getByText('Enhanced Features Available')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Connect Spotify' })).toBeInTheDocument()
 
-      // Step 2: User clicks connect button
-      vi.mocked(spotifyApi.getAuthUrl).mockResolvedValue({ authUrl: mockAuthUrl })
+      // Step 2: User clicks connect button - should use popup auth
+      vi.mocked(popupAuthService.loginWithPopup).mockResolvedValue({
+        success: true,
+        userId: 'user123',
+        accessToken: 'popup-token',
+        userData: mockUser
+      })
       
       const connectButton = screen.getByRole('button', { name: 'Connect Spotify' })
       fireEvent.click(connectButton)
 
       await waitFor(() => {
-        expect(spotifyApi.getAuthUrl).toHaveBeenCalled()
-        expect(window.location.href).toBe(mockAuthUrl)
+        expect(popupAuthService.loginWithPopup).toHaveBeenCalled()
       })
 
-      // Step 3: For this test, we're testing the main flow where user clicks connect
-      // and gets redirected. The callback handling is tested separately in other files.
-      // Since localStorage is mocked and we're not actually testing the full integration
-      // with URL params, we'll just verify the connection flow works.
-      
-      // The test already verified that:
-      // 1. Connect button click triggers getAuthUrl
-      // 2. Window location gets updated with auth URL
-      // This covers the main connection flow from the UI perspective
+      // Step 3: Verify popup authentication was used (not redirect)
+      // The test verifies that:
+      // 1. Connect button click triggers popup authentication
+      // 2. No redirect happens (staying on same page)
+      // 3. Popup service is called for authentication
     })
 
-    it('handles authentication errors gracefully', async () => {
+    it('handles popup authentication errors gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
       render(
@@ -82,14 +97,14 @@ describe('Spotify Connection Flow Integration', () => {
         </SpotifyProvider>
       )
 
-      // Mock API error
-      vi.mocked(spotifyApi.getAuthUrl).mockRejectedValue(new Error('Network error'))
+      // Mock popup auth error
+      vi.mocked(popupAuthService.loginWithPopup).mockRejectedValue(new Error('Popup failed'))
 
       const connectButton = screen.getByRole('button', { name: 'Connect Spotify' })
       fireEvent.click(connectButton)
 
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Login failed:', expect.any(Error))
+        expect(consoleSpy).toHaveBeenCalledWith('Popup authentication failed:', expect.any(Error))
       })
 
       // Connection prompt should still be visible
@@ -99,12 +114,9 @@ describe('Spotify Connection Flow Integration', () => {
       consoleSpy.mockRestore()
     })
 
-    it('handles callback errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      
-      // Set URL params before mounting the component so useEffect can detect them
+    it('ignores URL auth parameters in popup-only mode', async () => {
+      // Set URL params that would previously trigger auth callback processing
       window.location.search = '?code=auth-code&state=auth-state'
-      vi.mocked(spotifyApi.handleAuthCallback).mockRejectedValue(new Error('Invalid code'))
 
       render(
         <SpotifyProvider>
@@ -112,14 +124,14 @@ describe('Spotify Connection Flow Integration', () => {
         </SpotifyProvider>
       )
 
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Auth callback failed:', expect.any(Error))
-      })
+      // Wait to ensure no auth callback processing happens
+      await new Promise(resolve => setTimeout(resolve, 100))
 
-      // Should remain unauthenticated
+      // Should not process auth callbacks in main app (popup-only mode)
+      expect(spotifyApi.handleAuthCallback).not.toHaveBeenCalled()
+      
+      // Should remain unauthenticated and show connection prompt
       expect(screen.getByText('Enhanced Features Available')).toBeInTheDocument()
-
-      consoleSpy.mockRestore()
     })
   })
 

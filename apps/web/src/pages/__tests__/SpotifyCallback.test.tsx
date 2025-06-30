@@ -61,8 +61,11 @@ describe('SpotifyCallback', () => {
     );
   };
 
-  describe('Regular mode (not popup)', () => {
-    it('should exchange code for tokens and redirect on success', async () => {
+  describe('Non-popup mode (should not happen in popup-only architecture)', () => {
+    it('should warn and redirect when accessed outside popup', async () => {
+      // Add console.warn spy to capture the warning
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      
       mockSearchParams.set('code', 'test-code');
       mockSearchParams.set('state', 'test-state');
       
@@ -81,39 +84,29 @@ describe('SpotifyCallback', () => {
 
       await waitFor(() => {
         expect(spotifyApi.handleAuthCallback).toHaveBeenCalledWith('test-code', 'test-state');
+        expect(consoleSpy).toHaveBeenCalledWith('SpotifyCallback running outside popup - this should not happen');
         expect(mockNavigate).toHaveBeenCalledWith('/search');
       });
+      
+      consoleSpy.mockRestore();
     });
 
-    it('should show error and redirect on auth error', async () => {
+    it('should handle auth errors in non-popup mode', async () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      
       mockSearchParams.set('error', 'access_denied');
 
       renderComponent();
 
       expect(screen.getByText('❌ Spotify authorization failed: access_denied')).toBeInTheDocument();
-      expect(screen.getByText('Redirecting back to search...')).toBeInTheDocument();
+      expect(screen.queryByText('Redirecting back to search...')).not.toBeInTheDocument();
 
       await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('SpotifyCallback running outside popup - this should not happen');
         expect(mockNavigate).toHaveBeenCalledWith('/search');
-      }, { timeout: 4000 });
-    });
-
-    it('should show error and redirect on exchange failure', async () => {
-      mockSearchParams.set('code', 'test-code');
-      mockSearchParams.set('state', 'test-state');
-      
-      vi.mocked(spotifyApi.handleAuthCallback).mockRejectedValueOnce(new Error('Exchange failed'));
-
-      renderComponent();
-
-      await waitFor(() => {
-        expect(screen.getByText('❌ Failed to complete Spotify authentication')).toBeInTheDocument();
-        expect(screen.getByText('Redirecting back to search...')).toBeInTheDocument();
       });
-
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/search');
-      }, { timeout: 4000 });
+      
+      consoleSpy.mockRestore();
     });
   });
 

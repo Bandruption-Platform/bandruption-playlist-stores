@@ -11,9 +11,8 @@ interface SpotifyContextType {
   accessToken: string | null;
   loading: boolean;
   isAuthenticating: boolean;
-  login: () => Promise<void>;
+  login: () => Promise<{ success: boolean; error?: string }>;
   loginWithPopup: () => Promise<{ success: boolean; error?: string }>;
-  loginWithRedirect: () => Promise<void>;
   logout: () => void;
   
   // Player state
@@ -58,7 +57,6 @@ export const SpotifyProvider: React.FC<SpotifyProviderProps> = ({ children }) =>
     isAuthenticating,
     login,
     loginWithPopup,
-    loginWithRedirect,
     logout,
     isPremium
   } = useSpotifyAuth();
@@ -90,7 +88,6 @@ export const SpotifyProvider: React.FC<SpotifyProviderProps> = ({ children }) =>
     isAuthenticating,
     login,
     loginWithPopup,
-    loginWithRedirect,
     logout,
     
     // Player state

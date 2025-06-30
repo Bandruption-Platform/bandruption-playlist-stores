@@ -29,12 +29,9 @@ export function SpotifyCallback() {
         // Close popup
         window.close();
       } else {
-        // Regular redirect flow (fallback)
-        if (result.success) {
-          navigate('/search');
-        } else {
-          setTimeout(() => navigate('/search'), 3000);
-        }
+        // This should not happen in popup-only flow
+        console.warn('SpotifyCallback running outside popup - this should not happen');
+        navigate('/search');
       }
     };
 
@@ -84,9 +81,7 @@ export function SpotifyCallback() {
         {error ? (
           <div className="text-red-500">
             <p className="text-xl mb-2">❌ {error}</p>
-            {!isPopup && (
-              <p className="text-gray-400">Redirecting back to search...</p>
-            )}
+            {/* In popup-only architecture, we don't show redirect message for non-popup mode */}
           </div>
         ) : (
           <div>

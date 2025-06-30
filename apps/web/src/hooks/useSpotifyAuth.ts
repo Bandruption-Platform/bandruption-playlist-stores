@@ -28,36 +28,13 @@ export const useSpotifyAuth = () => {
         }
       }
       setLoading(false);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
-      
-      if (code && state) {
-        await handleAuthCallback(code, state);
-      }
     };
 
-    const handleAuthCallback = async (code: string, state: string) => {
-      try {
-        const result = await spotifyApi.handleAuthCallback(code, state);
-        if (result.success && result.userData && result.accessToken) {
-          setUser(result.userData);
-          setIsAuthenticated(true);
-          setAccessToken(result.accessToken);
-          
-          localStorage.setItem('spotify_user', JSON.stringify(result.userData));
-          localStorage.setItem('spotify_connected', 'true');
-          localStorage.setItem('spotify_user_id', result.userId);
-          localStorage.setItem('spotify_access_token', result.accessToken);
-        }
-      } catch (error) {
-        console.error('Auth callback failed:', error);
-      }
-    };
-
+    // Initialize by checking stored connection only
+    // Auth codes are processed only in SpotifyCallback popup component
     checkSpotifyConnection();
 
+    // Listen for auth changes from popup authentication
     window.addEventListener('spotify-auth-changed', checkSpotifyConnection);
 
     return () => {
@@ -104,21 +81,15 @@ export const useSpotifyAuth = () => {
     }
   };
 
-  // Fallback to redirect method
-  const loginWithRedirect = async () => {
-    try {
-      const { authUrl } = await spotifyApi.getAuthUrl();
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  };
+  // Removed redirect method - using popup-only authentication
 
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
     setAccessToken(null);
     spotifyApi.disconnect();
+    
+    // No need to clean up processed codes since we don't use them in main app
   };
 
   return {
@@ -128,8 +99,7 @@ export const useSpotifyAuth = () => {
     loading,
     isAuthenticating,
     loginWithPopup,
-    loginWithRedirect,
-    login: loginWithRedirect, // Keep backward compatibility
+    login: loginWithPopup, // Use popup as the only login method
     logout,
     isPremium: user?.product === 'premium'
   };
