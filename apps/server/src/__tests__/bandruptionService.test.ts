@@ -67,7 +67,7 @@ describe('BandruptionService', () => {
       await expect(service.askAxel('test message')).rejects.toThrow('Network error');
     });
 
-    it('should handle rate limiting', async () => {
+    it('should handle rate limiting - reject exactly at 100 requests', async () => {
       // Set up service state for rate limiting
       service.requestCount = 0;
       service.resetTime = Date.now();
@@ -84,7 +84,25 @@ describe('BandruptionService', () => {
       }
 
       // The 101st request should throw rate limit error
-      service.requestCount = 101;
+      await expect(service.askAxel('test')).rejects.toThrow('Rate limit exceeded');
+    });
+
+    it('should enforce exact 100 request limit - old behavior would allow 101', async () => {
+      // Set up service state - this test would fail with old code that checked > 100
+      service.requestCount = 99;
+      service.resetTime = Date.now();
+
+      const mockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({ reply: 'Response' }),
+      };
+      mockFetch.mockResolvedValue(mockResponse as any);
+
+      // Request 100 should succeed
+      await service.askAxel('test');
+      expect(service.requestCount).toBe(100);
+
+      // Request 101 should fail immediately (old code would have allowed this)
       await expect(service.askAxel('test')).rejects.toThrow('Rate limit exceeded');
     });
 

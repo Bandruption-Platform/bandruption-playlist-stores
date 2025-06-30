@@ -15,18 +15,18 @@ class BandruptionService {
   private resetTime = Date.now();
 
   async askAxel(message: string): Promise<string> {
-    // Simple rate limiting
-    if (this.requestCount > 100 && Date.now() - this.resetTime < 60000) {
+    // Reset counter every minute
+    if (Date.now() - this.resetTime >= 60000) {
+      this.requestCount = 0;
+      this.resetTime = Date.now();
+    }
+
+    // Simple rate limiting - check before incrementing to enforce true limit of 100
+    if (this.requestCount >= 100) {
       throw new Error('Rate limit exceeded');
     }
 
     try {
-      // Reset counter every minute
-      if (Date.now() - this.resetTime > 60000) {
-        this.requestCount = 0;
-        this.resetTime = Date.now();
-      }
-
       this.requestCount++;
       
       const response = await fetch(`${this.baseUrl}/api/ask`, {

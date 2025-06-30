@@ -50,7 +50,7 @@ export const ChatPage: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const axelResponse = await bandruptionApi.chatWithAxel(inputValue);
+      const axelResponse = await bandruptionApi.chatWithAxel(newMessage.content);
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
