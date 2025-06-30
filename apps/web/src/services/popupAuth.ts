@@ -6,6 +6,8 @@ export interface PopupAuthResult {
   success: boolean;
   userId?: string;
   accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
   userData?: SpotifyUser;
   error?: string;
 }
@@ -56,6 +58,8 @@ class PopupAuthService {
               success: true,
               userId: event.data.userId,
               accessToken: event.data.accessToken,
+              refreshToken: event.data.refreshToken,
+              expiresIn: event.data.expiresIn,
               userData: event.data.userData
             });
           }

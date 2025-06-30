@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from 'vitest';
 import { popupAuthService } from '../popupAuth';
 
 // Mock fetch
@@ -25,6 +25,9 @@ describe('PopupAuthService', () => {
   });
 
   afterEach(() => {
+    // Reset the popup service state to prevent hanging processes
+    popupAuthService.currentPopup = null;
+    
     global.window = originalWindow;
   });
 
@@ -214,5 +217,10 @@ describe('PopupAuthService', () => {
     it('should not error if no popup is open', () => {
       expect(() => popupAuthService.closeCurrentPopup()).not.toThrow();
     });
+  });
+  
+  // Global cleanup after all tests
+  afterAll(() => {
+    vi.clearAllMocks();
   });
 });

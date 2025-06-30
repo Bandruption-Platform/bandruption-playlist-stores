@@ -9,6 +9,8 @@
     "dev": "tsc --watch",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "rm -rf dist",
     "db:generate": "supabase gen types typescript --local > src/types.ts",
     "db:push": "supabase db push"
@@ -22,6 +24,7 @@
     "globals": "^15.9.0",
     "supabase": "^2.26.9",
     "typescript": "^5.1.6",
-    "typescript-eslint": "^8.3.0"
+    "typescript-eslint": "^8.3.0",
+    "vitest": "^3.2.4"
   }
 }
