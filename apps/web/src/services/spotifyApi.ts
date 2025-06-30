@@ -50,11 +50,6 @@ class SpotifyApiService {
     if (!response.ok) throw new Error('Auth callback failed');
     const result = await response.json();
     
-    // Store the access token if present
-    if (result.accessToken) {
-      localStorage.setItem('spotify_access_token', result.accessToken);
-    }
-    
     return result;
   }
 
