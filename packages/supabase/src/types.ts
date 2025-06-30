@@ -17,10 +17,10 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
-          operationName?: string
+          extensions?: Json
           query?: string
           variables?: Json
-          extensions?: Json
+          operationName?: string
         }
         Returns: Json
       }
@@ -34,6 +34,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      algorand_wallets: {
+        Row: {
+          address: string
+          created_at: string | null
+          encrypted_mnemonic: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string | null
+          encrypted_mnemonic: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string | null
+          encrypted_mnemonic?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      nft_transactions: {
+        Row: {
+          amount: number | null
+          block_number: number | null
+          created_at: string | null
+          from_address: string | null
+          id: string
+          nft_id: string | null
+          to_address: string
+          transaction_id: string
+          transaction_type: string
+        }
+        Insert: {
+          amount?: number | null
+          block_number?: number | null
+          created_at?: string | null
+          from_address?: string | null
+          id?: string
+          nft_id?: string | null
+          to_address: string
+          transaction_id: string
+          transaction_type: string
+        }
+        Update: {
+          amount?: number | null
+          block_number?: number | null
+          created_at?: string | null
+          from_address?: string | null
+          id?: string
+          nft_id?: string | null
+          to_address?: string
+          transaction_id?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_transactions_nft_id_fkey"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nfts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nfts: {
+        Row: {
+          asset_id: number
+          created_at: string | null
+          creator_address: string
+          current_owner_address: string | null
+          description: string | null
+          for_sale: boolean | null
+          id: string
+          image_url: string | null
+          metadata_url: string | null
+          name: string
+          price: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          asset_id: number
+          created_at?: string | null
+          creator_address: string
+          current_owner_address?: string | null
+          description?: string | null
+          for_sale?: boolean | null
+          id?: string
+          image_url?: string | null
+          metadata_url?: string | null
+          name: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          asset_id?: number
+          created_at?: string | null
+          creator_address?: string
+          current_owner_address?: string | null
+          description?: string | null
+          for_sale?: boolean | null
+          id?: string
+          image_url?: string | null
+          metadata_url?: string | null
+          name?: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       playlists: {
         Row: {
           cover_image: string | null
