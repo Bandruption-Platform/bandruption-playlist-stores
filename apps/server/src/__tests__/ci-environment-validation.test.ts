@@ -91,7 +91,7 @@ describe('CI Environment Validation', () => {
     Object.entries(allEnvVars).forEach(([key, value]) => {
       if (typeof value === 'string') {
         // Should use ${{ secrets.SECRET_NAME }} syntax
-        if (!value.startsWith('${{ secrets.') || !value.endsWith(' }}')) {
+        if (!value.startsWith('${{ secrets.') || !value.endsWith('}}')) {
           invalidSecretRefs.push(`${key}: ${value}`);
         }
       }
