@@ -41,14 +41,16 @@ class SpotifyApiService {
     return response.json();
   }
 
-  async handleAuthCallback(code: string, state: string): Promise<{ success: boolean; userId: string }> {
+  async handleAuthCallback(code: string, state: string): Promise<{ success: boolean; userId: string; accessToken?: string; userData?: SpotifyUser }> {
     const response = await fetch(`${API_BASE}/api/spotify/auth/callback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, state })
     });
     if (!response.ok) throw new Error('Auth callback failed');
-    return response.json();
+    const result = await response.json();
+    
+    return result;
   }
 
   // Authenticated endpoints (with user token)

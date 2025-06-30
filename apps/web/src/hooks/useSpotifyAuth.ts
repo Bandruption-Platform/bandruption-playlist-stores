@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { spotifyApi } from '../services/spotifyApi';
+import { popupAuthService } from '../services/popupAuth';
 import { SpotifyUser } from '@shared/types';
 
 export const useSpotifyAuth = () => {
@@ -7,6 +8,7 @@ export const useSpotifyAuth = () => {
   const [user, setUser] = useState<SpotifyUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
     const checkSpotifyConnection = async () => {
@@ -26,36 +28,13 @@ export const useSpotifyAuth = () => {
         }
       }
       setLoading(false);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
-      
-      if (code && state) {
-        await handleAuthCallback(code, state);
-      }
     };
 
-    const handleAuthCallback = async (code: string, state: string) => {
-      try {
-        const result = await spotifyApi.handleAuthCallback(code, state);
-        if (result.success) {
-          const userData = await spotifyApi.getUserProfile(result.userId, accessToken!);
-          
-          setUser(userData);
-          setIsAuthenticated(true);
-          
-          localStorage.setItem('spotify_user', JSON.stringify(userData));
-          localStorage.setItem('spotify_connected', 'true');
-          localStorage.setItem('spotify_user_id', result.userId);
-        }
-      } catch (error) {
-        console.error('Auth callback failed:', error);
-      }
-    };
-
+    // Initialize by checking stored connection only
+    // Auth codes are processed only in SpotifyCallback popup component
     checkSpotifyConnection();
 
+    // Listen for auth changes from popup authentication
     window.addEventListener('spotify-auth-changed', checkSpotifyConnection);
 
     return () => {
@@ -63,21 +42,54 @@ export const useSpotifyAuth = () => {
     };
   }, []);
 
-  const login = async () => {
+  const loginWithPopup = async (): Promise<{ success: boolean; error?: string }> => {
+    setIsAuthenticating(true);
+    
     try {
-      const { authUrl } = await spotifyApi.getAuthUrl();
-      window.location.href = authUrl;
+      const result = await popupAuthService.loginWithPopup();
+      
+      if (result.success && result.accessToken && result.userData) {
+        // Store authentication data
+        localStorage.setItem('spotify_access_token', result.accessToken);
+        localStorage.setItem('spotify_user', JSON.stringify(result.userData));
+        localStorage.setItem('spotify_connected', 'true');
+        localStorage.setItem('spotify_user_id', result.userId!);
+        
+        // Update state
+        setAccessToken(result.accessToken);
+        setUser(result.userData);
+        setIsAuthenticated(true);
+        
+        // Notify other components
+        window.dispatchEvent(new CustomEvent('spotify-auth-changed'));
+        
+        return { success: true };
+      } else {
+        return { 
+          success: false, 
+          error: result.error || 'Authentication failed' 
+        };
+      }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Popup authentication failed:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Authentication failed' 
+      };
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
+  // Removed redirect method - using popup-only authentication
 
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
     setAccessToken(null);
     spotifyApi.disconnect();
+    
+    // No need to clean up processed codes since we don't use them in main app
   };
 
   return {
@@ -85,7 +97,9 @@ export const useSpotifyAuth = () => {
     user,
     accessToken,
     loading,
-    login,
+    isAuthenticating,
+    loginWithPopup,
+    login: loginWithPopup, // Use popup as the only login method
     logout,
     isPremium: user?.product === 'premium'
   };

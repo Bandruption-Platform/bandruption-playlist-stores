@@ -113,7 +113,13 @@ router.post('/auth/callback', async (req, res) => {
         userId: user.id
       });
       
-      res.json({ success: true, userId: user.id });
+      // Return complete auth data for popup
+      res.json({ 
+        success: true, 
+        userId: user.id,
+        accessToken: tokens.access_token,  // Include access token
+        userData: user                     // Include full user data
+      });
     } catch (spotifyError) {
       console.error('Spotify token exchange failed:', spotifyError);
       return res.status(400).json({ error: 'Failed to exchange authorization code' });

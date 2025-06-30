@@ -1,114 +1,257 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import { SpotifyCallback } from '../SpotifyCallback'
-import { spotifyApi } from '../../services/spotifyApi'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { SpotifyCallback } from '../SpotifyCallback';
+import { spotifyApi } from '../../services/spotifyApi';
 
-// Mock the router
-const mockNavigate = vi.fn()
+// Mock dependencies
+vi.mock('../../services/spotifyApi', () => ({
+  spotifyApi: {
+    handleAuthCallback: vi.fn()
+  }
+}));
+
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useSearchParams: () => [new URLSearchParams('?code=test_code&state=test_state')]
-  }
-})
+    useSearchParams: () => [mockSearchParams]
+  };
+});
 
-// Mock the spotifyApi
-vi.mock('../../services/spotifyApi', () => ({
-  spotifyApi: {
-    handleAuthCallback: vi.fn(),
-    exchangeCodeForTokens: vi.fn() // This method should NOT exist
-  }
-}))
-
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>)
-}
+const mockNavigate = vi.fn();
+const mockSearchParams = new URLSearchParams();
 
 describe('SpotifyCallback', () => {
+  let mockOpener: { postMessage: (data: unknown, origin: string) => void };
+
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('should call handleAuthCallback method not exchangeCodeForTokens', async () => {
-    const mockHandleAuthCallback = vi.mocked(spotifyApi.handleAuthCallback)
-    mockHandleAuthCallback.mockResolvedValue({ success: true, userId: 'test_user' })
-
-    renderWithRouter(<SpotifyCallback />)
-
-    // Wait for useEffect to run
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    // Should call the correct method
-    expect(mockHandleAuthCallback).toHaveBeenCalledWith('test_code', 'test_state')
-    expect(mockHandleAuthCallback).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call exchangeCodeForTokens method (this method should not exist)', async () => {
-    const mockHandleAuthCallback = vi.mocked(spotifyApi.handleAuthCallback)
-    mockHandleAuthCallback.mockResolvedValue({ success: true, userId: 'test_user' })
-
-    renderWithRouter(<SpotifyCallback />)
-
-    // Wait for useEffect to run
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    // Verify that exchangeCodeForTokens is never called
-    // This test would fail if the component tried to call exchangeCodeForTokens
-    expect(spotifyApi.exchangeCodeForTokens).not.toHaveBeenCalled()
-  })
-
-  it('should verify that handleAuthCallback method exists on spotifyApi', () => {
-    // This test ensures the method we expect to use actually exists
-    expect(typeof spotifyApi.handleAuthCallback).toBe('function')
-    expect(spotifyApi.handleAuthCallback).toBeDefined()
-  })
-
-  it('should throw error if component tries to call non-existent method', () => {
-    // This test simulates what would happen if the component called a wrong method
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.clearAllMocks();
+    mockSearchParams.delete('code');
+    mockSearchParams.delete('state');
+    mockSearchParams.delete('error');
     
-    // If the component tried to call a non-existent method, it would throw
-    expect(() => {
-      // @ts-expect-error - intentionally calling non-existent method to simulate the bug
-      spotifyApi.nonExistentMethod?.('test', 'test')
-    }).not.toThrow() // Non-existent method is undefined, so calling it would throw
+    // Mock window.opener for popup tests
+    mockOpener = {
+      postMessage: vi.fn()
+    };
+    
+    Object.defineProperty(window, 'opener', {
+      value: null,
+      writable: true
+    });
+    
+    Object.defineProperty(window, 'close', {
+      value: vi.fn(),
+      writable: true
+    });
 
-    consoleSpy.mockRestore()
-  })
+    Object.defineProperty(window, 'location', {
+      value: { origin: 'http://localhost:3000' },
+      writable: true
+    });
+  });
 
-  it('should handle auth callback with valid code and state parameters', async () => {
-    const mockHandleAuthCallback = vi.mocked(spotifyApi.handleAuthCallback)
-    mockHandleAuthCallback.mockResolvedValue({ success: true, userId: 'test_user' })
+  const renderComponent = () => {
+    return render(
+      <BrowserRouter>
+        <SpotifyCallback />
+      </BrowserRouter>
+    );
+  };
 
-    renderWithRouter(<SpotifyCallback />)
+  describe('Non-popup mode (should not happen in popup-only architecture)', () => {
+    it('should warn and redirect when accessed outside popup', async () => {
+      // Add console.warn spy to capture the warning
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      
+      mockSearchParams.set('code', 'test-code');
+      mockSearchParams.set('state', 'test-state');
+      
+      const mockResult = {
+        success: true,
+        userId: 'user123',
+        accessToken: 'token123',
+        userData: { id: 'user123', display_name: 'Test User' }
+      };
+      
+      vi.mocked(spotifyApi.handleAuthCallback).mockResolvedValueOnce(mockResult);
 
-    // Should show loading state initially
-    expect(screen.getByText('Connecting to Spotify...')).toBeInTheDocument()
+      renderComponent();
 
-    // Wait for the auth callback to complete
-    await new Promise(resolve => setTimeout(resolve, 100))
+      expect(screen.getByText('Connecting to Spotify...')).toBeInTheDocument();
 
-    // Should have called navigate to redirect to search page
-    expect(mockNavigate).toHaveBeenCalledWith('/search')
-  })
+      await waitFor(() => {
+        expect(spotifyApi.handleAuthCallback).toHaveBeenCalledWith('test-code', 'test-state');
+        expect(consoleSpy).toHaveBeenCalledWith('SpotifyCallback running outside popup - this should not happen');
+        expect(mockNavigate).toHaveBeenCalledWith('/search');
+      });
+      
+      consoleSpy.mockRestore();
+    });
 
-  it('should handle auth callback failure gracefully', async () => {
-    const mockHandleAuthCallback = vi.mocked(spotifyApi.handleAuthCallback)
-    mockHandleAuthCallback.mockRejectedValue(new Error('Auth failed'))
+    it('should handle auth errors in non-popup mode', async () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      
+      mockSearchParams.set('error', 'access_denied');
 
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderComponent();
 
-    renderWithRouter(<SpotifyCallback />)
+      expect(screen.getByText('❌ Spotify authorization failed: access_denied')).toBeInTheDocument();
+      expect(screen.queryByText('Redirecting back to search...')).not.toBeInTheDocument();
 
-    // Wait for the error to be handled
-    await new Promise(resolve => setTimeout(resolve, 100))
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('SpotifyCallback running outside popup - this should not happen');
+        expect(mockNavigate).toHaveBeenCalledWith('/search');
+      });
+      
+      consoleSpy.mockRestore();
+    });
+  });
 
-    // Should show error message
-    expect(screen.getByText(/Failed to complete Spotify authentication/)).toBeInTheDocument()
+  describe('Popup mode', () => {
+    beforeEach(() => {
+      // Set window.opener to simulate popup mode
+      window.opener = mockOpener;
+    });
 
-    consoleSpy.mockRestore()
-  })
-})
+    it('should send success message to parent and close popup', async () => {
+      mockSearchParams.set('code', 'test-code');
+      mockSearchParams.set('state', 'test-state');
+      
+      const mockResult = {
+        success: true,
+        userId: 'user123',
+        accessToken: 'token123',
+        userData: { id: 'user123', display_name: 'Test User' }
+      };
+      
+      vi.mocked(spotifyApi.handleAuthCallback).mockResolvedValueOnce(mockResult);
+
+      renderComponent();
+
+      expect(screen.getByText('Connecting to Spotify...')).toBeInTheDocument();
+      expect(screen.getByText('This window will close automatically')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(spotifyApi.handleAuthCallback).toHaveBeenCalledWith('test-code', 'test-state');
+        expect(mockOpener.postMessage).toHaveBeenCalledWith({
+          type: 'spotify-auth-success',
+          success: true,
+          userId: 'user123',
+          accessToken: 'token123',
+          userData: { id: 'user123', display_name: 'Test User' }
+        }, 'http://localhost:3000');
+        expect(window.close).toHaveBeenCalled();
+      });
+    });
+
+    it('should send error message to parent and close popup on auth error', async () => {
+      mockSearchParams.set('error', 'access_denied');
+
+      renderComponent();
+
+      expect(screen.getByText('❌ Spotify authorization failed: access_denied')).toBeInTheDocument();
+      expect(screen.queryByText('Redirecting back to search...')).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(mockOpener.postMessage).toHaveBeenCalledWith({
+          type: 'spotify-auth-error',
+          success: false,
+          error: 'Spotify authorization failed: access_denied'
+        }, 'http://localhost:3000');
+        expect(window.close).toHaveBeenCalled();
+      });
+    });
+
+    it('should send error message on exchange failure', async () => {
+      mockSearchParams.set('code', 'test-code');
+      mockSearchParams.set('state', 'test-state');
+      
+      vi.mocked(spotifyApi.handleAuthCallback).mockRejectedValueOnce(new Error('Exchange failed'));
+
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.getByText('❌ Failed to complete Spotify authentication')).toBeInTheDocument();
+        expect(mockOpener.postMessage).toHaveBeenCalledWith({
+          type: 'spotify-auth-error',
+          success: false,
+          error: 'Failed to complete Spotify authentication'
+        }, 'http://localhost:3000');
+        expect(window.close).toHaveBeenCalled();
+      });
+    });
+
+    it('should handle missing callback parameters', async () => {
+      // No code or state parameters
+
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.getByText('❌ Invalid callback parameters')).toBeInTheDocument();
+        expect(mockOpener.postMessage).toHaveBeenCalledWith({
+          type: 'spotify-auth-error',
+          success: false,
+          error: 'Invalid callback parameters'
+        }, 'http://localhost:3000');
+        expect(window.close).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Code deduplication', () => {
+    it('should not process the same code twice', async () => {
+      mockSearchParams.set('code', 'test-code');
+      mockSearchParams.set('state', 'test-state');
+      
+      const mockResult = {
+        success: true,
+        userId: 'user123',
+        accessToken: 'token123',
+        userData: { id: 'user123' }
+      };
+      
+      vi.mocked(spotifyApi.handleAuthCallback).mockResolvedValueOnce(mockResult);
+
+      const { rerender } = renderComponent();
+
+      await waitFor(() => {
+        expect(spotifyApi.handleAuthCallback).toHaveBeenCalledTimes(1);
+      });
+
+      // Re-render with same code
+      rerender(
+        <BrowserRouter>
+          <SpotifyCallback />
+        </BrowserRouter>
+      );
+
+      // Should not call handleAuthCallback again
+      expect(spotifyApi.handleAuthCallback).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Legacy tests', () => {
+    it('should call handleAuthCallback method not exchangeCodeForTokens', async () => {
+      mockSearchParams.set('code', 'test_code');
+      mockSearchParams.set('state', 'test_state');
+      
+      const mockHandleAuthCallback = vi.mocked(spotifyApi.handleAuthCallback);
+      mockHandleAuthCallback.mockResolvedValue({ success: true, userId: 'test_user' });
+
+      renderComponent();
+
+      await waitFor(() => {
+        expect(mockHandleAuthCallback).toHaveBeenCalledWith('test_code', 'test_state');
+        expect(mockHandleAuthCallback).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should verify that handleAuthCallback method exists on spotifyApi', () => {
+      expect(typeof spotifyApi.handleAuthCallback).toBe('function');
+      expect(spotifyApi.handleAuthCallback).toBeDefined();
+    });
+  });
+});
