@@ -3,6 +3,7 @@ import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
 import { Button } from '@shared/ui';
 import { Card } from '../ui/Card';
 import { useAppStore } from '../../store/appStore';
+import { bandruptionApi } from '../../services/bandruptionApi';
 
 export const ChatWidget: React.FC = () => {
   const { isChatOpen, toggleChat } = useAppStore();
@@ -16,7 +17,7 @@ export const ChatWidget: React.FC = () => {
     }
   ]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!message.trim()) return;
 
     const newMessage = {
@@ -29,16 +30,27 @@ export const ChatWidget: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
     setMessage('');
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const axelResponse = await bandruptionApi.chatWithAxel(newMessage.message);
+      
       const aiResponse = {
         id: (Date.now() + 1).toString(),
-        message: 'That\'s a great question! Based on your music taste, I\'d recommend checking out some ambient electronic tracks. Would you like me to create a playlist for you?',
+        message: axelResponse,
         isUser: false,
         timestamp: new Date(),
       };
+      
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorResponse = {
+        id: (Date.now() + 1).toString(),
+        message: "Sorry, I'm having trouble connecting to Axel right now. Please try again later.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
   };
 
   return (
