@@ -1,25 +1,5 @@
 import { User, Album, NFT, AIArtGeneration, Track, Playlist, Artist } from '../types';
 
-// Mobile app specific types for mock data
-interface PlaylistItem {
-  id: string;
-  trackId: string;
-  albumId: string;
-  addedAt: Date;
-  addedBy: string;
-}
-
-interface MobilePlaylist {
-  id: string;
-  name: string;
-  description?: string;
-  imageUrl?: string;
-  userId: string;
-  isPublic: boolean;
-  items: PlaylistItem[];
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export const mockTracks: Track[] = [
   // Midnight Synth tracks
