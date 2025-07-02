@@ -10,7 +10,7 @@
 # Redirect API calls to your Azure backend
 [[redirects]]
   from = "/api/*"
-  to = "https://your-server-domain.azurewebsites.net/api/:splat"
+  to = "https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/api/:splat"
   status = 200
 
 # Handle client-side routing (React Router)
