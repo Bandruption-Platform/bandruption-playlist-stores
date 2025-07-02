@@ -5,13 +5,14 @@ import { Grid2x2 as Grid, List, Layers, MoveHorizontal as MoreHorizontal, Plus, 
 import { useAppStore } from '@/store/useAppStore';
 import { AlbumCard } from '@/components/AlbumCard';
 import { AlbumListItem } from '@/components/AlbumListItem';
+import { PlaylistItem } from '@/components/PlaylistItem';
 import { DraftsTab } from '@/components/DraftsTab';
 import { NFTGenerationModal } from '@/components/NFTGenerationModal';
 
-type LibraryTab = 'albums' | 'drafts';
+type LibraryTab = 'albums' | 'playlists' | 'drafts';
 
 export default function LibraryScreen() {
-  const { library, libraryView, setLibraryView, drafts } = useAppStore();
+  const { library, playlists, libraryView, setLibraryView, drafts } = useAppStore();
   const [activeTab, setActiveTab] = useState<LibraryTab>('albums');
   const [showNFTModal, setShowNFTModal] = useState(false);
 
@@ -52,11 +53,42 @@ export default function LibraryScreen() {
     />
   );
 
+  const renderPlaylistList = () => (
+    <FlatList
+      data={playlists}
+      key="playlists"
+      renderItem={({ item }) => (
+        <PlaylistItem playlist={item} />
+      )}
+      keyExtractor={(item) => item.id}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.playlistContainer}
+    />
+  );
+
   const renderContent = () => {
     if (activeTab === 'drafts') {
       return <DraftsTab drafts={drafts} />;
     }
 
+    if (activeTab === 'playlists') {
+      return playlists.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateTitle}>No playlists yet</Text>
+          <Text style={styles.emptyStateText}>
+            Create your first playlist to organize your favorite tracks
+          </Text>
+          <TouchableOpacity style={styles.createPlaylistButton}>
+            <Plus size={20} color="#000000" />
+            <Text style={styles.createPlaylistButtonText}>Create Playlist</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        renderPlaylistList()
+      );
+    }
+
+    // Albums tab
     switch (libraryView) {
       case 'blocks':
       case 'stack':
@@ -78,7 +110,7 @@ export default function LibraryScreen() {
           style={styles.generateButton}
           onPress={() => setShowNFTModal(true)}
         >
-          <Plus size={20} color="#10B981" />
+          <Plus size={20} color="#000000" />
         </TouchableOpacity>
       </View>
 
@@ -90,6 +122,14 @@ export default function LibraryScreen() {
         >
           <Text style={[styles.tabText, activeTab === 'albums' && styles.activeTabText]}>
             Albums ({library.length})
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'playlists' && styles.activeTab]}
+          onPress={() => setActiveTab('playlists')}
+        >
+          <Text style={[styles.tabText, activeTab === 'playlists' && styles.activeTabText]}>
+            Playlists ({playlists.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -117,13 +157,33 @@ export default function LibraryScreen() {
               >
                 <Icon 
                   size={18} 
-                  color={libraryView === view ? '#10B981' : '#9CA3AF'} 
+                  color={libraryView === view ? '#70C3ED' : '#A78BFA'} 
                 />
               </TouchableOpacity>
             ))}
           </View>
           <TouchableOpacity style={styles.filterButton}>
-            <Filter size={18} color="#9CA3AF" />
+            <Filter size={18} color="#A78BFA" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Filter Controls for Playlists */}
+      {activeTab === 'playlists' && playlists.length > 0 && (
+        <View style={styles.controls}>
+          <View style={styles.playlistFilters}>
+            <TouchableOpacity style={styles.filterChip}>
+              <Text style={styles.filterChipText}>All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterChip}>
+              <Text style={styles.filterChipText}>Public</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterChip}>
+              <Text style={styles.filterChipText}>Private</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.filterButton}>
+            <Filter size={18} color="#A78BFA" />
           </TouchableOpacity>
         </View>
       )}
@@ -146,7 +206,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     flexDirection: 'row',
@@ -165,9 +225,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#064E3B',
+    backgroundColor: '#CDFF6A',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#9BC53D',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -179,17 +241,21 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 12,
+    backgroundColor: '#2D1B69',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   activeTab: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
+    borderColor: '#9BC53D',
   },
   tabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#A78BFA',
   },
   activeTabText: {
-    color: '#FFFFFF',
+    color: '#000000',
   },
   controls: {
     flexDirection: 'row',
@@ -200,16 +266,35 @@ const styles = StyleSheet.create({
   },
   viewToggle: {
     flexDirection: 'row',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 8,
     padding: 4,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   viewButton: {
     padding: 8,
     borderRadius: 6,
   },
   activeViewButton: {
-    backgroundColor: '#064E3B',
+    backgroundColor: '#4A9BC7',
+  },
+  playlistFilters: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: '#2D1B69',
+    borderWidth: 1,
+    borderColor: '#4C1D95',
+  },
+  filterChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#A78BFA',
   },
   filterButton: {
     padding: 8,
@@ -224,5 +309,43 @@ const styles = StyleSheet.create({
   blockCard: {
     flex: 1,
     margin: 8,
+  },
+  playlistContainer: {
+    paddingBottom: 20,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#C4B5FD',
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: '#A78BFA',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  createPlaylistButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#CDFF6A',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#9BC53D',
+  },
+  createPlaylistButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+    marginLeft: 8,
   },
 });

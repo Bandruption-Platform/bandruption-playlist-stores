@@ -52,7 +52,7 @@ export default function MerchandiseScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Merchandise</Text>
         <TouchableOpacity style={styles.cartButton}>
-          <ShoppingCart size={24} color="#10B981" />
+          <ShoppingCart size={24} color="#70C3ED" />
         </TouchableOpacity>
       </View>
 
@@ -62,7 +62,7 @@ export default function MerchandiseScreen() {
           style={styles.createButton}
           onPress={() => setShowNFTToMerchModal(true)}
         >
-          <Palette size={24} color="#10B981" />
+          <Palette size={24} color="#CDFF6A" />
           <View style={styles.createButtonText}>
             <Text style={styles.createButtonTitle}>Turn NFT into Merch</Text>
             <Text style={styles.createButtonSubtitle}>Convert your NFTs to physical products</Text>
@@ -72,7 +72,7 @@ export default function MerchandiseScreen() {
         {/* Categories */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <TrendingUp size={20} color="#10B981" />
+            <TrendingUp size={20} color="#70C3ED" />
             <Text style={styles.sectionTitle}>Popular Items</Text>
           </View>
           
@@ -94,7 +94,7 @@ export default function MerchandiseScreen() {
         {/* Your Creations */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Award size={20} color="#10B981" />
+            <Award size={20} color="#CDFF6A" />
             <Text style={styles.sectionTitle}>Your Creations</Text>
           </View>
           
@@ -158,7 +158,7 @@ export default function MerchandiseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#1E1B4B',
   },
   header: {
     flexDirection: 'row',
@@ -177,9 +177,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#064E3B',
+    backgroundColor: '#4A9BC7',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#70C3ED',
   },
   scrollView: {
     flex: 1,
@@ -187,13 +189,13 @@ const styles = StyleSheet.create({
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     marginHorizontal: 20,
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#10B981',
+    borderColor: '#CDFF6A',
   },
   createButtonText: {
     marginLeft: 16,
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
   },
   createButtonSubtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginTop: 2,
   },
   section: {
@@ -237,12 +239,12 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 18,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginBottom: 8,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#A78BFA',
     textAlign: 'center',
   },
   licenseSection: {
@@ -256,10 +258,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   licenseCard: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
   },
   licenseTitle: {
     fontSize: 16,
@@ -269,13 +273,13 @@ const styles = StyleSheet.create({
   },
   licenseDescription: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginBottom: 8,
     lineHeight: 20,
   },
   licensePrice: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#CDFF6A',
   },
 });

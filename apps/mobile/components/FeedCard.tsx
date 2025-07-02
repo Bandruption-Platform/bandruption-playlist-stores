@@ -14,13 +14,13 @@ export function FeedCard({ type, user, content, image, timestamp }: FeedCardProp
   const getTypeIcon = () => {
     switch (type) {
       case 'nft_created':
-        return <Palette size={16} color="#8B5CF6" />;
+        return <Palette size={16} color="#70C3ED" />;
       case 'album_added':
-        return <Music size={16} color="#10B981" />;
+        return <Music size={16} color="#CDFF6A" />;
       case 'merch_created':
-        return <Heart size={16} color="#F59E0B" />;
+        return <Heart size={16} color="#CDFF6A" />;
       default:
-        return <Music size={16} color="#10B981" />;
+        return <Music size={16} color="#CDFF6A" />;
     }
   };
 
@@ -59,15 +59,15 @@ export function FeedCard({ type, user, content, image, timestamp }: FeedCardProp
 
       <View style={styles.actions}>
         <TouchableOpacity style={styles.actionButton}>
-          <Heart size={20} color="#9CA3AF" />
+          <Heart size={20} color="#A78BFA" />
           <Text style={styles.actionText}>24</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
-          <MessageCircle size={20} color="#9CA3AF" />
+          <MessageCircle size={20} color="#A78BFA" />
           <Text style={styles.actionText}>5</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
-          <Share size={20} color="#9CA3AF" />
+          <Share size={20} color="#A78BFA" />
         </TouchableOpacity>
       </View>
     </View>
@@ -76,8 +76,10 @@ export function FeedCard({ type, user, content, image, timestamp }: FeedCardProp
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#2D1B69',
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#4C1D95',
     padding: 16,
     marginHorizontal: 20,
     marginBottom: 16,
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#10B981',
+    backgroundColor: '#CDFF6A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#000000',
   },
   userDetails: {
     flex: 1,
@@ -113,17 +115,17 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#E0E7FF',
     marginRight: 8,
   },
   timestamp: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginTop: 2,
   },
   content: {
     fontSize: 15,
-    color: '#D1D5DB',
+    color: '#E0E7FF',
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -144,7 +146,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     marginLeft: 6,
   },
 });

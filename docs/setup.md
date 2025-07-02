@@ -6,6 +6,7 @@ This guide will help you set up the Bandruption Playlist Stores monorepo for dev
 
 Before you begin, make sure you have the following installed:
 
+- **Git**
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
 - **Git**
@@ -131,6 +132,13 @@ Before you begin, make sure you have the following installed:
    - Check if Supabase is running: `supabase status`
    - Verify environment variables are correct
    - Check database logs: `supabase logs -f`
+
+5. **Starting with NPX**
+   ```bash
+   nvm use xx.xx
+   cd apps/mobile
+   npx expo start --clear
+   ```
 
 ### Getting Help
 
