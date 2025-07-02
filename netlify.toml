@@ -1,6 +1,6 @@
 [build]
-  # Let Turbo handle dependency building automatically
-  command = "npm ci && npx turbo build --filter=web"
+  # Build shared packages first, then web app
+  command = "npm ci && npm run build --filter=@shared/types --filter=@shared/ui --filter=web"
   publish = "apps/web/dist"
 
 [build.environment]
@@ -19,6 +19,5 @@
   to = "/index.html"
   status = 200
 
-# Production environment variables (set in Netlify dashboard instead)
 [context.production.environment]
   NODE_ENV = "production"
