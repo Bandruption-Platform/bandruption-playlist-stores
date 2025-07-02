@@ -77,7 +77,6 @@ jobs:
           # Copy server build output
           cp -r apps/server/dist deploy-package/
           cp apps/server/package.json deploy-package/
-          cp apps/server/package-lock.json deploy-package/
           
           # Create package.json for Azure with production dependencies only
           cd deploy-package
@@ -106,7 +105,7 @@ jobs:
           cp ../packages/supabase/package.json node_modules/@shared/supabase/
           
           # Install only production dependencies
-          npm ci --omit=dev --ignore-scripts
+          npm install --omit=dev --ignore-scripts
 
       - name: Zip artifact for deployment
         run: |
