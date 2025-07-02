@@ -14,7 +14,7 @@ describe('AIChat', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAppStore as jest.Mock).mockReturnValue({
+    (useAppStore as unknown as jest.Mock).mockReturnValue({
       chatHistory: [],
       addChatMessage: mockAddChatMessage,
     } as any);
@@ -72,7 +72,7 @@ describe('AIChat', () => {
       },
     ];
 
-    (useAppStore as jest.Mock).mockReturnValue({
+    (useAppStore as unknown as jest.Mock).mockReturnValue({
       chatHistory: mockChatHistory,
       addChatMessage: mockAddChatMessage,
     } as any);
@@ -109,7 +109,7 @@ describe('AIChat', () => {
     try {
       await bandruptionService.chatWithAxel('test message');
     } catch (error) {
-      expect(error.message).toBe('Service error');
+      expect((error as Error).message).toBe('Service error');
     }
     
     expect(bandruptionService.chatWithAxel).toHaveBeenCalledWith('test message');
