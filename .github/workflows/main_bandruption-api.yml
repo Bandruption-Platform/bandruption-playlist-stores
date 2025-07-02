@@ -152,5 +152,5 @@ jobs:
       - name: Check deployment health
         run: |
           sleep 30
-          curl -f https://bandruption-api.azurewebsites.net/health || exit 1
+          curl -f https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || exit 1
           
