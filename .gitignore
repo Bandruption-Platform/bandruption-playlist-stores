@@ -125,3 +125,7 @@ lerna-debug.log*
 
 # Supabase local development
 .supabase/ 
+# Supabase CLI temp files
+**/.temp/
+**/supabase/.temp/
+packages/supabase/supabase/.temp/**
