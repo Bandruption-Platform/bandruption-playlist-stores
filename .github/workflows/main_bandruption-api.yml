@@ -7,13 +7,18 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'apps/server/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'turbo.json'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -22,15 +27,66 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+          cache: 'npm'
 
-      - name: npm install, build, and test
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared packages
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm run build --filter=@shared/types
+          npm run build --filter=@shared/supabase
+
+      - name: Build server
+        run: |
+          cd apps/server
+          npm run build
+
+      - name: Run tests
+        run: |
+          npm run test --filter=server
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy-package
+          
+          # Copy server build output
+          cp -r apps/server/dist deploy-package/
+          cp apps/server/package.json deploy-package/
+          
+          # Create package.json for Azure with production dependencies only
+          cd deploy-package
+          
+          # Copy and modify package.json to remove dev dependencies
+          node -e "
+            const pkg = require('./package.json');
+            delete pkg.devDependencies;
+            delete pkg.scripts.dev;
+            delete pkg.scripts['test:watch'];
+            pkg.scripts.start = 'node dist/index.js';
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          
+          # Copy shared package builds
+          mkdir -p node_modules/@shared
+          
+          # Copy shared types
+          mkdir -p node_modules/@shared/types
+          cp -r ../packages/shared/dist/* node_modules/@shared/types/
+          cp ../packages/shared/package.json node_modules/@shared/types/
+          
+          # Copy shared supabase
+          mkdir -p node_modules/@shared/supabase  
+          cp -r ../packages/supabase/dist/* node_modules/@shared/supabase/
+          cp ../packages/supabase/package.json node_modules/@shared/supabase/
+          
+          # Install only production dependencies
+          npm ci --production --ignore-scripts
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          cd deploy-package
+          zip -r ../release.zip . -x "*.git*" "node_modules/.cache/*" "*.log"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -42,8 +98,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -68,4 +124,9 @@ jobs:
           app-name: 'bandruption-api'
           slot-name: 'Production'
           package: .
+
+      - name: Check deployment health
+        run: |
+          sleep 30
+          curl -f https://bandruption-api.azurewebsites.net/health || exit 1
           
