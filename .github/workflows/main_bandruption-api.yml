@@ -29,9 +29,9 @@ jobs:
 
       - name: Build shared packages
         run: |
-          # Use turbo directly with --no-deps to avoid building dependent packages
-          npx turbo run build --filter=@shared/types --no-deps
-          npx turbo run build --filter=@shared/supabase --no-deps
+          # Build shared packages that the server depends on
+          npx turbo build --filter=@shared/types
+          npx turbo build --filter=@shared/supabase
 
       - name: Build server
         env:
