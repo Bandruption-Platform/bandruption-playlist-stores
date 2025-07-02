@@ -1,6 +1,6 @@
 [build]
-  # No base directory needed - we're building from root
-  command = "npm run build --filter=web"
+  # Let Turbo handle dependency building automatically
+  command = "npm ci && npx turbo build --filter=web"
   publish = "apps/web/dist"
 
 [build.environment]
