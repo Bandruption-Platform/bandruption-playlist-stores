@@ -1,24 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Type definitions for environment access
-interface ViteImportMeta {
-  env: Record<string, string>;
-}
-
-interface GlobalWithExpo {
-  __expo?: unknown;
-}
-
 // Environment variable helper that works across platforms
 const getEnvVar = (name: string): string => {
   // Browser environment (Vite)
-  if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && (import.meta as unknown as ViteImportMeta).env) {
-    return (import.meta as unknown as ViteImportMeta).env[`VITE_${name}`] || '';
+  if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env[`VITE_${name}`] || '';
   }
   
   // React Native (Expo) - check for Expo-specific globals
-  if (typeof process !== 'undefined' && process.env && (typeof global !== 'undefined' && (global as GlobalWithExpo).__expo)) {
+  if (typeof process !== 'undefined' && process.env && (typeof global !== 'undefined' && (global as any).__expo)) {
     return process.env[`EXPO_PUBLIC_${name}`] || process.env[name] || '';
   }
   
