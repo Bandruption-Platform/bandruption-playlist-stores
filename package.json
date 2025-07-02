@@ -1,6 +1,7 @@
 {
   "name": "bandruption-playlist-stores",
   "private": true,
+  "packageManager": "npm@9.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
