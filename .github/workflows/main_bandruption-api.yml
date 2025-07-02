@@ -34,10 +34,17 @@ jobs:
 
       - name: Build shared packages
         run: |
-          npm run build --filter=@shared/types
-          npm run build --filter=@shared/supabase
+          # Use turbo directly with --no-deps to avoid building dependent packages
+          npx turbo run build --filter=@shared/types --no-deps
+          npx turbo run build --filter=@shared/supabase --no-deps
 
       - name: Build server
+        env:
+          # Add environment variables in case they're needed during build
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           cd apps/server
           npm run build
