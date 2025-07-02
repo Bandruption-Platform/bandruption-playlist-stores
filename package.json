@@ -29,6 +29,8 @@
     "mobile:clean": "cd apps/mobile && npm run dev:clean"
   },
   "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-keywords": "5.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "supabase": "^2.26.9"
