@@ -7,11 +7,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'apps/server/**'
-      - 'packages/**'
-      - 'package.json'
-      - 'turbo.json'
   workflow_dispatch:
 
 jobs:
