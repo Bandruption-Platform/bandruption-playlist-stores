@@ -1,7 +1,7 @@
 import { BandruptionApiResponse } from '@shared/types';
 
 export class BandruptionApiService {
-  private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+  private readonly baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   async chatWithAxel(message: string): Promise<string> {
     const response = await fetch(`${this.baseUrl}/api/bandruption/chat`, {
