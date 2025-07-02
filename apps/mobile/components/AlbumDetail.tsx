@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { X, Play, Clock, Heart, Share, Palette, ShoppingBag } from 'lucide-react-native';
 import { Album } from '@shared/types';
 
@@ -38,9 +38,8 @@ export function AlbumDetail({ album, isOpen, onClose, onCreateNFT, onCreateMerch
           {/* Album Info */}
           <View style={styles.albumSection}>
             <View style={styles.albumCover}>
-              <img
-                src={album.imageUrl}
-                alt={`${album.name} by ${album.artist}`}
+              <Image
+                source={{ uri: album.imageUrl }}
                 style={styles.albumImage}
               />
             </View>
