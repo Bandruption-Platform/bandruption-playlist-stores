@@ -51,6 +51,9 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          WALLET_MNEMONIC_ENCRYPTION_KEY: ${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          BANDRUPTION_API_KEY: ${{ secrets.BANDRUPTION_API_KEY }}
         run: |
           npm run test --filter=server
 
