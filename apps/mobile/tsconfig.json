@@ -4,7 +4,7 @@
     "strict": true,
     "jsx": "react-native",
     "baseUrl": ".",
-    "types": ["jest"],
+    "types": ["jest", "node"],
     "paths": {
       "@/*": ["./*"],
       "@shared/types": ["../../packages/shared/src"],

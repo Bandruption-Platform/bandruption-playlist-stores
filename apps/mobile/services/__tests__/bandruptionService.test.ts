@@ -20,7 +20,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Great music recommendations for mobile!' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       const result = await bandruptionService.chatWithAxel('Recommend electronic music');
 
@@ -46,7 +46,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Response' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       await service.chatWithAxel('Test message');
 
@@ -64,7 +64,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Response' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       await service.chatWithAxel('Test message');
 
@@ -79,7 +79,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: false,
         status: 500,
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       await expect(bandruptionService.chatWithAxel('test')).rejects.toThrow(
         'Failed to chat with Axel: 500'
@@ -107,7 +107,7 @@ describe('BandruptionService (Mobile)', () => {
           ok: false,
           status: testCase.status,
         };
-        (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+        (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
         await expect(bandruptionService.chatWithAxel('test')).rejects.toThrow(testCase.expected);
       }
@@ -118,7 +118,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       await expect(bandruptionService.chatWithAxel('test')).rejects.toThrow('Invalid JSON');
     });
@@ -128,7 +128,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({}),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       const result = await bandruptionService.chatWithAxel('test');
       expect(result).toBeUndefined();
@@ -140,7 +140,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'I love classical music and jazz!' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       await bandruptionService.chatWithAxel(specialMessage);
 
@@ -158,7 +158,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Processed your long message!' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       const result = await bandruptionService.chatWithAxel(longMessage);
 
@@ -176,7 +176,7 @@ describe('BandruptionService (Mobile)', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ reply: 'Concurrent response' }),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as Response);
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse as unknown as Response);
 
       const promises = [
         bandruptionService.chatWithAxel('Message 1'),

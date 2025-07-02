@@ -221,7 +221,7 @@ export default function CommunityScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton} onPress={handleProfilePress}>
             <Image 
-              source={{ uri: user.profileImage }} 
+              source={{ uri: user?.profileImage || '' }} 
               style={styles.profileImage}
             />
           </TouchableOpacity>

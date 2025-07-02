@@ -9,7 +9,7 @@ import { PlaylistItem } from '@/components/PlaylistItem';
 
 export default function FanProfileScreen() {
   const { id } = useLocalSearchParams();
-  const { user, nftGallery, library, playlists, followedArtists, fanUsers, getFanUserById } = useAppStore();
+  const { user, nftGallery, library, playlists, fanUsers, getFanUserById } = useAppStore();
   const [activeTab, setActiveTab] = useState<'music' | 'gallery' | 'statistics'>('music');
 
   // Get the fan user by id, fallback to mock data for demo
@@ -28,7 +28,7 @@ export default function FanProfileScreen() {
   const featuredPlaylists = playlists.filter(playlist => playlist.isFeatured);
   
   // Use fan user's specific data or fallback to current user's data for demo
-  const fanFollowedArtists = fanUser.followedArtists || followedArtists || [];
+  const fanFollowedArtists = fanUser?.followedArtists || user?.followedArtists || [];
   const fanFavoriteAlbums = fanUser.favoriteAlbums || library.slice(0, 6);
   const fanNFTGallery = fanUser.nftGallery || nftGallery;
 
