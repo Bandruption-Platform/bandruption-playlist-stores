@@ -1,6 +1,6 @@
 [build]
   # Build shared packages first, then web app
-  command = "npm ci && npm run build --filter=@shared/types --filter=@shared/ui --filter=web"
+  command = "npm ci && npx turbo run build --filter=@shared/types --filter=@shared/ui --filter=web"
   publish = "apps/web/dist"
 
 [build.environment]
