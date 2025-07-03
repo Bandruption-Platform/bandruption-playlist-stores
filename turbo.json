@@ -1,10 +1,19 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["NODE_ENV"],
-  "pipeline": {
+  "globalEnv": [
+    "NODE_ENV"
+  ],
+  "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**", ".expo/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "build/**",
+        ".expo/**"
+      ]
     },
     "dev": {
       "cache": false,
@@ -21,14 +30,22 @@
       ]
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "type-check": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
     },
     "test:watch": {
       "cache": false,
@@ -48,8 +65,13 @@
       "cache": false
     },
     "build:web": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".expo/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".expo/**"
+      ]
     }
   }
-} 
+}
