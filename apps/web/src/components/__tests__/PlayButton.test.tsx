@@ -1,4 +1,3 @@
-import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { PlayButton } from '../PlayButton';
@@ -21,9 +20,8 @@ const mockTrack = {
     images: [{ url: 'https://example.com/album.jpg', height: 300, width: 300 }]
   },
   duration_ms: 180000,
-  explicit: false,
-  external_urls: { spotify: 'https://open.spotify.com/track/track123' },
-  uri: 'spotify:track:track123'
+  preview_url: null,
+  external_urls: { spotify: 'https://open.spotify.com/track/track123' }
 };
 
 describe('PlayButton', () => {

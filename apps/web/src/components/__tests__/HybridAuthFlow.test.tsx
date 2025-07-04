@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlayButton } from '../PlayButton';
@@ -22,12 +21,15 @@ vi.mock('../../hooks/useSpotify', () => ({
 const mockTrack = {
   id: 'test-track-id',
   name: 'Test Track',
-  artists: [{ name: 'Test Artist' }],
-  album: { name: 'Test Album' },
+  artists: [{ id: 'artist-1', name: 'Test Artist' }],
+  album: { 
+    id: 'album-1',
+    name: 'Test Album',
+    images: [{ url: 'test.jpg', width: 640, height: 640 }]
+  },
   duration_ms: 180000,
   preview_url: null,
   external_urls: { spotify: 'https://open.spotify.com/track/test-track-id' },
-  spotify_id: 'test-track-id',
 };
 
 describe('Hybrid Auth Flow Integration', () => {

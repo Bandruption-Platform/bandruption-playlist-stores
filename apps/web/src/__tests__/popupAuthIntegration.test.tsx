@@ -131,9 +131,8 @@ const mockTrack = {
     images: [{ url: 'https://example.com/album.jpg', height: 300, width: 300 }]
   },
   duration_ms: 180000,
-  explicit: false,
-  external_urls: { spotify: 'https://open.spotify.com/track/track123' },
-  uri: 'spotify:track:track123'
+  preview_url: null,
+  external_urls: { spotify: 'https://open.spotify.com/track/track123' }
 };
 
 describe('Popup Authentication Integration', () => {
