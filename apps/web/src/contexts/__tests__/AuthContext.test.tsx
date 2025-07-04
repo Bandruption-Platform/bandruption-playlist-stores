@@ -1,6 +1,6 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { AuthError } from '@supabase/supabase-js';
 
 // Mock Supabase before importing AuthContext
 vi.mock('@shared/supabase', () => {
@@ -89,7 +89,7 @@ describe('AuthContext', () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 500,
-    });
+    } as unknown as Response);
   });
 
   afterEach(() => {
@@ -178,7 +178,7 @@ describe('AuthContext', () => {
         hasSpotifyAccess: true,
         accessMethod: 'primary'
       }),
-    });
+    } as unknown as Response);
 
     render(
       <AuthProvider>
@@ -218,7 +218,7 @@ describe('AuthContext', () => {
         hasSpotifyAccess: true,
         accessMethod: 'linked'
       }),
-    });
+    } as unknown as Response);
 
     render(
       <AuthProvider>
@@ -234,7 +234,7 @@ describe('AuthContext', () => {
 
   it('should handle regular OAuth sign in', async () => {
     mockSupabase.auth.signInWithOAuth.mockResolvedValue({
-      data: { url: 'https://auth-url.com' },
+      data: { provider: 'google' as const, url: 'https://auth-url.com' },
       error: null,
     });
 
@@ -262,10 +262,10 @@ describe('AuthContext', () => {
       close: vi.fn(),
     };
     
-    (window.open as vi.Mock).mockReturnValue(mockWindow);
+    (window.open as vi.Mock).mockReturnValue(mockWindow as unknown as Window);
     
     mockSupabase.auth.signInWithOAuth.mockResolvedValue({
-      data: { url: 'https://auth-url.com' },
+      data: { provider: 'google' as const, url: 'https://auth-url.com' },
       error: null,
     });
 
@@ -311,7 +311,7 @@ describe('AuthContext', () => {
     (window.open as vi.Mock).mockReturnValue(null);
     
     mockSupabase.auth.signInWithOAuth.mockResolvedValue({
-      data: { url: 'https://auth-url.com' },
+      data: { provider: 'google' as const, url: 'https://auth-url.com' },
       error: null,
     });
 
@@ -336,10 +336,10 @@ describe('AuthContext', () => {
       close: vi.fn(),
     };
     
-    (window.open as vi.Mock).mockReturnValue(mockWindow);
+    (window.open as vi.Mock).mockReturnValue(mockWindow as unknown as Window);
     
     mockSupabase.auth.signInWithOAuth.mockResolvedValue({
-      data: { url: 'https://auth-url.com' },
+      data: { provider: 'google' as const, url: 'https://auth-url.com' },
       error: null,
     });
 
@@ -364,8 +364,8 @@ describe('AuthContext', () => {
 
   it('should handle OAuth error', async () => {
     mockSupabase.auth.signInWithOAuth.mockResolvedValue({
-      data: null,
-      error: { message: 'OAuth failed' },
+      data: { provider: 'google' as const, url: null },
+      error: { message: 'OAuth failed', name: 'AuthError' } as AuthError,
     });
 
     render(

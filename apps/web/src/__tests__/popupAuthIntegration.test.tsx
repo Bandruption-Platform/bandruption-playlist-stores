@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthError } from '@supabase/supabase-js';
 import { AuthProvider } from '../contexts/AuthContext';
 import { SpotifyProvider } from '../contexts/SpotifyContext';
 import { PlayButton } from '../components/PlayButton';
@@ -38,7 +39,7 @@ vi.mock('react-router-dom', async () => {
 // Mock Supabase before importing contexts
 vi.mock('@shared/supabase', () => {
   const mockSignInWithOAuth = vi.fn().mockResolvedValue({ 
-    data: { user: null, session: null }, 
+    data: { provider: 'spotify' as const, url: 'https://accounts.spotify.com/authorize' }, 
     error: null 
   });
 
@@ -149,7 +150,7 @@ describe('Popup Authentication Integration', () => {
     // Reset the auth mock to default success behavior
     const mockSignInWithOAuth = vi.mocked(supabase.auth.signInWithOAuth);
     mockSignInWithOAuth.mockResolvedValue({
-      data: { user: null, session: null },
+      data: { provider: 'spotify' as const, url: 'https://accounts.spotify.com/authorize' },
       error: null
     });
     
@@ -159,7 +160,7 @@ describe('Popup Authentication Integration', () => {
       closed: false,
       postMessage: vi.fn(),
       location: { href: '' }
-    } as Window & { close: () => void; closed: boolean; postMessage: () => void; location: { href: string } };
+    } as unknown as Window & { close: () => void; closed: boolean; postMessage: () => void; location: { href: string } };
     
     mockWindowOpen.mockReturnValue(mockPopupWindow);
     
@@ -169,7 +170,7 @@ describe('Popup Authentication Integration', () => {
         return Promise.resolve({
           ok: true,
           json: async () => ({ authUrl: 'https://accounts.spotify.com/authorize?client_id=test' })
-        });
+        } as unknown as Response);
       }
       if (url.includes('/api/spotify/auth/callback')) {
         return Promise.resolve({
@@ -183,10 +184,11 @@ describe('Popup Authentication Integration', () => {
               display_name: 'Test User',
               email: 'test@example.com',
               product: 'premium',
-              images: []
+              images: [],
+              country: 'US'
             }
           })
-        });
+        } as unknown as Response);
       }
       return Promise.reject(new Error('Unknown URL'));
     });
@@ -268,8 +270,8 @@ describe('Popup Authentication Integration', () => {
       // Mock the Supabase auth to simulate cancellation/error
       const mockSignInWithOAuth = vi.mocked(supabase.auth.signInWithOAuth);
       mockSignInWithOAuth.mockResolvedValueOnce({
-        data: { user: null, session: null },
-        error: { message: 'Authentication cancelled' }
+        data: { provider: 'spotify' as const, url: null },
+        error: { message: 'Authentication cancelled', name: 'AuthError' } as AuthError
       });
       
       renderWithProviders(<PlayButton track={mockTrack} />);
@@ -299,8 +301,8 @@ describe('Popup Authentication Integration', () => {
       // Mock the Supabase auth to simulate error
       const mockSignInWithOAuth = vi.mocked(supabase.auth.signInWithOAuth);
       mockSignInWithOAuth.mockResolvedValueOnce({
-        data: { user: null, session: null },
-        error: { message: 'User denied access' }
+        data: { provider: 'spotify' as const, url: null },
+        error: { message: 'User denied access', name: 'AuthError' } as AuthError
       });
       
       renderWithProviders(<PlayButton track={mockTrack} />);

@@ -228,7 +228,14 @@ describe('PlayButton', () => {
 
       mockUseSpotifyAccess.mockReturnValue({
         hasSpotifyAccess: true,
-        spotifyUser: { product: 'free' },
+        spotifyUser: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'free'
+        },
         accessToken: 'spotify-token',
         loading: false,
         isLinking: false,
@@ -244,7 +251,14 @@ describe('PlayButton', () => {
         playTrack: vi.fn(),
         isPlayerReady: false,
         isAuthenticating: false,
-        user: { product: 'free' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'free'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),
@@ -308,7 +322,14 @@ describe('PlayButton', () => {
 
       mockUseSpotifyAccess.mockReturnValue({
         hasSpotifyAccess: true,
-        spotifyUser: { product: 'premium' },
+        spotifyUser: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         isLinking: false,
@@ -324,7 +345,14 @@ describe('PlayButton', () => {
         playTrack: vi.fn(),
         isPlayerReady: true,
         isAuthenticating: false,
-        user: { product: 'premium' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),
@@ -362,7 +390,14 @@ describe('PlayButton', () => {
         playTrack: vi.fn(),
         isPlayerReady: false,
         isAuthenticating: false,
-        user: { product: 'premium' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),
@@ -398,7 +433,14 @@ describe('PlayButton', () => {
         playTrack: mockPlayTrack,
         isPlayerReady: true,
         isAuthenticating: false,
-        user: { product: 'premium' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),
@@ -437,7 +479,14 @@ describe('PlayButton', () => {
         playTrack: mockPlayTrack,
         isPlayerReady: true,
         isAuthenticating: false,
-        user: { product: 'premium' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),
@@ -519,7 +568,14 @@ describe('PlayButton', () => {
 
       mockUseSpotifyAccess.mockReturnValue({
         hasSpotifyAccess: true,
-        spotifyUser: { product: 'free' },
+        spotifyUser: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'free'
+        },
         accessToken: 'spotify-token',
         loading: false,
         isLinking: false,
@@ -550,7 +606,14 @@ describe('PlayButton', () => {
 
       mockUseSpotifyAccess.mockReturnValue({
         hasSpotifyAccess: true,
-        spotifyUser: { product: 'premium' },
+        spotifyUser: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         isLinking: false,
@@ -566,7 +629,14 @@ describe('PlayButton', () => {
         playTrack: vi.fn(),
         isPlayerReady: true,
         isAuthenticating: false,
-        user: { product: 'premium' },
+        user: { 
+          id: 'spotify-user-1',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          images: [{ url: 'https://example.com/avatar.jpg', width: 64, height: 64 }],
+          country: 'US',
+          product: 'premium'
+        },
         accessToken: 'spotify-token',
         loading: false,
         login: vi.fn(),

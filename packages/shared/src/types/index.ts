@@ -15,6 +15,7 @@ export interface User {
   nftGallery?: NFT[];
   followedArtists?: Artist[];
   favoriteAlbums?: Album[];
+  isPaidSubscriber?: boolean;
 }
 
 export interface Artist {
@@ -38,6 +39,11 @@ export interface Playlist {
   coverImage?: string;
   isFeatured?: boolean;
   items?: PlaylistItem[];
+  // Legacy fields for backward compatibility
+  name?: string;
+  tracks?: Track[];
+  userId?: string;
+  coverImageUrl?: string;
 }
 
 export interface PlaylistItem {
@@ -69,6 +75,9 @@ export interface Track {
   external_url?: string;
   artist_id?: string;
   album_id?: string;
+  // Legacy field for backward compatibility
+  album?: string;
+  previewUrl?: string;
 }
 
 export interface Album {

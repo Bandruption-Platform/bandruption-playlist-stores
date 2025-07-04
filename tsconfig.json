@@ -1,7 +1,10 @@
 {
-  "compilerOptions": {
-    "types": ["react", "react-native"],
-    "jsx": "react-native"
-  },
-  "extends": "expo/tsconfig.base"
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/supabase" },
+    { "path": "./apps/web" },
+    { "path": "./apps/server" }
+  ]
 }

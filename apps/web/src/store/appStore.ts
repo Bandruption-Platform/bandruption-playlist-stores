@@ -50,7 +50,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const state = get();
     const updatedPlaylists = state.userPlaylists.map(playlist => 
       playlist.id === playlistId 
-        ? { ...playlist, tracks: [...playlist.tracks, track] }
+        ? { ...playlist, tracks: [...(playlist.tracks || []), track] }
         : playlist
     );
     set({ userPlaylists: updatedPlaylists });

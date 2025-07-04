@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { useSpotifyAuth } from '../useSpotifyAuth';
 import { spotifyApi } from '../../services/spotifyApi';
 import { popupAuthService } from '../../services/popupAuth';

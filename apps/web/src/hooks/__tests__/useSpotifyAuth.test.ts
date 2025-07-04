@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react'
+import { vi } from 'vitest'
 import { useSpotifyAuth } from '../useSpotifyAuth'
 import { spotifyApi } from '../../services/spotifyApi'
 import { popupAuthService } from '../../services/popupAuth'
@@ -34,7 +35,7 @@ const mockLocation = {
   search: ''
 }
 delete (window as unknown as { location: unknown }).location
-window.location = mockLocation as Location
+window.location = mockLocation as unknown as Location
 
 // Mock URLSearchParams
 const mockURLSearchParams = vi.fn()
