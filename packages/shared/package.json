@@ -5,10 +5,10 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "npm run type-check && npm run lint && ../../node_modules/.bin/tsc",
-    "dev": "../../node_modules/.bin/tsc --watch",
+    "build": "npm run type-check && npm run lint && npx --package=typescript tsc",
+    "dev": "npx --package=typescript tsc --watch",
     "lint": "eslint .",
-    "type-check": "../../node_modules/.bin/tsc --noEmit",
+    "type-check": "npx --package=typescript tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
