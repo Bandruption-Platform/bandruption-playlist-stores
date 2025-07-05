@@ -181,13 +181,11 @@ jobs:
         run: |
           # Get access token using your existing service principal
           TOKEN=$(az account get-access-token --resource https://management.azure.com/ --query accessToken -o tsv)
-          # Use the token to authenticate with your app
-          HEALTH_RESPONSE=$(curl -H "Authorization: Bearer $TOKEN" \
-            https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health)
-          echo "Health check response: $HEALTH_RESPONSE"
+          echo "TOKEN=$TOKEN" >> $GITHUB_OUTPUT
 
       - name: Check deployment health
         run: |
           sleep 30
-          curl -f https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || exit 1
+          curl -f -H "Authorization: Bearer ${{ steps.get-token.outputs.TOKEN }}" \
+            https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || exit 1
           
