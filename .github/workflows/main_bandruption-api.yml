@@ -159,21 +159,21 @@ jobs:
             --resource-group Flagship \
             --settings \
               WEBSITE_NODE_DEFAULT_VERSION=20 \
-              VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
-              VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
-              SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
-              SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}" \
-              WALLET_MNEMONIC_ENCRYPTION_KEY="${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}" \
-              JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              BANDRUPTION_API_KEY="${{ secrets.BANDRUPTION_API_KEY }}" \
-              SPOTIFY_CLIENT_ID="${{ secrets.SPOTIFY_CLIENT_ID }}" \
-              SPOTIFY_CLIENT_SECRET="${{ secrets.SPOTIFY_CLIENT_SECRET }}" \
-              SPOTIFY_REDIRECT_URI="${{ secrets.SPOTIFY_REDIRECT_URI }}" \
-              PINATA_API_KEY="${{ secrets.PINATA_API_KEY }}" \
-              PINATA_SECRET="${{ secrets.PINATA_SECRET }}" \
-              NODELY_API_URL="${{ secrets.NODELY_API_URL }}" \
-              NODELY_INDEXER_URL="${{ secrets.NODELY_INDEXER_URL }}" \
-              ALGORAND_NETWORK="${{ secrets.ALGORAND_NETWORK }}" \
+              VITE_SUPABASE_URL='${{ secrets.VITE_SUPABASE_URL }}' \
+              VITE_SUPABASE_ANON_KEY='${{ secrets.VITE_SUPABASE_ANON_KEY }}' \
+              SUPABASE_URL='${{ secrets.SUPABASE_URL }}' \
+              SUPABASE_ANON_KEY='${{ secrets.SUPABASE_ANON_KEY }}' \
+              WALLET_MNEMONIC_ENCRYPTION_KEY='${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}' \
+              JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+              BANDRUPTION_API_KEY='${{ secrets.BANDRUPTION_API_KEY }}' \
+              SPOTIFY_CLIENT_ID='${{ secrets.SPOTIFY_CLIENT_ID }}' \
+              SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}' \
+              SPOTIFY_REDIRECT_URI='${{ secrets.SPOTIFY_REDIRECT_URI }}' \
+              PINATA_API_KEY='${{ secrets.PINATA_API_KEY }}' \
+              PINATA_SECRET='${{ secrets.PINATA_SECRET }}' \
+              NODELY_API_URL='${{ secrets.NODELY_API_URL }}' \
+              NODELY_INDEXER_URL='${{ secrets.NODELY_INDEXER_URL }}' \
+              ALGORAND_NETWORK='${{ secrets.ALGORAND_NETWORK }}' \
               PORT=8080
 
       - name: Check deployment health
