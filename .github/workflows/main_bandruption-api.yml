@@ -81,6 +81,9 @@ jobs:
           cp -r apps/server/dist deploy-package/
           cp apps/server/package.json deploy-package/
           
+          # Copy auth.json for Azure App Service authentication configuration
+          cp apps/server/auth.json deploy-package/ 2>/dev/null || echo "No auth.json found, skipping"
+          
           # Create package.json for Azure with production dependencies only
           cd deploy-package
           
@@ -175,30 +178,21 @@ jobs:
               NODELY_INDEXER_URL='${{ secrets.NODELY_INDEXER_URL }}' \
               ALGORAND_NETWORK='${{ secrets.ALGORAND_NETWORK }}' \
               PORT=8080
-
-      - name: Get Azure AD Token for Health Check
-        id: get-token
-        run: |
-          # Get access token for the specific App Service resource
-          # First, get the resource ID for your app service
-          APP_RESOURCE_ID=$(az webapp show --name bandruption-api --resource-group Flagship --query id -o tsv)
           
-          # Get access token for the app service (not management API)
-          # Try to get token for the app's default audience
-          TOKEN=$(az account get-access-token --resource "https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/.default" --query accessToken -o tsv 2>/dev/null || \
-                  az account get-access-token --resource "api://${{ secrets.AZUREAPPSERVICE_CLIENTID_99B02F3DD5EF46E68F187D04D49710E0 }}" --query accessToken -o tsv 2>/dev/null || \
-                  az account get-access-token --resource "${{ secrets.AZUREAPPSERVICE_CLIENTID_99B02F3DD5EF46E68F187D04D49710E0 }}" --query accessToken -o tsv)
-          
-          echo "TOKEN=$TOKEN" >> $GITHUB_OUTPUT
-          echo "::add-mask::$TOKEN"
+          # Configure authentication to use file-based config
+          az webapp auth update \
+            --name bandruption-api \
+            --resource-group Flagship \
+            --config-file-path /home/site/wwwroot/auth.json || echo "Auth config update failed, may need manual configuration"
 
       - name: Check deployment health
         run: |
+          echo "Waiting for deployment to stabilize..."
           sleep 30
-          # Try with the token
-          curl -f -H "Authorization: Bearer ${{ steps.get-token.outputs.TOKEN }}" \
-            https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || \
-          # If that fails, try checking if we can at least reach the endpoint
-          (echo "Token auth failed, checking if endpoint is reachable..." && \
-           curl -v https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health)
+          
+          echo "Checking health endpoint (should be excluded from auth)..."
+          curl -f https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || \
+          (echo "Health check failed. Checking verbose output..." && \
+           curl -v https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health && \
+           exit 1)
           
