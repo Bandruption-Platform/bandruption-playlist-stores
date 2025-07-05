@@ -45,6 +45,24 @@
       ],
       "outputs": [
         "coverage/**"
+      ],
+      "env": [
+        "VITE_SUPABASE_URL",
+        "VITE_SUPABASE_ANON_KEY",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "BANDRUPTION_API_KEY",
+        "SPOTIFY_CLIENT_ID",
+        "SPOTIFY_CLIENT_SECRET",
+        "SPOTIFY_REDIRECT_URI",
+        "WALLET_MNEMONIC_ENCRYPTION_KEY",
+        "JWT_SECRET",
+        "PINATA_API_KEY",
+        "PINATA_SECRET",
+        "NODELY_API_URL",
+        "NODELY_INDEXER_URL",
+        "ALGORAND_NETWORK",
+        "PORT"
       ]
     },
     "test:watch": {

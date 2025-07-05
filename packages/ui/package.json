@@ -4,6 +4,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "build": "npm run type-check && npm run lint && npx --package=typescript tsc",
     "dev": "npx --package=typescript tsc --watch",

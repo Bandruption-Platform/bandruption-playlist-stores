@@ -68,7 +68,10 @@ jobs:
           # Server Configuration
           PORT: 3001
         run: |
+          # Run server tests specifically
           npm run test --filter=server
+          # Run supabase tests with environment variables
+          npm run test --filter=@shared/supabase
 
       - name: Create deployment package
         run: |
