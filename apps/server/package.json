@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "nodemon --exec \"node --loader ts-node/esm\" src/index.ts",
     "build": "npm run type-check && npm run lint && tsc",

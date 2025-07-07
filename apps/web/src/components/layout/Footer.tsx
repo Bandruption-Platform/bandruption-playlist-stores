@@ -61,9 +61,9 @@ export const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-dark-700">
           <h3 className="text-white font-semibold mb-6 text-center">Powered By</h3>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <span className="text-green-400 font-semibold">Spotify</span>
+            <img src="/images/Spotify_Full_Logo_RGB_Green.png" alt="Spotify" className="h-6 w-auto object-contain filter brightness-75" />
             <img src="/images/algorand-white.svg" alt="Algorand" className="h-6 w-auto object-contain filter brightness-75" />
-            <span className="text-orange-400 font-semibold">Cloudflare</span>
+            <img src="/images/Cloudflare_Logo.svg" alt="Cloudflare" className="h-6 w-auto object-contain filter brightness-75" />
             <img src="/images/supabase-color.svg" alt="Supabase" className="h-6 w-auto object-contain filter brightness-75" />
             <img src="/images/revenue-cat-color.svg" alt="RevenueCat" className="h-6 w-auto object-contain filter brightness-75" />
             <img src="/images/entri-white.svg" alt="Entri" className="h-6 w-auto object-contain filter brightness-75" />

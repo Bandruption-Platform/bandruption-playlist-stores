@@ -1,10 +1,9 @@
 import React from 'react';
-import { DivideIcon as LucideIcon } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
-  icon?: LucideIcon;
+  icon?: React.ComponentType<{ size?: number; className?: string; }>;
   iconPosition?: 'left' | 'right';
   isLoading?: boolean;
 }
