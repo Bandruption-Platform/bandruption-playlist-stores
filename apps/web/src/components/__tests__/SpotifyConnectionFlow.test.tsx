@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SpotifyProvider } from '../../contexts/SpotifyContext'
 import { SearchPage } from '../../pages/SearchPage'

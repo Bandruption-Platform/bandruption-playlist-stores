@@ -21,7 +21,7 @@ export const PlaylistPage: React.FC = () => {
     );
   }
 
-  const totalDuration = playlist.tracks.reduce((sum, track) => sum + track.duration, 0);
+  const totalDuration = playlist.tracks?.reduce((sum, track) => sum + track.duration, 0) || 0;
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -72,7 +72,7 @@ export const PlaylistPage: React.FC = () => {
                 />
                 <span className="font-medium">{playlistOwner.username}</span>
                 <span>•</span>
-                <span>{playlist.tracks.length} songs</span>
+                <span>{playlist.tracks?.length || 0} songs</span>
                 <span>•</span>
                 <span>{formatDuration(totalDuration)}</span>
               </div>
@@ -137,7 +137,7 @@ export const PlaylistPage: React.FC = () => {
           </div>
           
           {/* Tracks */}
-          {playlist.tracks.map((track, index) => (
+          {playlist.tracks?.map((track, index) => (
             <div
               key={track.id}
               className="grid grid-cols-12 gap-4 px-4 py-3 text-gray-300 hover:bg-dark-700/50 rounded-lg transition-colors duration-200 group"

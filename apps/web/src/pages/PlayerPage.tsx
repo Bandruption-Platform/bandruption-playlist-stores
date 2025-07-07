@@ -184,7 +184,7 @@ export const PlayerPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            {playlist.tracks.slice(1, 6).map((queueTrack, index) => (
+            {playlist.tracks?.slice(1, 6).map((queueTrack, index) => (
               <div
                 key={queueTrack.id}
                 className="flex items-center gap-4 p-3 rounded-lg hover:bg-dark-700/50 transition-colors duration-200 group cursor-pointer"

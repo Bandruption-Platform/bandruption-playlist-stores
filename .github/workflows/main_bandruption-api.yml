@@ -1,0 +1,198 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - bandruption-api
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared packages
+        run: |
+          # Build shared packages that the server depends on
+          npx turbo build --filter=@shared/types
+          npx turbo build --filter=@shared/supabase
+
+      - name: Build server
+        env:
+          # Add environment variables in case they're needed during build
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          cd apps/server
+          npm run build
+
+      - name: Run tests
+        env:
+          # Supabase Configuration
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Security & Auth
+          WALLET_MNEMONIC_ENCRYPTION_KEY: ${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          # API Keys
+          BANDRUPTION_API_KEY: ${{ secrets.BANDRUPTION_API_KEY }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
+          # Algorand Configuration
+          NODELY_API_URL: ${{ secrets.NODELY_API_URL }}
+          NODELY_INDEXER_URL: ${{ secrets.NODELY_INDEXER_URL }}
+          ALGORAND_NETWORK: ${{ secrets.ALGORAND_NETWORK }}
+          # Server Configuration
+          PORT: 3001
+        run: |
+          # Run server tests specifically
+          npm run test --filter=server
+          # Run supabase tests with environment variables
+          npm run test --filter=@shared/supabase
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy-package
+          
+          # Copy server build output
+          cp -r apps/server/dist deploy-package/
+          cp apps/server/package.json deploy-package/
+          
+          # Copy auth.json for Azure App Service authentication configuration
+          cp apps/server/auth.json deploy-package/ 2>/dev/null || echo "No auth.json found, skipping"
+          
+          # Create package.json for Azure with production dependencies only
+          cd deploy-package
+          
+          # Copy and modify package.json to remove dev dependencies
+          node -e "
+            const pkg = require('./package.json');
+            delete pkg.devDependencies;
+            delete pkg.scripts.dev;
+            delete pkg.scripts['test:watch'];
+            pkg.scripts.start = 'node dist/index.js';
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          
+          # Copy shared package builds
+          mkdir -p node_modules/@shared
+          
+          # Copy shared types
+          mkdir -p node_modules/@shared/types
+          cp -r ../packages/shared/dist/* node_modules/@shared/types/
+          cp ../packages/shared/package.json node_modules/@shared/types/
+          
+          # Copy shared supabase
+          mkdir -p node_modules/@shared/supabase  
+          cp -r ../packages/supabase/dist/* node_modules/@shared/supabase/
+          cp ../packages/supabase/package.json node_modules/@shared/supabase/
+          
+          # Install only production dependencies
+          npm install --omit=dev --ignore-scripts
+
+      - name: Zip artifact for deployment
+        run: |
+          cd deploy-package
+          zip -r ../release.zip . -x "*.git*" "node_modules/.cache/*" "*.log"
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: release.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_99B02F3DD5EF46E68F187D04D49710E0 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9A3E27E49B4545259EF22C8E5C162BA0 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_53AE506B07AD45C18F4E9A77FCA8DB64 }}
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'bandruption-api'
+          slot-name: 'Production'
+          package: .
+
+      - name: Configure App Settings
+        run: |
+          az webapp config appsettings set \
+            --name bandruption-api \
+            --resource-group Flagship \
+            --settings \
+              WEBSITE_NODE_DEFAULT_VERSION=20 \
+              VITE_SUPABASE_URL='${{ secrets.VITE_SUPABASE_URL }}' \
+              VITE_SUPABASE_ANON_KEY='${{ secrets.VITE_SUPABASE_ANON_KEY }}' \
+              SUPABASE_URL='${{ secrets.SUPABASE_URL }}' \
+              SUPABASE_ANON_KEY='${{ secrets.SUPABASE_ANON_KEY }}' \
+              WALLET_MNEMONIC_ENCRYPTION_KEY='${{ secrets.WALLET_MNEMONIC_ENCRYPTION_KEY }}' \
+              JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+              BANDRUPTION_API_KEY='${{ secrets.BANDRUPTION_API_KEY }}' \
+              SPOTIFY_CLIENT_ID='${{ secrets.SPOTIFY_CLIENT_ID }}' \
+              SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}' \
+              SPOTIFY_REDIRECT_URI='${{ secrets.SPOTIFY_REDIRECT_URI }}' \
+              PINATA_API_KEY='${{ secrets.PINATA_API_KEY }}' \
+              PINATA_SECRET='${{ secrets.PINATA_SECRET }}' \
+              NODELY_API_URL='${{ secrets.NODELY_API_URL }}' \
+              NODELY_INDEXER_URL='${{ secrets.NODELY_INDEXER_URL }}' \
+              ALGORAND_NETWORK='${{ secrets.ALGORAND_NETWORK }}' \
+              PORT=8080
+          
+          # Configure authentication to use file-based config
+          az webapp auth update \
+            --name bandruption-api \
+            --resource-group Flagship \
+            --config-file-path /home/site/wwwroot/auth.json || echo "Auth config update failed, may need manual configuration"
+
+      - name: Check deployment health
+        run: |
+          echo "Waiting for deployment to stabilize..."
+          sleep 30
+          
+          echo "Checking health endpoint (should be excluded from auth)..."
+          curl -f https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health || \
+          (echo "Health check failed. Checking verbose output..." && \
+           curl -v https://bandruption-api-hpfkc8azfyheb9a9.japaneast-01.azurewebsites.net/health && \
+           exit 1)
+          

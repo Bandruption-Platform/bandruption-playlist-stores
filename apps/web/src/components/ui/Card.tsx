@@ -5,6 +5,7 @@ interface CardProps {
   className?: string;
   variant?: 'default' | 'glass' | 'elevated';
   hover?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -12,6 +13,7 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   variant = 'default',
   hover = false,
+  style,
 }) => {
   const baseClasses = 'rounded-xl overflow-hidden transition-all duration-300';
   
@@ -26,7 +28,7 @@ export const Card: React.FC<CardProps> = ({
   const classes = `${baseClasses} ${variantClasses[variant]} ${hoverClasses} ${className}`;
   
   return (
-    <div className={classes}>
+    <div className={classes} style={style}>
       {children}
     </div>
   );

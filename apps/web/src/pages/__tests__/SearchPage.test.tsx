@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { vi } from 'vitest'
 import { SearchPage } from '../SearchPage'
 import { SpotifyProvider } from '../../contexts/SpotifyContext'
 import { popupAuthService } from '../../services/popupAuth'

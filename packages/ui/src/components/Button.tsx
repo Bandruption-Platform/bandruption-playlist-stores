@@ -1,12 +1,13 @@
 import React from 'react';
 
 export interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline';
+  children?: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   onClick?: () => void;
   className?: string;
+  icon?: React.ComponentType<any>;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -16,6 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
   onClick,
   className = '',
+  icon: Icon,
 }) => {
   const baseClasses = 'font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
   
@@ -23,6 +25,7 @@ const Button: React.FC<ButtonProps> = ({
     primary: 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500',
     secondary: 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500',
     outline: 'border border-blue-500 text-blue-500 hover:bg-blue-50 focus:ring-blue-500',
+    ghost: 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500',
   };
 
   const sizeClasses = {
@@ -49,6 +52,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
     >
+      {Icon && <Icon className="mr-2 w-4 h-4" />}
       {children}
     </button>
   );

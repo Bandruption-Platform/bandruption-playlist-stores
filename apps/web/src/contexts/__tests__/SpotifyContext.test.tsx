@@ -1,4 +1,5 @@
 import { render, renderHook } from '@testing-library/react'
+import { vi } from 'vitest'
 import { SpotifyProvider } from '../SpotifyContext'
 import { useSpotify } from '../../hooks/useSpotify'
 import { ReactNode } from 'react'

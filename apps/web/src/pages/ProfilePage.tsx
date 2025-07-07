@@ -126,7 +126,7 @@ export const ProfilePage: React.FC = () => {
                     <h3 className="text-white font-semibold truncate">{playlist.name}</h3>
                     <p className="text-gray-400 text-sm mb-2 line-clamp-2">{playlist.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">{playlist.tracks.length} tracks</span>
+                      <span className="text-sm text-gray-500">{playlist.tracks?.length || 0} tracks</span>
                       <Button variant="ghost" size="sm" icon={Copy}>
                         Copy
                       </Button>
