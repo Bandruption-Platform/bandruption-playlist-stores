@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Library, ShoppingBag, UsersRound, User } from 'lucide-react-native';
+import { Home, Library, Sparkles, UsersRound, User } from 'lucide-react-native';
 
 export default function TabLayout() {
 
@@ -39,6 +39,16 @@ export default function TabLayout() {
           title: 'Library',
           tabBarIcon: ({ size, color }) => (
             <Library size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Explore',
+          tabBarIcon: ({ size, color }) => (
+            <Sparkles size={size} color={color} />
           ),
         }}
       />
