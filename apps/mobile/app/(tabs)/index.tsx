@@ -5,13 +5,11 @@ import { Search, MessageCircle, Sparkles, TrendingUp, Clock } from 'lucide-react
 import { useAppStore } from '@/store/useAppStore';
 import { AlbumCard } from '@/components/AlbumCard';
 import { FeedCard } from '@/components/FeedCard';
-import { AIChat } from '@/components/AIChat';
 
 export default function HomeScreen() {
   const { library, user } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAIChat, setShowAIChat] = useState(false);
-
+  
   const featuredAlbums = library.slice(0, 3);
   const recentlyPlayed = library.slice(3, 6);
 
@@ -36,16 +34,6 @@ export default function HomeScreen() {
           onChangeText={setSearchQuery}
         />
       </View>
-
-      {/* AI Chat Button */}
-      <TouchableOpacity
-        style={styles.aiChatButton}
-        onPress={() => setShowAIChat(true)}
-      >
-        <Sparkles size={20} color="#CDFF6A" />
-        <Text style={styles.aiChatText}>Want to hear something new?</Text>
-        <MessageCircle size={16} color="#000000" />
-      </TouchableOpacity>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Featured Section */}
@@ -106,12 +94,6 @@ export default function HomeScreen() {
           />
         </View>
       </ScrollView>
-
-      {/* AI Chat Modal */}
-      <AIChat
-        visible={showAIChat}
-        onClose={() => setShowAIChat(false)}
-      />
     </SafeAreaView>
   );
 }
@@ -155,23 +137,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#E0E7FF',
     fontSize: 16,
-  },
-  aiChatButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#9BC53D',
-    marginHorizontal: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  aiChatText: {
-    flex: 1,
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
   },
   scrollView: {
     flex: 1,
